@@ -10,34 +10,33 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    
+  
     try {
-      // 회원가입 요청 시에는 Authorization 헤더를 포함하지 않음
       const response = await axios.post(
-        'http://localhost:8080/api/auth/register', 
+        'http://localhost:8080/api/auth/register',
         {
           email,
           username,
           password,
-        }, 
+        },
         {
           headers: {
             'Content-Type': 'application/json', // 필요한 다른 헤더
-          }
+          },
         }
       );
-      
-      // 서버에서 반환된 메시지(response.data)를 alert로 표시
-      alert(response.data); // 예: "회원가입이 완료되었습니다."
+  
+      // 서버에서 반환된 메시지를 사용하여 성공 알림 표시
+      const successMessage = response.data.message || "회원가입이 완료되었습니다."; // 예: "회원가입이 완료되었습니다."
+      alert(successMessage); // 성공 메시지 표시
+  
       navigate('/'); // 회원가입 후 홈 화면으로 이동
     } catch (error) {
-      // 오류 발생 시, 서버 응답을 통해 에러 메시지를 사용자에게 알림
       const errorMessage = error.response ? error.response.data : '회원가입에 실패했습니다. 다시 시도해 주세요.';
       console.error('회원가입 실패:', errorMessage);
-      alert(errorMessage);
+      alert(errorMessage); // 실패 메시지 표시
     }
   };
-
   return (
     <div>
       <h2>회원가입</h2>
