@@ -1,0 +1,77 @@
+# -----------------------------
+# Backend (Spring / Gradle)
+# -----------------------------
+
+# Gradle specific files
+/APIService/.gradle/
+/APIService/build/
+/APIService/out/
+
+# Compiled class files
+/APIService/**/*.class
+
+# Log files
+/APIService/**/*.log
+
+# Maven specific files (if applicable)
+/APIService/target/
+/APIService/pom.xml.tag
+/APIService/pom.xml.releaseBackup
+/APIService/pom.xml.versionsBackup
+/APIService/pom.xml.next
+/APIService/release.properties
+
+# Environment variables
+/APIService/*.env
+
+# IDE-specific files
+/APIService/.project
+/APIService/.classpath
+/APIService/.settings/
+/APIService/.idea/
+/APIService/*.iml
+/APIService/*.iws
+/APIService/.vscode/
+
+# -----------------------------
+# Frontend (React)
+# -----------------------------
+
+# Dependencies
+/ReactFront/node_modules/
+/ReactFront/.pnp
+/ReactFront/.pnp.js
+
+# Production build
+/ReactFront/build
+
+# Environment variables
+/ReactFront/.env
+/ReactFront/.env.local
+/ReactFront/.env.development
+/ReactFront/.env.production
+/ReactFront/.env.test
+
+# Log files
+/ReactFront/npm-debug.log*
+/ReactFront/yarn-debug.log*
+/ReactFront/yarn-error.log*
+
+# Editor-specific files
+/ReactFront/.idea
+/ReactFront/.vscode
+/ReactFront/*.suo
+/ReactFront/*.ntvs*
+/ReactFront/*.njsproj
+/ReactFront/*.sln
+/ReactFront/*.sw?
+
+# -----------------------------
+# Common
+# -----------------------------
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
