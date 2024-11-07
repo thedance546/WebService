@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Login Home</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center">Mart</h1>
+  <p class="text-center" th:text="'어서요세요, ' + ${userEmail} + '!'"></p> <!-- 로그인한 사용자 이메일 표시 -->
+  <div class="text-center mt-4">
+    <a th:href="@{/mypage}" class="btn btn-primary mr-2">My Page</a> <!-- My Page 버튼 -->
+    <a th:href="@{/logout}" class="btn btn-danger">Logout</a> <!-- 로그아웃 버튼 (logout.html로 이동) -->
+  </div>
+</div>
+</body>
+</html>
