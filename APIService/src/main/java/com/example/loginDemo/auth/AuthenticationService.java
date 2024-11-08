@@ -31,7 +31,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public ResponseEntity<Object> register(RegisterRequest request) {
+    public Map<String, String> register(RegisterRequest request) {
         // 이메일 중복 체크
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         if (existingUser.isPresent()) {
@@ -47,12 +47,13 @@ public class AuthenticationService {
         System.out.println("Saving user: " + user); // 로그 추가
         userRepository.save(user);
 
-        // OK 상태 코드와 메시지 반환
+        // 응답 메시지 생성
         Map<String, String> response = new HashMap<>();
         response.put("message", "회원가입이 완료되었습니다.");
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
+
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {

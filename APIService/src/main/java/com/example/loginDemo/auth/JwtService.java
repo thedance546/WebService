@@ -43,7 +43,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis())) // 토큰 발행 시간
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 토큰 만료 시간
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 토큰 만료 시간
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 토큰 알고리즘
                 .compact();
     }
