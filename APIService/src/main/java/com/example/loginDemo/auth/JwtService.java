@@ -21,8 +21,8 @@ public class JwtService {
     @Value("${security.secret.key}")
     private String secretKey;
 
-    public final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000 * 60 * 5;
-    public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000 * 60 * 60 * 24 * 7;
+    public final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000 * 60 * 30;
+    public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000 * 60 * 60 * 24 * 14;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
