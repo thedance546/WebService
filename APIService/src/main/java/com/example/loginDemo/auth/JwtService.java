@@ -30,6 +30,7 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
+    //access_token
     public String generateAccessToken(UserDetails userDetails) {
         return generateAccessToken(new HashMap<>(), userDetails);
     }
@@ -45,6 +46,25 @@ public class JwtService {
                 .setIssuedAt(new Date(System.currentTimeMillis())) // 토큰 발행 시간
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5)) // 토큰 만료 시간
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 토큰 알고리즘
+                .compact();
+    }
+
+    //refresh_token
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateRefreshToken(new HashMap<>(), userDetails);
+    }
+
+    public String generateRefreshToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails
+    ) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis())) // 발행 시간
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7일 만료 시간 (예시)
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 서명 알고리즘
                 .compact();
     }
 

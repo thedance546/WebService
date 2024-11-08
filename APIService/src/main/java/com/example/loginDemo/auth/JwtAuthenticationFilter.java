@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // "Bearer " 뒤의 JWT 추출
-        jwt = authHeader.substring(7);
+        jwt = authHeader.substring("Bearer ".length());
         userEmail = jwtService.extractUsername(jwt);
 
         // 토큰 검증

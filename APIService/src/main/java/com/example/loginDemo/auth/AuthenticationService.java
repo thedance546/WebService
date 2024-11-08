@@ -67,7 +67,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         var jwtToken = jwtService.generateAccessToken(user);
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .access_token(jwtToken)
                 .build();
     }
 }
