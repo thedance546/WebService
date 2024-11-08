@@ -1,0 +1,75 @@
+/* Welcome.css */
+
+/* 전체 레이아웃 설정 */
+.welcome-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 수평 가운데 정렬 */
+  min-height: 100vh; /* 화면 전체 높이 차지 */
+  text-align: center;
+  padding: 20px;
+  background-color: #f9f9f9; /* 배경색 설정 */
+}
+
+/* h1 스타일 설정 - 화면 위쪽 중앙에 배치 */
+.welcome-page h1 {
+  font-size: 2em;
+  color: #333;
+  margin: 20px 0; /* 상단 여백을 추가하여 화면 위쪽에 약간 떨어지도록 */
+}
+
+/* 회원가입/로그인 버튼을 감싸는 박스 스타일 */
+.auth-box {
+  background-color: #ffffff; /* 박스 배경색 */
+  padding: 30px; /* 박스 내부 여백 */
+  border-radius: 10px; /* 모서리 둥글게 설정 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  display: flex;
+  flex-direction: column; /* 버튼을 세로로 나열 */
+  align-items: center; /* 버튼 수평 가운데 정렬 */
+  gap: 15px; /* 버튼 간격 */
+  margin-top: 20px; /* h1 아래 여백 추가 */
+}
+
+/* 버튼 그룹 스타일 */
+nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 각 버튼을 수평 가운데 정렬 */
+  gap: 15px; /* 버튼 사이 여백 */
+}
+
+/* 공통 버튼 스타일 */
+.home-button {
+  display: block;
+  width: 100%;
+  max-width: 300px; /* 버튼의 최대 너비 */
+  padding: 15px; /* 버튼 내부 여백 */
+  font-size: 1.2em; /* 버튼 텍스트 크기 */
+  color: #fff; /* 텍스트 색상 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  text-decoration: none; /* 밑줄 제거 */
+  border-radius: 8px; /* 모서리 둥글게 설정 */
+  background-color: #4CAF50; /* 기본 버튼 색상 (회원가입) */
+  transition: background-color 0.3s ease; /* 색상 전환 효과 */
+}
+
+/* 회원가입 버튼 hover 스타일 */
+.home-button:hover {
+  background-color: #45a049; /* hover 시 배경색 */
+}
+
+/* 로그인 버튼 스타일 */
+.home-button:last-child {
+  background-color: #008CBA; /* 로그인 버튼 색상 */
+}
+
+/* 로그인 버튼 hover 스타일 */
+.home-button:last-child:hover {
+  background-color: #007bb5; /* hover 시 배경색 */
+}
+
+/* 테스트 링크 버튼의 외부 위치 설정 */
+.test-link {
+  margin-top: 20px; /* auth-box와 간격을 주기 위해 위 여백 추가 */
+}

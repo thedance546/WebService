@@ -1,7 +1,21 @@
+/* App.css */
+
+/* App 전체 레이아웃 설정 */
 .App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  background-color: #f9f9f9;
+  min-height: 100vh;
 }
 
+/* 애플리케이션 링크 스타일 */
+.App-link {
+  color: #61dafb;
+}
+
+/* 로고 애니메이션 */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -11,21 +25,6 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
 }
 
 @keyframes App-logo-spin {
