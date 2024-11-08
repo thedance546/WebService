@@ -54,8 +54,6 @@ public class AuthenticationService {
         return response;
     }
 
-
-
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

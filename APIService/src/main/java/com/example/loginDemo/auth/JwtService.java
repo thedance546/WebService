@@ -30,9 +30,11 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    //access_token
+    // access_token
     public String generateAccessToken(UserDetails userDetails) {
-        return generateAccessToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("type", "access");  // 토큰 타입을 추가해서 구분
+        return generateAccessToken(extraClaims, userDetails);
     }
 
     public String generateAccessToken(
@@ -49,9 +51,11 @@ public class JwtService {
                 .compact();
     }
 
-    //refresh_token
+    // refresh_token
     public String generateRefreshToken(UserDetails userDetails) {
-        return generateRefreshToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("type", "refresh"); // refresh 토큰을 구분할 수 있는 추가적인 정보
+        return generateRefreshToken(extraClaims, userDetails);
     }
 
     public String generateRefreshToken(
@@ -61,13 +65,20 @@ public class JwtService {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(userDetails.getUsername()) // 토큰의 subject는 사용자 이름
                 .setIssuedAt(new Date(System.currentTimeMillis())) // 발행 시간
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7일 만료 시간 (예시)
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 서명 알고리즘
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 만료 시간 7일
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 서명
                 .compact();
     }
 
+    public boolean isAccessToken(String token) {
+        // 토큰에서 "type" 클레임 추출
+        String tokenType = extractClaim(token, claims -> claims.get("type", String.class));
+
+        // "access"라는 type을 가진 토큰이 access_token
+        return "access".equals(tokenType);
+    }
 
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
