@@ -1,18 +1,13 @@
 package com.example.loginDemo.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+@AllArgsConstructor
 public class AccessTokenResponse {
 
     private String accessToken;
 
-    public AccessTokenResponse(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
 }

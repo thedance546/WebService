@@ -1,14 +1,13 @@
 package com.example.loginDemo.auth;
 
 import com.example.loginDemo.dto.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,34 +28,31 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
+    // 리프레시 토큰을 이용해 새로운 액세스 토큰을 발급하는 테스트용 엔드포인트
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        String refreshToken = refreshTokenRequest.getRefreshToken();
-
-        // Refresh Token이 null이면 처리
-        if (refreshToken == null) {
-            return ResponseEntity.status(400).body("Refresh token is required");
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String authHeader) {
+        // "Bearer "로 시작하는 토큰 추출
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid refresh token format");
         }
 
-        // Refresh Token에서 username 추출
+        String refreshToken = authHeader.substring(7); // "Bearer " 뒤의 토큰 부분만 추출
         String username = jwtService.extractUsername(refreshToken);
 
-        // UserDetails 로드
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("User not found");
+        if (username != null) {
+            // UserDetails 로드
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            // 리프레시 토큰이 유효한지 확인
+            if (jwtService.isTokenValid(refreshToken, userDetails)) {
+                // 새로운 액세스 토큰 발급
+                String newAccessToken = jwtService.generateAccessToken(userDetails);
+                return ResponseEntity.ok().header("New-Access-Token", newAccessToken).body("New access token issued");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is expired or invalid");
+            }
         }
-
-        // Refresh Token이 유효한지 확인
-        if (!jwtService.isTokenValid(refreshToken, userDetails)) {
-            return ResponseEntity.status(401).body("Invalid or expired refresh token");
-        }
-
-        // 새로운 Access Token 발급 (UserDetails를 전달)
-        String newAccessToken = jwtService.generateAccessToken(userDetails);
-
-        // 새로운 Access Token을 응답에 포함하여 반환
-        return ResponseEntity.ok(new AccessTokenResponse(newAccessToken));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
     }
 
 }

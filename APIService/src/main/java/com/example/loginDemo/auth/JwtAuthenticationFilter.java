@@ -49,6 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             userEmail = jwtService.extractUsername(jwt);
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                //만료기간 검증
                 if (!jwtService.isTokenValid(jwt, userDetails)) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized
                     response.getWriter().write("JWT token is expired or invalid");
@@ -64,8 +65,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             // Refresh Token의 경우 처리 로직 추가
             // refresh 유효한지 확인
-            //유효하면 access 새발급
-            //만료시 로그인화면으로 redirect
+            String username = jwtService.extractUsername(jwt);
+            if (username != null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                // 리프레시 토큰이 유효한지 확인
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    // 리프레시 토큰이 유효하면 새로운 액세스 토큰 발급
+                    String newAccessToken = jwtService.generateAccessToken(userDetails);
+                    response.setHeader("New-Access-Token", newAccessToken); // 새로운 액세스 토큰을 응답 헤더에 추가
+                } else {
+                    // 리프레시 토큰이 만료된 경우, 클라이언트는 다시 로그인해야 함
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized
+                    response.getWriter().write("Refresh token is expired or invalid");
+                    return;
+                }
+            }
         }
 
         // 필터 체인 계속 진행
