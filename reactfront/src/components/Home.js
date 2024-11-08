@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import './Home.css';
 import MyIngredients from './MyIngredients';
+import Settings from './Settings';
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState('myIngredients');
@@ -13,7 +14,7 @@ const Home = () => {
         {activeTab === 'myIngredients' && <MyIngredients />}
         {activeTab === 'chatbot' && <div>챗봇 화면</div>}
         {activeTab === 'notifications' && <div>알림 화면</div>}
-        {activeTab === 'settings' && <div>설정 화면</div>}
+        {activeTab === 'settings' && <Settings />}
       </div>
 
       {/* 네비게이션 바 */}

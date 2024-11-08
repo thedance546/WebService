@@ -1,0 +1,64 @@
+/* Settings.css */
+.settings-content {
+    padding: 16px; /* 내부 여백 추가 */
+    margin: 0 20px; /* 좌우 여유 공간 확보 */
+    width: auto; /* 너비를 화면 전체에 가깝게 확장 */
+  }
+  
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  button {
+    width: 100%; /* 버튼을 박스 전체 너비로 확장 */
+    margin: 10px 0;
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .content-section {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    width: 100%; /* 고정된 너비로 좌우 크기 변동 방지 */
+    min-height: 80px; /* 최소 높이로 일관된 크기 유지 */
+  }
+  
+  /* 개발팀 정보 섹션에 대해 높이 제한 없음 */
+  .content-section.no-scroll {
+    max-height: none;
+    overflow: visible;
+  }
+  
+  /* 개인정보 처리방침 섹션에 스크롤 유지 */
+  .content-section.scrollable {
+    max-height: 100px;
+    overflow-y: auto;
+  }
+  
+  /* 개발자 문의 input 박스를 박스 전체 너비에 맞춤 */
+  .input-box {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-top: 10px;
+  }
+  
+  .send-button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    font-size: 16px;
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .send-button:hover {
+    background-color: #0056b3;
+  }
+  

@@ -8,31 +8,30 @@
     width: 100%; /* 화면 전체 너비 차지 */
     justify-content: space-between;
     overflow-x: hidden; /* 수평 스크롤 제거 */
-  }
+}
   
-  /* 각 탭의 콘텐츠 영역 */
-  .tab-content {
+/* 각 탭의 콘텐츠 영역 */
+.tab-content {
     flex-grow: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 1.5em;
+    align-items: flex-start; /* 수직 정렬을 위쪽으로 */
+    justify-content: flex-start; /* 수평 정렬을 왼쪽으로 */
     padding: 20px;
-  }
+    font-size: 1.5em;
+}
   
-  /* 네비게이션 바 설정 */
-  .navbar {
+/* 네비게이션 바 설정 */
+.navbar {
     display: flex;
     width: 100%; /* 전체 화면 너비 차지 */
     background-color: #333;
     position: fixed;
     bottom: 0;
     padding: 0;
-  }
+}
   
-  /* 네비게이션 버튼 스타일 */
-  .navbar button {
+/* 네비게이션 버튼 스타일 */
+.navbar button {
     flex: 1; /* 모든 버튼이 네비게이션 바 전체 너비를 균등하게 차지 */
     color: white;
     background: none;
@@ -41,9 +40,8 @@
     font-size: 1em;
     cursor: pointer;
     text-align: center;
-  }
+}
   
-  .navbar button:hover {
+.navbar button:hover {
     background-color: #575757;
-  }
-  
+}
