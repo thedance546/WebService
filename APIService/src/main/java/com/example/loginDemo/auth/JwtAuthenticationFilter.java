@@ -86,8 +86,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-
-
     private boolean validateToken(String jwt, UserDetails userDetails, HttpServletResponse response, String tokenStatusHeader) throws IOException {
         if (!jwtService.isTokenValid(jwt, userDetails)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
