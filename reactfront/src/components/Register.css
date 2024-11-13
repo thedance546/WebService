@@ -1,0 +1,42 @@
+/* Register.css */
+
+/* 페이지 전체 레이아웃 설정 */
+.register-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative; /* 상위 컨테이너에 relative 추가 */
+    padding-top: 40px; /* 뒤로가기 버튼 아래 여백 추가 */
+  }
+  
+  /* 중앙 콘텐츠 정렬 */
+  .register-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+    border-radius: 8px;
+    margin: 0 auto; /* 콘텐츠 가운데 정렬 */
+  }
+  
+  /* 뒤로가기 버튼 */
+  .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    color: #007bff;
+  }
+  

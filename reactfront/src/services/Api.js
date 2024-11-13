@@ -43,10 +43,23 @@ api.interceptors.response.use(
 // 로그아웃 함수
 export const logout = async () => {
   try {
-    await api.post('/auth/logout');
+    const refreshToken = localStorage.getItem('refreshToken');
+    const accessToken = localStorage.getItem('accessToken');
+    
+    await api.post(
+      '/auth/logout',
+      { refreshToken },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    // 로그아웃 후 Welcome 화면으로 이동
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    window.location.href = '/login'; // 로그아웃 후 로그인 페이지로 이동
+    window.location.href = '/'; // Welcome 화면으로 이동
   } catch (error) {
     console.error("Logout failed:", error);
   }

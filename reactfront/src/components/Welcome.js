@@ -1,8 +1,7 @@
 // Welcome.js
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout } from '../services/Api';
+import LogoutButton from './LogoutButton';
 import './Welcome.css';
 
 const Welcome = () => {
@@ -15,10 +14,12 @@ const Welcome = () => {
     setIsLoggedIn(!!token);
   }, []);
 
-  const handleLogout = async () => {
-    await logout();
-    setIsLoggedIn(false); // 로그아웃 후 로그인 상태 업데이트
-    navigate('/Authenticate'); // 로그아웃 후 로그인 페이지로 이동
+  const handleLogoutSuccess = () => {
+    // 로그아웃 후 상태 초기화 및 페이지 이동
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    setIsLoggedIn(false);
+    navigate('/Authenticate');
   };
 
   return (
@@ -27,9 +28,11 @@ const Welcome = () => {
       <div className="auth-box">
         <nav>
           {isLoggedIn ? (
-            <button onClick={handleLogout} className="home-button">
-              로그아웃
-            </button>
+            <LogoutButton
+              accessToken={localStorage.getItem('accessToken')}
+              refreshToken={localStorage.getItem('refreshToken')}
+              onLogoutSuccess={handleLogoutSuccess}
+            />
           ) : (
             <>
               <Link to="/Register" className="home-button">회원가입</Link>

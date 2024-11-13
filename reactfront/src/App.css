@@ -4,10 +4,16 @@
 .App {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
   background-color: #f9f9f9;
   min-height: 100vh;
+}
+
+/* 특정 컴포넌트에서 필요한 경우에만 중앙 정렬 추가 */
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 /* 애플리케이션 링크 스타일 */
