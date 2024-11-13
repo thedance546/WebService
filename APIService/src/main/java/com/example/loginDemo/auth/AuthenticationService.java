@@ -44,7 +44,6 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .role(Role.USER)
                 .build();
-        System.out.println("Saving user: " + user); // 로그 추가
         userRepository.save(user);
 
         // 응답 메시지 생성
@@ -63,11 +62,13 @@ public class AuthenticationService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        var jwt_access_token = jwtService.generateAccessToken(user);
-        var jwt_refresh_token = jwtService.generateRefreshToken(user);
+        //token 생성
+        var accessToken = jwtService.generateAccessToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+
         return AuthenticationResponse.builder()
-                .access_token(jwt_access_token)
-                .refresh_token(jwt_refresh_token)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }
