@@ -1,8 +1,8 @@
 // Home.js
 import React, { useState } from 'react';
 import './Home.css';
-import MyIngredients from './MyIngredients';
-import Settings from './Settings';
+import MyIngredients from '../Ingredients/MyIngredients';
+import Settings from '../Settings/Settings';
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState('myIngredients');

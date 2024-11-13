@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/Api';
+import api from '../../services/Api';
 import './Authenticate.css';
 
 const Authenticate = () => {
