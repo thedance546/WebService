@@ -1,10 +1,14 @@
 package com.example.loginDemo.auth;
 
+import com.example.loginDemo.exception.ExpiredTokenException;
+import com.example.loginDemo.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,16 +20,25 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${security.secret.key}")
     private String secret_key;
 
+    private final BlacklistService blacklistService; // BlacklistService 의존성 주입
+
     private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1 hour
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; //7 days
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (ExpiredTokenException e) {
+            throw new ExpiredTokenException("The token has expired.");
+        } catch (InvalidTokenException e) {
+            throw new InvalidTokenException("Invalid token.");
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -73,21 +86,24 @@ public class JwtService {
                 .compact();
     }
 
-
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        if (isTokenExpired(token)) {
+            return false;
+        }
+        if (isTokenBlacklisted(token)) {
+            return false;
+        }
+
+        String username = extractUsername(token);
+        return username.equals(userDetails.getUsername());
     }
+
 
     protected boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public boolean isAccessTokenExpired(String token) {
-        return isTokenExpired(token);
-    }
-
-    private Date extractExpiration(String token) {
+    protected Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
@@ -102,5 +118,10 @@ public class JwtService {
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret_key);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    // 블랙리스트에 있는지 확인하는 메서드
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistService.isTokenBlacklisted(token);
     }
 }
