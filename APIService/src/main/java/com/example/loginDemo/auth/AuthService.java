@@ -6,6 +6,7 @@ import com.example.loginDemo.dto.AuthenticationRequest;
 import com.example.loginDemo.dto.AuthenticationResponse;
 import com.example.loginDemo.dto.RegisterRequest;
 import com.example.loginDemo.exception.DuplicateEmailException;
+import com.example.loginDemo.exception.InvalidEmailFormatException;
 import com.example.loginDemo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +33,10 @@ public class AuthService {
 
     @Transactional
     public Map<String, String> register(RegisterRequest request) {
+        // 이메일 형식 체크
+        if (!isValidEmailFormat(request.getEmail())) {
+            throw new InvalidEmailFormatException("잘못된 이메일 형식입니다.");
+        }
         // 이메일 중복 체크
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         if (existingUser.isPresent()) {
@@ -92,6 +98,14 @@ public class AuthService {
         response.put("message", "Successfully deleted the account");
 
         return response;
+    }
+
+    // 이메일 형식 유효성 검사 메서드
+    private boolean isValidEmailFormat(String email) {
+        // 이메일 형식 검사를 위한 정규식
+        String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
     }
 
 
