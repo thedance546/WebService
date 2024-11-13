@@ -4,6 +4,10 @@
 
 # Gradle specific files
 /APIService/.gradle/
+/APIService/.gradle/**/*.lock
+/APIService/.gradle/**/*.bin
+
+# Other build and IDE-specific files remain the same
 /APIService/build/
 /APIService/out/
 
@@ -12,14 +16,6 @@
 
 # Log files
 /APIService/**/*.log
-
-# Maven specific files (if applicable)
-/APIService/target/
-/APIService/pom.xml.tag
-/APIService/pom.xml.releaseBackup
-/APIService/pom.xml.versionsBackup
-/APIService/pom.xml.next
-/APIService/release.properties
 
 # Environment variables
 /APIService/*.env
@@ -32,6 +28,7 @@
 /APIService/*.iml
 /APIService/*.iws
 /APIService/.vscode/
+
 
 # -----------------------------
 # Frontend (React)
@@ -67,16 +64,9 @@
 /ReactFront/*.sw?
 
 # -----------------------------
-# Common
+# Flask ignore List
 # -----------------------------
-
-# macOS system files
-.DS_Store
-
-# Windows system files
-Thumbs.db
-
-### flask ignore list
+### 
 # Python 관련
 *.pyc
 *.pyo
@@ -107,3 +97,13 @@ venv/
 
 # 파이참 설정 파일
 .idea/
+
+# -----------------------------
+# Common
+# -----------------------------
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
