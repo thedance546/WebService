@@ -33,9 +33,11 @@ const Authenticate = () => {
 
   return (
     <div className="authenticate-page">
-      <button onClick={() => navigate('/')} className="back-button">
-        &lt; 뒤로가기
-      </button>
+      <div className="back-button-container">
+        <button onClick={() => navigate('/')} className="back-button">
+          &lt; 뒤로가기
+        </button>
+      </div>
       <div className="authenticate-content">
         <h2>로그인</h2>
         <form onSubmit={handleLogin}>

@@ -25,9 +25,11 @@ const Register = () => {
 
   return (
     <div className="register-page">
-      <button onClick={() => navigate('/')} className="back-button">
-        &lt; 뒤로가기
-      </button>
+      <div className="back-button-container">
+        <button onClick={() => navigate('/')} className="back-button">
+          &lt; 뒤로가기
+        </button>
+      </div>
       <div className="register-content">
         <h2>회원가입</h2>
         <form onSubmit={handleRegister}>
