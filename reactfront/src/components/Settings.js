@@ -14,6 +14,16 @@ const Settings = () => {
 
   const handleContactMessageChange = (e) => setContactMessage(e.target.value);
 
+  const handleLogout = () => {
+    // 로그아웃 로직을 구현
+    alert('로그아웃 되었습니다.');
+  };
+
+  const handleDeleteAccount = () => {
+    // 회원탈퇴 로직을 구현
+    alert('회원탈퇴 되었습니다.');
+  };
+
   return (
     <div className="settings-content">
       <h2>설정</h2>
@@ -52,6 +62,12 @@ const Settings = () => {
           <button className="send-button">보내기</button>
         </div>
       )}
+
+      {/* 로그아웃 및 회원탈퇴 버튼 */}
+      <div className="account-actions">
+        <button onClick={handleLogout} className="logout-button">로그아웃</button>
+        <button onClick={handleDeleteAccount} className="delete-account-button">회원탈퇴</button>
+      </div>
     </div>
   );
 };
