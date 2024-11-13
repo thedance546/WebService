@@ -1,10 +1,14 @@
 package com.example.loginDemo.auth;
 
+import com.example.loginDemo.exception.ExpiredTokenException;
+import com.example.loginDemo.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,16 +20,25 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${security.secret.key}")
-    private String secretKey;
+    private String secret_key;
 
-    public final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000 * 60 * 30;
-    public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000 * 60 * 60 * 24 * 14;
+    private final BlacklistService blacklistService; // BlacklistService 의존성 주입
+
+    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; //7 days
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (ExpiredTokenException e) {
+            throw new ExpiredTokenException("The token has expired.");
+        } catch (InvalidTokenException e) {
+            throw new InvalidTokenException("Invalid token.");
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -33,85 +46,82 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    // Access Token 생성 메서드
     public String generateAccessToken(UserDetails userDetails) {
-            Map<String, Object> extraClaims = new HashMap<>();
-            extraClaims.put("type", "access");
-            return generateAccessToken(extraClaims, userDetails);
-        }
+        return generateAccessToken(new HashMap<>(), userDetails, "access");  // type = access
+    }
 
-        public String generateAccessToken(
-                Map<String, Object> extraClaims,
-                UserDetails userDetails
+    public String generateAccessToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails,
+            String tokenType // 추가된 tokenType 파라미터
     ){
-            return Jwts
-                    .builder()
-                    .setClaims(extraClaims)
-                    .setSubject(userDetails.getUsername())
+        extraClaims.put("type", tokenType);  // "type" 클레임 추가
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis())) // 토큰 발행 시간
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDATION_SECOND))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION)) // 만료 시간
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 토큰 알고리즘
                 .compact();
     }
 
-    // Refresh Token 생성 메서드
     public String generateRefreshToken(UserDetails userDetails) {
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("type", "refresh");
-        return generateRefreshToken(extraClaims, userDetails);
+        return generateRefreshToken(new HashMap<>(), userDetails, "refresh");  // type = refresh
     }
 
     public String generateRefreshToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails
+            UserDetails userDetails,
+            String tokenType // 추가된 tokenType 파라미터
     ) {
+        extraClaims.put("type", tokenType);  // "type" 클레임 추가
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername()) // 토큰의 subject는 사용자 이름
-                .setIssuedAt(new Date(System.currentTimeMillis())) // 발행 시간
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDATION_SECOND))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 서명
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis())) // 토큰 발행 시간
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION)) // 만료 시간
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 토큰 알고리즘
                 .compact();
     }
 
-    public boolean isAccessToken(String token) {
-        // 토큰에서 "type" 클레임 추출
-        String tokenType = extractClaim(token, claims -> claims.get("type", String.class));
-
-        // "access"라는 type을 가진 토큰이 access_token
-        return "access".equals(tokenType);
-    }
-
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        if (isTokenExpired(token)) {
+            return false;
+        }
+        if (isTokenBlacklisted(token)) {
+            return false;
+        }
+
+        String username = extractUsername(token);
+        return username.equals(userDetails.getUsername());
     }
 
-    private boolean isTokenExpired(String token) {
+
+    protected boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
+    protected Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
-                .build()  // Then build the parser
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(secret_key);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-
-    private Key getSignInKeyForAccessToken() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+    // 블랙리스트에 있는지 확인하는 메서드
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistService.isTokenBlacklisted(token);
     }
 }
