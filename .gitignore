@@ -7,11 +7,9 @@
 /APIService/.gradle/**/*.lock
 /APIService/.gradle/**/*.bin
 
-# Other build and IDE-specific files remain the same
+# Build and IDE-specific files
 /APIService/build/
 /APIService/out/
-
-# Compiled class files
 /APIService/**/*.class
 
 # Log files
@@ -63,84 +61,41 @@
 /ReactFront/*.sln
 /ReactFront/*.sw?
 
+
 # -----------------------------
-# Flask ignore List - LLM
+# Flask ignore List - LLM and YOLO
 # -----------------------------
 
-# Python 관련
+# Python related files
 *.pyc
 *.pyo
 *.pyd
 __pycache__/
 *.db
 
-# 가상환경 폴더 (myenv 등)
+# Virtual environment folders
 myenv/
 venv/
-.env
 
-# 환경 변수 파일
+# Environment variables
 *.env
 
-# VSCode 설정 파일
+# VSCode settings
 .vscode/
 
-# Jupyter Notebook 체크포인트 파일
+# Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# macOS 관련
-.DS_Store
-
-# 로그 파일
-*.log
-*.sqlite3
-
-# 파이참 설정 파일
-.idea/
-
-# Python Bytecode
-*.pyc
-*.pyo
-__pycache__/
-
-# 가상환경
-myenv/
-
-# 모델 파일
+# Model files
 *.pt
 
-# 훈련 및 로그 관련 디렉토리
+# Training and log directories
 runs/
 
-# 데이터셋
+# Datasets and results
 datasets/
-
-# 결과 파일
 results/
 
-# -----------------------------
-# Flask ignore List - YOLO
-# -----------------------------
-
-# Python Bytecode
-*.pyc
-*.pyo
-__pycache__/
-
-# 가상환경
-myenv/
-
-# 모델 파일
-*.pt
-
-# 훈련 및 로그 관련 디렉토리
-runs/
-
-# 데이터셋
-datasets/
-
-# 결과 파일
-results/
 
 # -----------------------------
 # Common
@@ -151,3 +106,10 @@ results/
 
 # Windows system files
 Thumbs.db
+
+# Log files
+*.log
+*.sqlite3
+
+# PyCharm settings
+.idea/
