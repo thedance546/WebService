@@ -75,3 +75,35 @@
 
 # Windows system files
 Thumbs.db
+
+### flask ignore list
+# Python 관련
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.db
+
+# 가상환경 폴더 (myenv 등)
+myenv/
+venv/
+.env
+
+# 환경 변수 파일
+*.env
+
+# VSCode 설정 파일
+.vscode/
+
+# Jupyter Notebook 체크포인트 파일
+.ipynb_checkpoints/
+
+# macOS 관련
+.DS_Store
+
+# 로그 파일
+*.log
+*.sqlite3
+
+# 파이참 설정 파일
+.idea/
