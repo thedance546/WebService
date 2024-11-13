@@ -1,6 +1,9 @@
 package com.example.loginDemo.auth;
 
+import com.example.loginDemo.exception.ExpiredTokenException;
+import com.example.loginDemo.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -29,7 +32,13 @@ public class JwtService {
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; //7 days
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (ExpiredTokenException e) {
+            throw new ExpiredTokenException("The token has expired.");
+        } catch (InvalidTokenException e) {
+            throw new InvalidTokenException("Invalid token.");
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

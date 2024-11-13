@@ -22,4 +22,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    // 유효하지 않은 토큰 예외 처리
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<String> handleInvalidTokenException(InvalidTokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token: " + ex.getMessage());
+    }
+
+    // 만료된 토큰 예외 처리
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<String> handleExpiredTokenException(ExpiredTokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token Expired: " + ex.getMessage());
+    }
 }
