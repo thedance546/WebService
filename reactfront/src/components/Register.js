@@ -1,8 +1,8 @@
-/* Register.js */
+// src/components/Register.js
 
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/Api'; // 상대 경로 수정
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -14,31 +14,20 @@ const Register = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post(
-        'http://localhost:8080/api/auth/register',
-        {
-          email,
-          username,
-          password,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json', // 필요한 다른 헤더
-          },
-        }
-      );
-  
-      // 서버에서 반환된 메시지를 사용하여 성공 알림 표시
-      const successMessage = response.data.message || "회원가입이 완료되었습니다."; // 예: "회원가입이 완료되었습니다."
-      alert(successMessage); // 성공 메시지 표시
-  
-      navigate('/'); // 회원가입 후 홈 화면으로 이동
+      const response = await api.post('/auth/register', {
+        email,
+        username,
+        password,
+      });
+
+      alert(response.data.message || "회원가입이 완료되었습니다.");
+      navigate('/'); // 회원가입 성공 시 홈으로 이동
     } catch (error) {
-      const errorMessage = error.response ? error.response.data : '회원가입에 실패했습니다. 다시 시도해 주세요.';
-      console.error('회원가입 실패:', errorMessage);
-      alert(errorMessage); // 실패 메시지 표시
+      console.error('회원가입 실패:', error);
+      alert(error.response?.data || '회원가입에 실패했습니다. 다시 시도해 주세요.');
     }
   };
+
   return (
     <div>
       <h2>회원가입</h2>

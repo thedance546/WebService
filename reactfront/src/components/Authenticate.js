@@ -1,47 +1,34 @@
-/* Authenticate.js */
+// src/components/Authenticate.js
 
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/Api';
 
 const Authenticate = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // 로딩 상태 추가
-  const [error, setError] = useState(''); // 오류 메시지 상태 추가
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    setLoading(true); // 로딩 상태 시작
-    setError(''); // 이전 오류 초기화
+    setLoading(true);
+    setError('');
 
     try {
-      // 로그인 요청
-      const response = await axios.post(
-        'http://localhost:8080/api/auth/authenticate', // 서버 엔드포인트 수정
-        { email, password },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await api.post('/auth/authenticate', { email, password });
 
-      // 서버에서 받은 토큰이 있을 경우, localStorage에 저장
-      if (response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
-        alert('로그인 성공');
-        navigate('/'); // 홈 화면으로 이동
-      } else {
-        setError('로그인 실패: 토큰이 없습니다.');
-      }
+      const { token } = response.data;
+      localStorage.setItem('accessToken', token);
+      
+      alert('로그인 성공');
+      navigate('/'); // 로그인 성공 시 홈으로 이동
     } catch (error) {
       console.error('로그인 실패:', error);
       setError('로그인에 실패했습니다. 다시 시도해 주세요.');
     } finally {
-      setLoading(false); // 로딩 상태 종료
+      setLoading(false);
     }
   };
 
@@ -69,11 +56,7 @@ const Authenticate = () => {
         </div>
         <button type="submit" disabled={loading}>로그인</button>
       </form>
-
-      {/* 로딩 상태 표시 */}
       {loading && <p>로그인 중...</p>}
-
-      {/* 오류 메시지 표시 */}
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
