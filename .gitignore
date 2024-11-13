@@ -64,9 +64,9 @@
 /ReactFront/*.sw?
 
 # -----------------------------
-# Flask ignore List
+# Flask ignore List - LLM
 # -----------------------------
-### 
+
 # Python 관련
 *.pyc
 *.pyo
@@ -97,6 +97,50 @@ venv/
 
 # 파이참 설정 파일
 .idea/
+
+# Python Bytecode
+*.pyc
+*.pyo
+__pycache__/
+
+# 가상환경
+myenv/
+
+# 모델 파일
+*.pt
+
+# 훈련 및 로그 관련 디렉토리
+runs/
+
+# 데이터셋
+datasets/
+
+# 결과 파일
+results/
+
+# -----------------------------
+# Flask ignore List - YOLO
+# -----------------------------
+
+# Python Bytecode
+*.pyc
+*.pyo
+__pycache__/
+
+# 가상환경
+myenv/
+
+# 모델 파일
+*.pt
+
+# 훈련 및 로그 관련 디렉토리
+runs/
+
+# 데이터셋
+datasets/
+
+# 결과 파일
+results/
 
 # -----------------------------
 # Common
@@ -106,40 +150,4 @@ venv/
 .DS_Store
 
 # Windows system files
-<<<<<<< HEAD
 Thumbs.db
-
-### flask ignore list
-# Python 관련
-*.pyc
-*.pyo
-*.pyd
-__pycache__/
-*.db
-
-# 가상환경 폴더 (myenv 등)
-myenv/
-venv/
-.env
-
-# 환경 변수 파일
-*.env
-
-# VSCode 설정 파일
-.vscode/
-
-# Jupyter Notebook 체크포인트 파일
-.ipynb_checkpoints/
-
-# macOS 관련
-.DS_Store
-
-# 로그 파일
-*.log
-*.sqlite3
-
-# 파이참 설정 파일
-.idea/
-=======
-Thumbs.db
->>>>>>> aa4cca070e47170d2a3583edd750427cc09309ef
