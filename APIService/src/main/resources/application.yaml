@@ -16,3 +16,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+
+yolo:
+  api:
+    url: http://localhost:5000/v1/object-detection/yolov5
