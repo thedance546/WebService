@@ -17,8 +17,7 @@ public class LogoutService {
         long accessTokenExpiration = jwtService.extractExpiration(accessToken).getTime() - System.currentTimeMillis();
         long refreshTokenExpiration = jwtService.extractExpiration(refreshToken).getTime() - System.currentTimeMillis();
 
-        // 블랙리스트에 추가
-        blacklistService.addToBlacklist(accessToken, accessTokenExpiration);
-        blacklistService.addToBlacklist(refreshToken, refreshTokenExpiration);
+        blacklistService.addToBlacklist(accessToken, accessTokenExpiration,"logout");
+        blacklistService.addToBlacklist(refreshToken, refreshTokenExpiration,"logout");
     }
 }

@@ -26,10 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    protected void doFilterInternal(
-            @NotNull HttpServletRequest request,
-            @NotNull HttpServletResponse response,
-            @NotNull FilterChain filterChain
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
     ) throws ServletException, IOException {
 
         final String jwt = extractJwtFromHeader(request);
@@ -72,9 +69,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setUnauthorizedResponse(HttpServletResponse response, String message, String tokenType) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 Unauthorized 상태 코드
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
         response.setContentType("application/json");
-        response.getWriter().write("{\"message\": \"" + message + "\", \"tokenType\": \"" + tokenType + "\"}");
+        String jsonResponse = String.format("{\"message\": \"%s\", \"tokenType\": \"%s\"}", message, tokenType);
+        response.getWriter().write(jsonResponse);
     }
 
 
@@ -89,6 +87,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isTokenBlacklisted(String token) {
         return redisTemplate.hasKey("blacklist:" + token);  // 블랙리스트에 토큰이 있으면 true 반환
     }
+
 
 }
 

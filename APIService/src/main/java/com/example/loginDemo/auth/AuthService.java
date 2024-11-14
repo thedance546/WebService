@@ -84,15 +84,11 @@ public class AuthService {
         var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // 사용자 정보 삭제
         userRepository.delete(user);
-
         // Access token 만료 시간 추출
         long expirationTime = jwtService.extractExpiration(accessToken).getTime();
-
         // 토큰을 블랙리스트에 추가
-        blacklistService.addToBlacklist(accessToken, expirationTime);
-
+        blacklistService.addToBlacklist(accessToken, expirationTime,"account_deleted");
         // 응답 메시지 생성
         Map<String, String> response = new HashMap<>();
         response.put("message", "Successfully deleted the account");
