@@ -26,4 +26,18 @@ public class ChatbotController {
 
         return ResponseEntity.ok("okokok");
     }
+
+    // 레시피 질의
+    @PostMapping("/ask")
+    public ResponseEntity<ChatResponse> askFlask(@RequestBody ChatRequest requestBody) {
+        // Flask API로 보낼 데이터를 준비
+        String question = requestBody.getQuestion();
+        String searchResults = requestBody.getSearchResults();
+
+        // 서비스 호출
+        ChatResponse response = chatbotService.askFlask(question, searchResults);
+
+        // 응답 데이터 반환
+        return ResponseEntity.ok(response);
+    }
 }
