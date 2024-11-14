@@ -1,7 +1,13 @@
 package com.example.loginDemo.chat;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -9,15 +15,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ChatbotController {
     private final ChatbotService chatbotService;
+    private final RestTemplate restTemplate;
 
-    @PostMapping
-    public ChatResponse chat(@RequestBody ChatRequest chatRequest) {
-        String userMessage = chatRequest.getMessage();
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image) {
+        if (image.isEmpty()) {
+            return ResponseEntity.badRequest().body("Image file is required");
+        }
+        // 이미지 파일을 처리 로직 (추후)
 
-        // Flask 서버에 사용자 메시지 전달 후 응답 받기
-        String botResponse = chatbotService.getChatbotResponse(userMessage);
-
-        // ChatResponse 객체 생성 후 반환
-        return new ChatResponse(botResponse);
+        return ResponseEntity.ok("okokok");
     }
 }
