@@ -11,7 +11,7 @@ from weaviate import WeaviateClient
 from dotenv import load_dotenv
 
 # .env 파일 로드
-env_path = "/home/student/myenv/pj.env"
+env_path = "./.env"
 load_dotenv(env_path)
 
 # 환경 변수 가져오기
