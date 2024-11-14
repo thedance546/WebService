@@ -1,5 +1,4 @@
 // src/components/Settings/TeamInfo.js
-
 import React, { useState } from 'react';
 
 const TeamInfo = () => {

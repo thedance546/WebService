@@ -1,5 +1,4 @@
 // src/components/ChatBot/ChatWindow.js
-
 import React from 'react';
 
 const ChatWindow = ({ messages }) => {

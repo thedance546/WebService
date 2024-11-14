@@ -1,5 +1,4 @@
 // src/components/Settings/PrivacyPolicy.js
-
 import React, { useState } from 'react';
 
 const PrivacyPolicy = () => {
