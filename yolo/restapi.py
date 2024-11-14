@@ -13,7 +13,7 @@ temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
 
 # YOLOv5 경로 설정 (yolov5 코드가 있는 경로로 수정)
-sys.path.append("C:/Windows/System32/yolov5")  # YOLOv5 폴더의 정확한 경로를 여기에 설정
+sys.path.append("C:\\WorkSpace\\yolo")  # YOLOv5 폴더의 정확한 경로를 여기에 설정
 
 from models.common import DetectMultiBackend
 from utils.torch_utils import select_device
@@ -32,13 +32,14 @@ def predict(model):
 
         if model in models:
             results = models[model](im, size=640)
-            return results.pandas().xyxy[0].to_json(orient="records")
+            object_names = results.pandas().xyxy[0]['name'].tolist()
+            return {"detected_objects": object_names}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
     
     # 여기에 best.pt 파일의 경로를 지정합니다.
-    parser.add_argument("--model", nargs="+", default=["C:/Windows/System32/yolov5/best.pt"], help="model path(s)")  # best.pt 파일의 경로로 수정
+    parser.add_argument("--model", nargs="+", default=["C:/WorkSpace/yolo/best.pt"], help="model path(s)")  # best.pt 파일의 경로로 수정
     parser.add_argument("--port", default=5000, type=int, help="port number")
     
     opt = parser.parse_args()

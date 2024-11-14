@@ -3,29 +3,29 @@
 # -----------------------------
 
 # Gradle specific files
-/APIService/.gradle/
-/APIService/.gradle/**/*.lock
-/APIService/.gradle/**/*.bin
+# /APIService/.gradle/
+# /APIService/.gradle/**/*.lock
+# /APIService/.gradle/**/*.bin
 
-# Build and IDE-specific files
-/APIService/build/
-/APIService/out/
-/APIService/**/*.class
+# # Build and IDE-specific files
+# /APIService/build/
+# /APIService/out/
+# /APIService/**/*.class
 
-# Log files
-/APIService/**/*.log
+# # Log files
+# /APIService/**/*.log
 
-# Environment variables
-/APIService/*.env
+# # Environment variables
+# /APIService/*.env
 
-# IDE-specific files
-/APIService/.project
-/APIService/.classpath
-/APIService/.settings/
-/APIService/.idea/
-/APIService/*.iml
-/APIService/*.iws
-/APIService/.vscode/
+# # IDE-specific files
+# /APIService/.project
+# /APIService/.classpath
+# /APIService/.settings/
+# /APIService/.idea/
+# /APIService/*.iml
+# /APIService/*.iws
+# /APIService/.vscode/
 
 
 # -----------------------------
@@ -112,4 +112,4 @@ Thumbs.db
 *.sqlite3
 
 # PyCharm settings
-.idea/
+# .idea/
