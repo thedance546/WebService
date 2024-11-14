@@ -1,14 +1,17 @@
 // src/components/Ingredients/MyIngredients.js
+
 import React, { useState, useEffect } from 'react';
 import IngredientModal from './IngredientModal';
 import RecognitionResultModal from './RecognitionResultModal';
 import LoadingModal from './LoadingModal';
+import { Plus } from 'react-bootstrap-icons';
 
 const MyIngredients = ({ showModal, closeModal }) => {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [photoType, setPhotoType] = useState('');
   const [recognitionResult, setRecognitionResult] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
 
   // 모달 초기화 함수
   const resetModal = () => {
@@ -29,7 +32,7 @@ const MyIngredients = ({ showModal, closeModal }) => {
 
   const handleUploadCancel = () => {
     resetModal();
-    closeModal();
+    setIsModalOpen(false);
   };
 
   const handleUploadConfirm = async () => {
@@ -47,26 +50,46 @@ const MyIngredients = ({ showModal, closeModal }) => {
         resultList: ['사과', '오렌지', '바나나'],
       });
       resetModal();
+      setIsModalOpen(false);
     }, 3000);
   };
 
   const handleResultModalClose = () => {
     setRecognitionResult(null);
-    closeModal();
+    setIsModalOpen(false);
   };
 
   useEffect(() => {
-    if (!showModal) {
+    if (!isModalOpen) {
       resetModal();
     }
-  }, [showModal]);
+  }, [isModalOpen]);
 
   return (
     <div className="container text-center my-ingredients">
       <h2 className="my-3">나의 식재료</h2>
 
+      {/* 식재료 추가 버튼 (FAB) */}
+      <button
+        className="btn btn-success position-fixed"
+        style={{
+          bottom: '80px',
+          right: '20px',
+          width: '56px',
+          height: '56px',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)',
+        }}
+        onClick={() => setIsModalOpen(true)} // FAB 버튼 클릭 시 모달 열기
+      >
+        <Plus size={28} />
+      </button>
+
       {/* 식재료 등록 모달 */}
-      {showModal && !recognitionResult && (
+      {isModalOpen && !recognitionResult && (
         <IngredientModal
           onConfirm={handleUploadConfirm}
           onCancel={handleUploadCancel}
