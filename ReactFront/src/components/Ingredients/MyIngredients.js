@@ -53,7 +53,7 @@ const MyIngredients = () => {
 
   return (
     <div className="my-ingredients">
-      <h2>나의 식자재</h2>
+      <h2>나의 식재료</h2>
 
       <button className="upload-button" onClick={() => setShowModal(true)}>
         +
