@@ -1,19 +1,17 @@
 // src/components/Ingredients/FileUploader.js
-
 import React from 'react';
-import './FileUploader.css';
 
 const FileUploader = ({ selectedFile, onFileChange }) => (
-  <div>
+  <div className="my-3">
     <input
       type="file"
       accept="image/*"
       onChange={onFileChange}
-      className="file-input"
+      className="form-control"
     />
     {selectedFile && (
-      <div className="preview-container">
-        <img src={selectedFile} alt="미리보기" className="preview-image" />
+      <div className="border rounded p-3 mt-3 text-center">
+        <img src={selectedFile} alt="미리보기" className="img-fluid rounded" />
       </div>
     )}
   </div>

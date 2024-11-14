@@ -1,11 +1,10 @@
 // src/components/Ingredients/MyIngredients.js
-
 import React, { useState } from 'react';
-import './MyIngredientsCommon.css'; // 공통 스타일
 import FileUploader from './FileUploader';
 import PhotoTypeOptions from './PhotoTypeOptions';
 import RecognitionResultModal from './RecognitionResultModal';
 import LoadingModal from './LoadingModal';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const MyIngredients = () => {
   const [showModal, setShowModal] = useState(false);
@@ -52,22 +51,28 @@ const MyIngredients = () => {
   };
 
   return (
-    <div className="my-ingredients">
-      <h2>나의 식재료</h2>
+    <div className="container text-center my-ingredients">
+      <h2 className="my-3">나의 식재료</h2>
 
-      <button className="upload-button" onClick={() => setShowModal(true)}>
+      <button
+        className="btn btn-success rounded-circle"
+        style={{ position: 'fixed', bottom: '100px', right: '20px', width: '60px', height: '60px', fontSize: '2em' }}
+        onClick={() => setShowModal(true)}
+      >
         +
       </button>
 
       {showModal && !recognitionResult && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>사진 업로드</h3>
-            <FileUploader selectedFile={selectedFile} onFileChange={handleFileChange} />
-            <PhotoTypeOptions selectedType={photoType} onTypeChange={handlePhotoTypeChange} />
-            <div className="modal-buttons">
-              <button className="confirm-button" onClick={handleUploadConfirm}>확인</button>
-              <button className="cancel-button" onClick={handleUploadCancel}>취소</button>
+        <div className="modal show d-block">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content p-4">
+              <h3>사진 업로드</h3>
+              <FileUploader selectedFile={selectedFile} onFileChange={handleFileChange} />
+              <PhotoTypeOptions selectedType={photoType} onTypeChange={handlePhotoTypeChange} />
+              <div className="d-flex justify-content-around mt-3">
+                <button className="btn btn-success" onClick={handleUploadConfirm}>확인</button>
+                <button className="btn btn-danger" onClick={handleUploadCancel}>취소</button>
+              </div>
             </div>
           </div>
         </div>

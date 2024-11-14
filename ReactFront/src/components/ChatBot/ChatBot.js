@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import ChatWindow from './ChatWindow';
 import MessageInput from './MessageInput';
-import './ChatBot.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ChatBot = () => {
   const [messages, setMessages] = useState([]);
@@ -22,7 +22,7 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="chatbot-container">
+    <div className="d-flex flex-column h-100">
       <ChatWindow messages={messages} />
       <MessageInput onSend={addMessage} />
     </div>

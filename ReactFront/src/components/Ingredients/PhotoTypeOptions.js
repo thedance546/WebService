@@ -1,21 +1,20 @@
 // src/components/Ingredients/PhotoTypeOptions.js
-
 import React from 'react';
-import './PhotoTypeOptions.css';
 
 const PhotoTypeOptions = ({ selectedType, onTypeChange }) => (
-  <div className="photo-type-options">
+  <div className="my-3">
     {['영수증 인식', '구매내역 캡쳐', '물체 인식'].map((type) => (
-      <label key={type}>
+      <div className="form-check" key={type}>
         <input
+          className="form-check-input"
           type="radio"
           name="photoType"
           value={type}
           checked={selectedType === type}
           onChange={onTypeChange}
         />
-        {type}
-      </label>
+        <label className="form-check-label">{type}</label>
+      </div>
     ))}
   </div>
 );

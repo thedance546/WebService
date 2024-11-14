@@ -1,7 +1,6 @@
 // src/components/Notification/Notification.js
 
 import React from 'react';
-import './Notification.css';
 
 const Notification = () => {
   const notifications = [
@@ -10,9 +9,9 @@ const Notification = () => {
   ];
 
   return (
-    <div className="notification-container">
-      {notifications.map(notif => (
-        <div key={notif.id} className={`notification ${notif.type}`}>
+    <div className="overflow-auto p-3" style={{ height: 'calc(100vh - 10vh)' }}>
+      {notifications.map((notif) => (
+        <div key={notif.id} className={`alert alert-${notif.type}`}>
           {notif.text}
         </div>
       ))}

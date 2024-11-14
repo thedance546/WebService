@@ -1,12 +1,11 @@
 // src/components/Settings/Settings.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './SettingsCommon.css';
-import './Settings.css';
 import TeamInfo from './TeamInfo';
 import PrivacyPolicy from './PrivacyPolicy';
 import ContactForm from './ContactForm';
 import LogoutButton from './LogoutButton';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -16,23 +15,24 @@ const Settings = () => {
   };
 
   const handleDeleteAccount = () => {
-    // 회원탈퇴 로직을 여기에 구현 예정
     alert('회원탈퇴 기능이 구현될 예정입니다.');
   };
 
   return (
-    <div className="settings-content">
-      <h2>설정</h2>
-      
-      <TeamInfo />
-      <PrivacyPolicy />
-      <ContactForm />
+    <div className="container my-4">
+      <div className="card p-4 shadow-sm">
+        <h2 className="text-center mb-4">설정</h2>
+        
+        <TeamInfo />
+        <PrivacyPolicy />
+        <ContactForm />
 
-      <div className="account-actions">
-        <LogoutButton onLogoutSuccess={handleLogoutSuccess} />
-        <button onClick={handleDeleteAccount} className="delete-account-button">
-          회원탈퇴
-        </button>
+        <div className="d-grid gap-2 mt-4">
+          <LogoutButton onLogoutSuccess={handleLogoutSuccess} />
+          <button onClick={handleDeleteAccount} className="btn btn-danger">
+            회원탈퇴
+          </button>
+        </div>
       </div>
     </div>
   );
