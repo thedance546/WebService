@@ -1,4 +1,4 @@
-// src/components/Authenticate.js
+// src/components/Auth/Authenticate.js
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';

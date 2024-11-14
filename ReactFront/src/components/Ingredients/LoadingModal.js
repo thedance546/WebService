@@ -1,7 +1,6 @@
 // src/components/Ingredients/LoadingModal.js
 
 import React from 'react';
-import './LoadingModal.css';
 
 const LoadingModal = () => (
   <div className="modal">

@@ -1,4 +1,4 @@
-// src/components/Profile/PrivacyPolicy.js
+// src/components/Settings/PrivacyPolicy.js
 
 import React, { useState } from 'react';
 import './SettingsCommon.css';

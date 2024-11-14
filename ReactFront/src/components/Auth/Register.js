@@ -1,4 +1,4 @@
-// src/components/Register.js
+// src/components/Auth/Register.js
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';

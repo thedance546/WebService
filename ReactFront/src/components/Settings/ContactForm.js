@@ -1,4 +1,4 @@
-// src/components/Profile/ContactForm.js
+// src/components/Settings/ContactForm.js
 
 import React, { useState } from 'react';
 import './SettingsCommon.css';

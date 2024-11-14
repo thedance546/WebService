@@ -1,0 +1,21 @@
+/* src/components/Notification/Notification.css */
+
+/* 알림 컨테이너 */
+.notification-container {
+    height: calc(100vh - 10vh); /* 네비게이션 바 제외한 높이 */
+    overflow-y: auto; /* 알림이 많을 경우 스크롤 가능 */
+    padding: 20px;
+    background-color: #fff3cd;
+}
+
+/* 경고 알림 스타일 */
+.notification.warning {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+/* 위험 알림 스타일 */
+.notification.danger {
+    color: #721c24;
+    margin-bottom: 10px;
+}

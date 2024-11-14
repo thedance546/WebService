@@ -1,4 +1,4 @@
-// src/components/Profile/Settings.js
+// src/components/Settings/Settings.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SettingsCommon.css';

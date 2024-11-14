@@ -14,8 +14,8 @@
 .tab-content {
     flex-grow: 1;
     display: flex;
-    align-items: flex-start; /* 수직 정렬을 위쪽으로 */
-    justify-content: flex-start; /* 수평 정렬을 왼쪽으로 */
+    align-items: flex-start;
+    justify-content: flex-start;
     padding: 20px;
     font-size: 1.5em;
 }
@@ -23,25 +23,87 @@
 /* 네비게이션 바 설정 */
 .navbar {
     display: flex;
-    width: 100%; /* 전체 화면 너비 차지 */
+    width: 100%;
     background-color: #333;
     position: fixed;
     bottom: 0;
     padding: 0;
 }
-  
+
 /* 네비게이션 버튼 스타일 */
 .navbar button {
-    flex: 1; /* 모든 버튼이 네비게이션 바 전체 너비를 균등하게 차지 */
+    flex: 1;
     color: white;
     background: none;
     border: none;
-    padding: 15px; /* 클릭 영역 확대 */
+    padding: 15px;
     font-size: 1em;
     cursor: pointer;
     text-align: center;
 }
-  
-.navbar button:hover {
-    background-color: #575757;
+
+.navbar button:active {
+    background-color: #575757; /* 클릭 시 활성화 */
+}
+
+/* 모바일 화면 최적화 */
+@media (max-width: 600px) {
+    .navbar {
+        height: 10vh; /* 모바일에서 적절한 높이 설정 */
+    }
+
+    .navbar button {
+        padding: 2vh 0; /* 모바일 버튼 패딩 조정 */
+        font-size: 0.9em;
+    }
+}
+
+/* ChatBot 스타일 */
+.chatbot-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 10vh); /* 네비게이션 바를 제외한 높이 */
+}
+
+.chatbot-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+.chat-message {
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.chat-message.user {
+    background-color: #d1ffd6;
+    align-self: flex-end;
+}
+
+.chat-message.bot {
+    background-color: #ffd1d1;
+    align-self: flex-start;
+}
+
+.chat-image {
+    max-width: 100px;
+    margin: 10px 0;
+}
+
+/* Notification 스타일 */
+.notification-container {
+    height: calc(100vh - 10vh); /* 네비게이션 바 제외한 높이 */
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #fff3cd;
+}
+
+.notification.warning {
+    color: #856404;
+}
+
+.notification.danger {
+    color: #721c24;
 }
