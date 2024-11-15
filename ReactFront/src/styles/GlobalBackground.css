@@ -1,0 +1,7 @@
+/* src/styles/GlobalBackground.css */
+.bg-welcome {
+    background-image: url('../assets/images/Background_Welcome.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }  
