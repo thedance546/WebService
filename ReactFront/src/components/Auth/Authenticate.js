@@ -15,11 +15,12 @@ const Authenticate = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
+  
     try {
       const response = await api.post('/auth/authenticate', { email, password });
-      const { token } = response.data;
-      localStorage.setItem('accessToken', token);
+      const { accessToken, refreshToken } = response.data; // refreshToken 추가
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken); // refreshToken 저장
       navigate('/home');
     } catch (error) {
       setError('로그인에 실패했습니다. 다시 시도해 주세요.');

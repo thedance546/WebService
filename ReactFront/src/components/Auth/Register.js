@@ -32,8 +32,8 @@ const Register = () => {
     }
   };
 
+  // 이메일 중복 확인
   const verifyEmail = async () => {
-    const email = `${emailLocal}@${emailDomain}`;
     if (!emailDomain.match(/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
       alert('유효한 이메일 도메인을 입력하세요.');
       return;
@@ -41,9 +41,10 @@ const Register = () => {
 
     setLoading(true);
     try {
+      const email = `${emailLocal}@${emailDomain}`;
       const response = await api.post('/auth/check-email', { email });
+      setEmailVerified(response.data.available);
       if (response.data.available) {
-        setEmailVerified(true);
         alert('사용 가능한 이메일입니다.');
       } else {
         alert('이미 사용 중인 이메일입니다.');
@@ -55,12 +56,14 @@ const Register = () => {
     }
   };
 
+
+  // 아이디 중복 확인
   const verifyUsername = async () => {
     setLoading(true);
     try {
       const response = await api.post('/auth/check-username', { username });
+      setUsernameVerified(response.data.available);
       if (response.data.available) {
-        setUsernameVerified(true);
         alert('사용 가능한 아이디입니다.');
       } else {
         alert('이미 사용 중인 아이디입니다.');
