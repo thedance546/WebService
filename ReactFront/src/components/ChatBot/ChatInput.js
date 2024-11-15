@@ -1,6 +1,7 @@
 // src/components/ChatBot/ChatInput.js
 import React, { useState } from 'react';
 import { Send } from 'react-bootstrap-icons';
+import './ChatBotStyles.css';
 
 const ChatInput = ({ addMessage, toggleOptions }) => {
   const [input, setInput] = useState('');
@@ -25,12 +26,10 @@ const ChatInput = ({ addMessage, toggleOptions }) => {
 
   return (
     <div className="d-flex align-items-center p-2 w-100" style={{ backgroundColor: 'transparent' }}>
-      {/* + 버튼 (옵션 메뉴 토글) */}
-      <button className="btn btn-outline-secondary me-2" style={{ width: '40px', height: '40px' }} onClick={toggleOptions}>
+      <button className="btn btn-outline-secondary me-2" style={{ width: 'var(--icon-size)', height: 'var(--icon-size)' }} onClick={toggleOptions}>
         +
       </button>
 
-      {/* 텍스트 입력 필드 */}
       <input
         type="text"
         className="form-control flex-grow-1"
@@ -40,8 +39,7 @@ const ChatInput = ({ addMessage, toggleOptions }) => {
         onKeyDown={handleKeyDown}
       />
 
-      {/* 전송 버튼 */}
-      <button className="btn btn-primary ms-2" style={{ width: '40px', height: '40px' }} onClick={handleSendMessage} aria-label="전송">
+      <button className="btn btn-primary ms-2" style={{ width: 'var(--icon-size)', height: 'var(--icon-size)' }} onClick={handleSendMessage} aria-label="전송">
         <Send size={24} />
       </button>
     </div>

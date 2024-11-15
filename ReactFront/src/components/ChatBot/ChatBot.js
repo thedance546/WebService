@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
+import './ChatBotStyles.css';
 
 const ChatBot = () => {
   const [messages, setMessages] = useState(() => {
@@ -10,6 +11,22 @@ const ChatBot = () => {
   });
 
   const [showOptions, setShowOptions] = useState(false);
+
+  // 동적 뷰포트 높이 설정 함수
+  const setViewportHeight = () => {
+    document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
+  };
+
+  useEffect(() => {
+    // 페이지 로드 및 리사이즈 시 동적 높이 설정
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('resize', setViewportHeight);
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages));
@@ -47,16 +64,14 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="d-flex flex-column vh-100 bg-light position-relative">
-      {/* 상단 여유 공간 */}
-      <div style={{ height: '7vh' }}></div>
+    <div className="chatbot-container">
+      <div style={{ height: 'var(--top-margin)' }}></div>
 
-      {/* 대화 내용 (화면의 65%를 차지) */}
-      <ChatMessages messages={messages} style={{ height: '75vh' }} />
+      <ChatMessages messages={messages} style={{ height: 'var(--chat-height)', overflowY: 'auto' }} />
 
-      {/* 옵션 메뉴 */}
       {showOptions && (
-        <div className="d-flex justify-content-around position-fixed w-100" style={{ bottom: '120px', zIndex: 10, backgroundColor: '#fff', padding: '10px', borderTop: '1px solid #ddd' }}>
+        <div className="d-flex justify-content-around position-fixed w-100"
+             style={{ bottom: 'var(--options-bottom)', zIndex: 10, backgroundColor: 'var(--options-bg-color)', padding: 'var(--options-padding)', borderTop: `1px solid var(--options-border-color)` }}>
           <label className="btn btn-outline-secondary" style={{ flex: 1, margin: '0 5px' }} aria-label="사진 업로드">
             <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e.target.files[0])} style={{ display: 'none' }} />
             📷
@@ -67,8 +82,8 @@ const ChatBot = () => {
         </div>
       )}
 
-      {/* 하단 고정 입력창 */}
-      <div className="position-fixed w-100 d-flex align-items-center" style={{ bottom: '60px', zIndex: 10, backgroundColor: 'transparent' }}>
+      <div className="position-fixed w-100 d-flex align-items-center"
+           style={{ bottom: 'var(--input-bottom)', zIndex: 10, backgroundColor: 'transparent' }}>
         <ChatInput addMessage={addMessage} toggleOptions={toggleOptions} />
       </div>
     </div>
