@@ -13,8 +13,16 @@ import pathlib
 temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
 
+<<<<<<< HEAD
 # YOLOv5 코드 경로 설정
 sys.path.append('C:/projects/project/yolo')  # YOLOv5 코드가 있는 경로 추가
+=======
+# YOLOv5 경로 설정 (yolov5 코드가 있는 경로로 수정)
+sys.path.append("C:\\WorkSpace\\yolo")  # YOLOv5 폴더의 정확한 경로를 여기에 설정
+
+from models.common import DetectMultiBackend
+from utils.torch_utils import select_device
+>>>>>>> 149ec5a790d2e6d5486d9079dca1e32b2d4ec728
 
 # Flask 애플리케이션 초기화
 app = Flask(__name__)
@@ -31,6 +39,7 @@ transform = T.Compose([
     T.ToTensor()           # 텐서로 변환
 ])
 
+<<<<<<< HEAD
 # 이미지 업로드 경로 설정
 UPLOAD_FOLDER = 'static'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -40,6 +49,21 @@ def detect_objects():
     try:
         if 'image' not in request.files:
             return jsonify({"error": "No image file in request"}), 400
+=======
+        if model in models:
+            results = models[model](im, size=640)
+            object_names = results.pandas().xyxy[0]['name'].tolist()
+            return {"detected_objects": object_names}
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
+    
+    # 여기에 best.pt 파일의 경로를 지정합니다.
+    parser.add_argument("--model", nargs="+", default=["C:/WorkSpace/yolo/best.pt"], help="model path(s)")  # best.pt 파일의 경로로 수정
+    parser.add_argument("--port", default=5000, type=int, help="port number")
+    
+    opt = parser.parse_args()
+>>>>>>> 149ec5a790d2e6d5486d9079dca1e32b2d4ec728
 
         # 이미지 파일 가져오기
         image_file = request.files['image']

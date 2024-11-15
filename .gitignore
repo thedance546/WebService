@@ -2,7 +2,7 @@
 # Backend (Spring / Gradle)
 # -----------------------------
 
-# Gradle specific files
+Gradle specific files
 /APIService/.gradle/
 /APIService/.gradle/**/*.lock
 /APIService/.gradle/**/*.bin
@@ -112,4 +112,4 @@ Thumbs.db
 *.sqlite3
 
 # PyCharm settings
-.idea/
+# .idea/
