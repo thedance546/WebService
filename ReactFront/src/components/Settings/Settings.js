@@ -5,6 +5,7 @@ import TeamInfo from './TeamInfo';
 import PrivacyPolicy from './PrivacyPolicy';
 import ContactForm from './ContactForm';
 import LogoutButton from './LogoutButton';
+import DeleteAccountButton from './DeleteAccountButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Settings = () => {
@@ -12,10 +13,6 @@ const Settings = () => {
 
   const handleLogoutSuccess = () => {
     navigate('/'); // 로그아웃 후 Welcome 페이지로 이동
-  };
-
-  const handleDeleteAccount = () => {
-    alert('회원탈퇴 기능이 구현될 예정입니다.');
   };
 
   return (
@@ -29,9 +26,7 @@ const Settings = () => {
 
         <div className="d-grid gap-2 mt-4">
           <LogoutButton onLogoutSuccess={handleLogoutSuccess} />
-          <button onClick={handleDeleteAccount} className="btn btn-danger">
-            회원탈퇴
-          </button>
+          <DeleteAccountButton onAccountDeleted={handleLogoutSuccess} />
         </div>
       </div>
     </div>
