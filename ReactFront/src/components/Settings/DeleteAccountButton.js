@@ -1,6 +1,6 @@
 // src/components/Settings/DeleteAccountButton.js
 import React, { useState } from 'react';
-import api from '../../services/Api';
+import api from '../../Services/Api';
 
 const DeleteAccountButton = ({ onAccountDeleted }) => {
   const [loading, setLoading] = useState(false);

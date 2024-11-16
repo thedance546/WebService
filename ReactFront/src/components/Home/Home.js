@@ -4,6 +4,7 @@ import MyIngredients from '../Ingredients/MyIngredients';
 import ChatBot from '../ChatBot/ChatBot';
 import Notification from '../Notification/Notification';
 import Settings from '../Settings/Settings';
+import './HomeCommonStyle.css'
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState('myIngredients');

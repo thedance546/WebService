@@ -1,0 +1,11 @@
+/* 모바일 환경 - 높이가 900px 이하인 경우 */
+html,
+body {
+  overflow: hidden;
+}
+
+@media (max-height: 900px) {
+    :root {
+      --top-margin: 7dvh;
+    }
+  }

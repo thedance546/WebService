@@ -2,10 +2,7 @@
 import React, { useState } from 'react';
 
 const ContactForm = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [contactMessage, setContactMessage] = useState('');
-
-  const toggleOpen = () => setIsOpen(!isOpen);
 
   const handleContactMessageChange = (e) => setContactMessage(e.target.value);
 
@@ -15,13 +12,26 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="mb-3">
-      <button onClick={toggleOpen} className="btn btn-link">
-        개발자에게 문의하기
-      </button>
-      {isOpen && (
-        <div className="border rounded p-3 bg-light">
-          <h3>개발자에게 문의</h3>
+    <div className="accordion-item">
+      <h2 className="accordion-header" id="headingContactForm">
+        <button
+          className="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseContactForm"
+          aria-expanded="false"
+          aria-controls="collapseContactForm"
+        >
+          개발자에게 문의하기
+        </button>
+      </h2>
+      <div
+        id="collapseContactForm"
+        className="accordion-collapse collapse"
+        aria-labelledby="headingContactForm"
+        data-bs-parent="#settingsAccordion"
+      >
+        <div className="accordion-body">
           <input
             type="text"
             className="form-control mb-3"
@@ -33,7 +43,7 @@ const ContactForm = () => {
             보내기
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 };

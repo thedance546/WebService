@@ -1,22 +1,31 @@
 // src/components/Settings/PrivacyPolicy.js
-import React, { useState } from 'react';
+import React from 'react';
 
 const PrivacyPolicy = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  const toggleOpen = () => setIsOpen(!isOpen);
-
   return (
-    <div className="mb-3">
-      <button onClick={toggleOpen} className="btn btn-link">
-        개인정보 처리방침 보기
-      </button>
-      {isOpen && (
-        <div className="border rounded p-3 bg-light">
-          <h3>개인정보 처리방침</h3>
+    <div className="accordion-item">
+      <h2 className="accordion-header" id="headingPrivacyPolicy">
+        <button
+          className="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapsePrivacyPolicy"
+          aria-expanded="false"
+          aria-controls="collapsePrivacyPolicy"
+        >
+          개인정보 처리방침 보기
+        </button>
+      </h2>
+      <div
+        id="collapsePrivacyPolicy"
+        className="accordion-collapse collapse"
+        aria-labelledby="headingPrivacyPolicy"
+        data-bs-parent="#settingsAccordion"
+      >
+        <div className="accordion-body">
           <p>여기에 개인정보 처리방침 내용이 표시됩니다...</p>
         </div>
-      )}
+      </div>
     </div>
   );
 };

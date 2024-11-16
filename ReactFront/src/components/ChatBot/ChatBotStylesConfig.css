@@ -1,9 +1,4 @@
 /* src/components/ChatBot/ChatBotStylesConfig.css */
-html,
-body {
-  overflow: hidden;
-}
-
 :root {
   /* 색상 */
   --text-color: #333;
@@ -60,7 +55,6 @@ body {
 /* 모바일 환경 - 높이가 900px 이하인 경우 */
 @media (max-height: 900px) {
   :root {
-    --top-margin: 7dvh;
     --input-left: 3.75%;
     --input-width: calc(100% - 2 * var(--input-left)); /* 화면 너비에서 --input-left의 두 배를 뺀 값 */
   }
