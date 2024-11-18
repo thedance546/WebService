@@ -1,9 +1,11 @@
 // src/components/Settings/ThemeSelector.js
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 const ThemeSelector = () => {
-  const [theme, setTheme] = useState('system');
+  const [setTheme] = useState('system');
 
+  /* 테마 변경 로직 주석 처리
+  const [theme, setTheme] = useState('system');
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
@@ -14,6 +16,7 @@ const ThemeSelector = () => {
       document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
     }
   }, [theme]);
+  */
 
   return (
     <div className="accordion-item">
@@ -39,21 +42,21 @@ const ThemeSelector = () => {
           <div className="btn-group w-100" role="group" aria-label="Theme selector">
             <button
               type="button"
-              className={`btn ${theme === 'light' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setTheme('light')}
+              className="btn btn-outline-primary"
+              onClick={() => setTheme('light')} // 로직은 남겨둠
             >
               화이트 모드
             </button>
             <button
               type="button"
-              className={`btn ${theme === 'dark' ? 'btn-primary' : 'btn-outline-primary'}`}
+              className="btn btn-outline-primary"
               onClick={() => setTheme('dark')}
             >
               다크 모드
             </button>
             <button
               type="button"
-              className={`btn ${theme === 'system' ? 'btn-primary' : 'btn-outline-primary'}`}
+              className="btn btn-outline-primary"
               onClick={() => setTheme('system')}
             >
               기기 테마
