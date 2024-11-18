@@ -3,7 +3,7 @@ from collections import Counter
 import json
 
 # 이미지 파일 경로
-image_path = 'C:/projects/project/yolo/test14.jpg'
+image_path = 'C:/WorkSpace/yolo/test14.jpg'
 
 # 파일 전송
 with open(image_path, 'rb') as f:
