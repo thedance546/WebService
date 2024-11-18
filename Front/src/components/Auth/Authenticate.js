@@ -1,7 +1,7 @@
 // src/components/Auth/Authenticate.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../Services/Api';
+import api from '../../services/Api';
 import GlobalBackground from '../Common/GlobalBackground';
 
 const Authenticate = () => {
