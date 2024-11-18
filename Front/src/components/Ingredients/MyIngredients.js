@@ -1,3 +1,4 @@
+// src/components/Ingredients/MyIngredients.js
 import React, { useState, useEffect } from 'react';
 import IngredientModal from './IngredientModal';
 import RecognitionResultModal from './RecognitionResultModal';
@@ -8,26 +9,6 @@ import { Plus } from 'react-bootstrap-icons';
 const getRandomIngredients = (ingredients, count) => {
   const shuffled = [...ingredients].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count).map((item) => ({ name: item, quantity: 1 }));
-};
-
-// JSON 데이터 저장 함수
-const saveDataToFile = (data) => {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'my_ingredients.json';
-  link.click();
-};
-
-// JSON 데이터 로드 함수
-const loadDataFromFile = async () => {
-  try {
-    const response = await fetch('/Data/my_ingredients.json');
-    if (!response.ok) return [];
-    return await response.json();
-  } catch {
-    return [];
-  }
 };
 
 const MyIngredients = () => {
@@ -45,19 +26,27 @@ const MyIngredients = () => {
   const [expiryData, setExpiryData] = useState([]);
   const [infoData, setInfoData] = useState([]);
 
+  const initialState = {
+    file: null,
+    type: '',
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const expiryResponse = await fetch('/Data/IngredientsExpiryData.json');
       const infoResponse = await fetch('/Data/IngredientsInfoData.json');
-      const savedData = await loadDataFromFile();
 
       setExpiryData(await expiryResponse.json().then((data) => data.ingredients || []));
       setInfoData(await infoResponse.json().then((data) => data.ingredients || []));
-      setDataFrame(savedData);
     };
 
     fetchData();
   }, []);
+
+  const resetModalState = () => {
+    setSelectedFile(initialState.file);
+    setPhotoType(initialState.type);
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -80,7 +69,14 @@ const MyIngredients = () => {
       const randomCount = Math.floor(Math.random() * 5) + 1;
       const randomIngredients = getRandomIngredients(ingredientList, randomCount);
       setRecognitionResult({ resultImage: selectedFile, resultList: randomIngredients });
+      resetModalState();
+      setIsModalOpen(false);
     }, 3000);
+  };
+
+  const handleModalClose = () => {
+    resetModalState();
+    setIsModalOpen(false);
   };
 
   const handleRecognitionConfirm = (editedIngredients) => {
@@ -97,7 +93,6 @@ const MyIngredients = () => {
     });
     const updatedDataFrame = [...dataFrame, ...combinedData];
     setDataFrame(updatedDataFrame);
-    saveDataToFile(updatedDataFrame); // JSON 파일 저장
     setRecognitionResult(null);
   };
 
@@ -127,7 +122,7 @@ const MyIngredients = () => {
       {isModalOpen && (
         <IngredientModal
           onConfirm={handleUploadConfirm}
-          onCancel={() => setIsModalOpen(false)}
+          onCancel={handleModalClose}
           selectedFile={selectedFile}
           fileChangeHandler={handleFileChange}
           photoType={photoType}
