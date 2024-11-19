@@ -1,19 +1,14 @@
 import { useState } from 'react';
 
-export const useModalState = (initialState = { file: null, type: '' }) => {
-  const [selectedFile, setSelectedFile] = useState(initialState.file);
-  const [photoType, setPhotoType] = useState(initialState.type);
+export const useModalState = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const reset = () => {
-    setSelectedFile(initialState.file);
-    setPhotoType(initialState.type);
-  };
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
 
   return {
-    selectedFile,
-    setSelectedFile,
-    photoType,
-    setPhotoType,
-    reset,
+    isOpen,
+    open,
+    close,
   };
 };

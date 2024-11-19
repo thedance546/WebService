@@ -1,4 +1,4 @@
-// Services/Api.js
+// services/Api.js
 import axios from 'axios';
 
 const api = axios.create({
@@ -70,10 +70,9 @@ export const logout = async () => {
       }
     );
 
-    // 로그아웃 후 Welcome 화면으로 이동
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    window.location.href = '/'; // Welcome 화면으로 이동
+    window.location.href = '/';
   } catch (error) {
     console.error("Logout failed:", error);
   }

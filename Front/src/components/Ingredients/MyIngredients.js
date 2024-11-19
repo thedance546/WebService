@@ -11,10 +11,13 @@ const getRandomIngredients = (ingredients, count) => {
 };
 
 const MyIngredients = () => {
-  const modalState = useModalState();
+  const ingredientModal = useModalState(); // IngredientModal 상태 관리
+  const recognitionModal = useModalState(); // RecognitionResultModal 상태 관리
+
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null); // IngredientModal에서 사용할 상태
+  const [photoType, setPhotoType] = useState(''); // IngredientModal에서 사용할 상태
   const [recognitionResult, setRecognitionResult] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [dataFrame, setDataFrame] = useState([]);
   const [expiryData, setExpiryData] = useState([]);
   const [infoData, setInfoData] = useState([]);
@@ -37,7 +40,7 @@ const MyIngredients = () => {
   }, []);
 
   const handleUploadConfirm = () => {
-    if (!modalState.selectedFile || !modalState.photoType) {
+    if (!selectedFile || !photoType) {
       alert('사진과 이미지 타입을 선택해주세요.');
       return;
     }
@@ -47,9 +50,12 @@ const MyIngredients = () => {
       setLoading(false);
       const randomCount = Math.floor(Math.random() * 5) + 1;
       const randomIngredients = getRandomIngredients(ingredientList, randomCount);
-      setRecognitionResult({ resultImage: modalState.selectedFile, resultList: randomIngredients });
-      modalState.reset();
-      setIsModalOpen(false);
+      setRecognitionResult({ resultImage: selectedFile, resultList: randomIngredients });
+
+      // 상태 초기화
+      setSelectedFile(null);
+      setPhotoType('');
+      ingredientModal.close();
     }, 3000);
   };
 
@@ -66,13 +72,14 @@ const MyIngredients = () => {
       };
     });
     setDataFrame((prev) => [...prev, ...combinedData]);
-    setRecognitionResult(null);
+    recognitionModal.close();
   };
 
   return (
     <div className="container text-center my-ingredients">
       <h2 className="my-3">나의 식재료</h2>
 
+      {/* 추가 버튼 */}
       <button
         className="btn btn-success position-fixed"
         style={{
@@ -81,41 +88,39 @@ const MyIngredients = () => {
           width: '56px',
           height: '56px',
           borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
         }}
-        onClick={() => {
-          modalState.reset();
-          setIsModalOpen(true);
-        }}
+        onClick={ingredientModal.open}
       >
         <Plus size={28} />
       </button>
 
-      {isModalOpen && (
+      {/* IngredientModal */}
+      {ingredientModal.isOpen && (
         <IngredientModal
           onConfirm={handleUploadConfirm}
-          onCancel={() => setIsModalOpen(false)}
-          selectedFile={modalState.selectedFile}
+          onCancel={ingredientModal.close}
+          selectedFile={selectedFile}
           fileChangeHandler={(e) =>
-            modalState.setSelectedFile(e.target.files[0] ? URL.createObjectURL(e.target.files[0]) : null)
+            setSelectedFile(e.target.files[0] ? URL.createObjectURL(e.target.files[0]) : null)
           }
-          photoType={modalState.photoType}
-          photoTypeChangeHandler={(e) => modalState.setPhotoType(e.target.value)}
+          photoType={photoType}
+          photoTypeChangeHandler={(e) => setPhotoType(e.target.value)}
         />
       )}
 
-      {recognitionResult && (
+      {/* RecognitionResultModal */}
+      {recognitionModal.isOpen && (
         <RecognitionResultModal
           result={recognitionResult}
           onConfirm={handleRecognitionConfirm}
-          onClose={() => setRecognitionResult(null)}
+          onClose={recognitionModal.close}
         />
       )}
 
+      {/* LoadingModal */}
       {loading && <LoadingModal />}
 
+      {/* 데이터프레임 테이블 */}
       {dataFrame.length > 0 && (
         <table className="table mt-5">
           <thead>

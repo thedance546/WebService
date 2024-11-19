@@ -9,7 +9,7 @@ const Register = () => {
   const [emailDomain, setEmailDomain] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // 로딩 상태
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const verifyEmail = async () => {
