@@ -1,5 +1,6 @@
 // src/components/Ingredients/IngredientsTable.js
 import React, { useState } from "react";
+import "bootstrap-icons/font/bootstrap-icons.css"; // Bootstrap Icons
 
 const IngredientsTable = ({ data }) => {
   const [filter, setFilter] = useState("전체");
@@ -8,6 +9,10 @@ const IngredientsTable = ({ data }) => {
   const filteredData = data.filter((item) =>
     filter === "전체" ? true : item.storage === filter
   );
+
+  const toggleDateType = () => {
+    setDateType((prev) => (prev === "유통기한" ? "소비기한" : "유통기한"));
+  };
 
   return (
     <div>
@@ -22,31 +27,40 @@ const IngredientsTable = ({ data }) => {
           <option value="냉동">냉동</option>
           <option value="상온">상온</option>
         </select>
-        <select
-          className="form-select w-auto"
-          value={dateType}
-          onChange={(e) => setDateType(e.target.value)}
-        >
-          <option value="유통기한">유통기한</option>
-          <option value="소비기한">소비기한</option>
-        </select>
       </div>
-      <table className="table mt-5">
+      <table className="table">
         <thead>
           <tr>
             <th>이름</th>
-            <th>{dateType}</th>
+            <th
+              className="text-center"
+              style={{ cursor: "pointer" }}
+              onClick={toggleDateType}
+            >
+              <span className="d-inline-flex align-items-center">
+                {dateType}
+                <i className="bi bi-arrow-down-up ms-2"></i>
+              </span>
+            </th>
             <th>카테고리</th>
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((row, index) => (
-            <tr key={index}>
-              <td>{row.name}</td>
-              <td>{row[dateType === "유통기한" ? "shelfLife" : "consumeBy"]}</td>
-              <td>{row.category}</td>
+          {filteredData.length > 0 ? (
+            filteredData.map((row, index) => (
+              <tr key={index}>
+                <td>{row.name}</td>
+                <td>{row[dateType === "유통기한" ? "shelfLife" : "consumeBy"]}</td>
+                <td>{row.category}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3" className="text-center">
+                등록된 식재료가 없습니다.
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

@@ -23,6 +23,8 @@ const MyIngredients = () => {
     '대파', '고등어', '김치', '돼지고기', '양배추', '버섯', '콩나물', '애호박', '고추', '깻잎',
     '시리얼', '김', '라면', '참치캔', '냉동 만두', '베이컨', '시금치', '오이', '게맛살', '삼겹살'
   ];
+  const categories = ["채소", "육류", "가공식품", "발효식품", "과일"];
+  const storageMethods = ["냉장", "냉동", "상온"];
 
   const handleUploadConfirm = () => {
     const { selectedFile, photoType } = ingredientModal.state;
@@ -53,8 +55,8 @@ const MyIngredients = () => {
       ...item,
       shelfLife: `${Math.floor(Math.random() * 10) + 1}일`, // Random shelf life
       consumeBy: `${Math.floor(Math.random() * 15) + 5}일`, // Random consume by
-      category: "랜덤 카테고리",
-      storage: "냉장",
+      category: categories[Math.floor(Math.random() * categories.length)], // 랜덤 카테고리
+      storage: storageMethods[Math.floor(Math.random() * storageMethods.length)], // 랜덤 저장 방식
     }));
 
     setDataFrame((prev) => [...prev, ...combinedData]);
@@ -116,7 +118,7 @@ const MyIngredients = () => {
       {loading && <LoadingModal />}
 
       {/* IngredientsTable */}
-      {dataFrame.length > 0 && <IngredientsTable data={dataFrame} />}
+      {<IngredientsTable data={dataFrame} />}
     </div>
   );
 };
