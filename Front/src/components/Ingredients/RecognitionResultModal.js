@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 
 const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
   const [editedResult, setEditedResult] = useState(result.resultList);
+  const [purchaseDate, setPurchaseDate] = useState(""); // 구매일자 추가
 
   const handleChange = (index, field, value) => {
     const updated = [...editedResult];
@@ -10,19 +11,60 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
     setEditedResult(updated);
   };
 
+  const handleAddRow = () => {
+    setEditedResult([...editedResult, { name: '' }]); // purchaseDate 제거
+  };
+
+  const handleRemoveRow = (index) => {
+    const updated = editedResult.filter((_, i) => i !== index);
+    setEditedResult(updated);
+  };
+
+  const handleConfirm = () => {
+    if (!purchaseDate) {
+      alert("구매일자를 입력해주세요.");
+      return;
+    }
+
+    // 이름이 비어있지 않은 항목만 필터링
+    const validItems = editedResult.filter((item) => item.name.trim() !== "");
+    if (validItems.length === 0) {
+      alert("추가할 유효한 항목이 없습니다.");
+      return;
+    }
+
+    const resultWithDate = validItems.map((item) => ({
+      ...item,
+      purchaseDate, // 모든 항목에 공통 구매일자 추가
+    }));
+
+    onConfirm(resultWithDate);
+  };
+
   return (
     <div className="modal show d-block">
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content p-4">
           <h3>인식 결과</h3>
+
+          {/* 구매일자 입력 */}
           <div className="mb-3">
-            <img src={result.resultImage} alt="결과 이미지" className="img-fluid rounded" />
+            <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
+            <input
+              type="date"
+              id="purchaseDate"
+              className="form-control"
+              value={purchaseDate}
+              onChange={(e) => setPurchaseDate(e.target.value)}
+            />
           </div>
+
+          {/* 상품명 리스트 */}
           <table className="table">
             <thead>
               <tr>
-                <th>이름</th>
-                <th>수량</th>
+                <th>상품명</th>
+                <th>삭제</th>
               </tr>
             </thead>
             <tbody>
@@ -37,24 +79,31 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
                     />
                   </td>
                   <td>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={item.quantity}
-                      onChange={(e) => handleChange(index, 'quantity', e.target.value)}
-                    />
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleRemoveRow(index)}
+                    >
+                      삭제
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="d-flex justify-content-around mt-3">
-            <button className="btn btn-success" onClick={() => onConfirm(editedResult)}>
-              확인
+
+          {/* 버튼 그룹 */}
+          <div className="d-flex justify-content-between mt-3">
+            <button className="btn btn-primary" onClick={handleAddRow}>
+              항목 추가
             </button>
-            <button className="btn btn-danger" onClick={onClose}>
-              취소
-            </button>
+            <div>
+              <button className="btn btn-success me-2" onClick={handleConfirm}>
+                확인
+              </button>
+              <button className="btn btn-danger" onClick={onClose}>
+                취소
+              </button>
+            </div>
           </div>
         </div>
       </div>
