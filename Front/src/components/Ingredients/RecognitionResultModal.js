@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
   const [editedResult, setEditedResult] = useState(result.resultList);
-  const [purchaseDate, setPurchaseDate] = useState(""); // 구매일자 추가
+  const [purchaseDate, setPurchaseDate] = useState("");
 
   const handleChange = (index, field, value) => {
     const updated = [...editedResult];
@@ -12,7 +12,7 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
   };
 
   const handleAddRow = () => {
-    setEditedResult([...editedResult, { name: '' }]); // purchaseDate 제거
+    setEditedResult([...editedResult, { name: '', quantity: '' }]);
   };
 
   const handleRemoveRow = (index) => {
@@ -26,7 +26,6 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
       return;
     }
 
-    // 이름이 비어있지 않은 항목만 필터링
     const validItems = editedResult.filter((item) => item.name.trim() !== "");
     if (validItems.length === 0) {
       alert("추가할 유효한 항목이 없습니다.");
@@ -35,7 +34,7 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
 
     const resultWithDate = validItems.map((item) => ({
       ...item,
-      purchaseDate, // 모든 항목에 공통 구매일자 추가
+      purchaseDate,
     }));
 
     onConfirm(resultWithDate);
@@ -59,11 +58,12 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
             />
           </div>
 
-          {/* 상품명 리스트 */}
+          {/* 상품명 및 수량 입력 */}
           <table className="table">
             <thead>
               <tr>
                 <th>상품명</th>
+                <th>수량</th>
                 <th>삭제</th>
               </tr>
             </thead>
@@ -79,11 +79,19 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
                     />
                   </td>
                   <td>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={item.quantity || ''}
+                      onChange={(e) => handleChange(index, 'quantity', e.target.value)}
+                    />
+                  </td>
+                  <td>
                     <button
                       className="btn btn-danger"
                       onClick={() => handleRemoveRow(index)}
                     >
-                      삭제
+                      X
                     </button>
                   </td>
                 </tr>
