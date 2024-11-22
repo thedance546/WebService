@@ -34,8 +34,8 @@ public class AuthController {
 
     @DeleteMapping("/delete-account")
     public ResponseEntity<Map<String, String>> deleteAccount(@RequestHeader("Authorization") String accessToken) {
-        accessToken = accessToken.substring(7); // "Bearer " 부분 제거
-        Map<String, String> response = authService.deleteAccount(accessToken); // deleteAccount 메서드 호출
+        accessToken = accessToken.substring(7);
+        Map<String, String> response = authService.deleteAccount(accessToken);
         return ResponseEntity.ok(response);
     }
 

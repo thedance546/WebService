@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDate;
 
 @Entity
@@ -19,8 +20,8 @@ public class ShelfLife {
     private Long id;
 
     @Column(name = "sell_by_date", nullable = false)
-    private LocalDate sellByDate;  // 유통기한
+    private int sellByDays;  // 유통기한 일수
 
     @Column(name = "use_by_date", nullable = false)
-    private LocalDate useByDate;   // 소비기한
+    private int  useByDays;   // 소비기한 일수
 }
