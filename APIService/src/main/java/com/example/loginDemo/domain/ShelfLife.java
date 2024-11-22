@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Duration;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "shelf_lifes")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
+@NoArgsConstructor
+@Getter @Setter
 public class ShelfLife {
 
     @Id

@@ -1,14 +1,14 @@
 package com.example.loginDemo.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "items")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Builder
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +28,6 @@ public class Item {
     @OneToOne
     @JoinColumn(name = "shelf_life_id", nullable = false)
     private ShelfLife shelfLife;
+
+
 }
