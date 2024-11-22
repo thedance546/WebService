@@ -1,103 +1,91 @@
+import os  # 추가
 from flask import Flask, request, jsonify
-import torch
-from PIL import Image
-import os
-import sys
-from torchvision import transforms as T
-from models.common import DetectMultiBackend  # YOLOv5 모델 로드 클래스
-from utils.general import non_max_suppression, scale_boxes
-import pandas as pd
+import json
+import onnxruntime as ort
+import numpy as np
+import cv2
+from collections import Counter
 
-
-import pathlib
-temp = pathlib.PosixPath
-pathlib.PosixPath = pathlib.WindowsPath
-
-<<<<<<< HEAD
-# YOLOv5 코드 경로 설정
-sys.path.append('C:/projects/project/yolo')  # YOLOv5 코드가 있는 경로 추가
-=======
-# YOLOv5 경로 설정 (yolov5 코드가 있는 경로로 수정)
-sys.path.append("C:\\WorkSpace\\yolo")  # YOLOv5 폴더의 정확한 경로를 여기에 설정
-
-from models.common import DetectMultiBackend
-from utils.torch_utils import select_device
->>>>>>> 149ec5a790d2e6d5486d9079dca1e32b2d4ec728
-
-# Flask 애플리케이션 초기화
 app = Flask(__name__)
 
-# YOLOv5 모델 로드 (로컬 경로에서 불러오기)
-MODEL_PATH = "best.pt"  # 로컬 모델 파일 경로
-device = torch.device('cpu')  # CPU 설정
-model = DetectMultiBackend(MODEL_PATH, device=device)  # DetectMultiBackend로 모델 로드
-model.eval()  # 평가 모드 설정
-
-# 이미지 전처리를 위한 변환 설정
-transform = T.Compose([
-    T.Resize((640, 640)),  # YOLOv5 입력 크기로 조정
-    T.ToTensor()           # 텐서로 변환
-])
-
-<<<<<<< HEAD
-# 이미지 업로드 경로 설정
-UPLOAD_FOLDER = 'static'
+# 업로드 폴더 설정
+UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# ONNX 모델 로드
+MODEL_PATH = "best.onnx"
+session = ort.InferenceSession(MODEL_PATH)
+
+# 클래스 이름 정의
+CLASS_NAMES = ['토마토', '방울토마토', '김치', '가지', '오이', '애호박', '팽이버섯', '새송이버섯',
+               '생 돼지고기', '생 닭고기', '생 소고기', '두부', '콩나물', '대파', '양파', '마늘', 
+               '시금치', '고추', '깻잎', '당근', '감자', '고구마', '계란', '무', '파프리카', 
+               '게맛살', '쌀', '어묵', '사과', '비엔나소시지']
+
+# 이미지 전처리 함수
+def preprocess_image(image_path):
+    image = cv2.imread(image_path)  # BGR로 읽기
+    image = cv2.resize(image, (640, 640))
+    image_np = np.array(image).transpose(2, 0, 1) / 255.0  # 정규화
+    return np.expand_dims(image_np, axis=0).astype(np.float32)
+
+# Non-Maximum Suppression 함수
+def non_max_suppression(predictions, conf_threshold=0.3, iou_threshold=0.45):
+    boxes = predictions[:, :4]
+    scores = predictions[:, 4]
+    classes = np.argmax(predictions[:, 5:], axis=1)
+    valid_idx = scores > conf_threshold
+
+    boxes, scores, classes = boxes[valid_idx], scores[valid_idx], classes[valid_idx]
+    indices = cv2.dnn.NMSBoxes(
+        boxes.tolist(),
+        scores.tolist(),
+        conf_threshold,
+        iou_threshold
+    )
+    if len(indices) > 0:
+        indices = indices.flatten()
+        boxes = boxes[indices]
+        scores = scores[indices]
+        classes = classes[indices]
+    return boxes, scores, classes
 
 @app.route('/detect', methods=['POST'])
 def detect_objects():
     try:
+        # 이미지 파일 확인
         if 'image' not in request.files:
             return jsonify({"error": "No image file in request"}), 400
-=======
-        if model in models:
-            results = models[model](im, size=640)
-            object_names = results.pandas().xyxy[0]['name'].tolist()
-            return {"detected_objects": object_names}
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Flask API exposing YOLOv5 model")
-    
-    # 여기에 best.pt 파일의 경로를 지정합니다.
-    parser.add_argument("--model", nargs="+", default=["C:/WorkSpace/yolo/best.pt"], help="model path(s)")  # best.pt 파일의 경로로 수정
-    parser.add_argument("--port", default=5000, type=int, help="port number")
-    
-    opt = parser.parse_args()
->>>>>>> 149ec5a790d2e6d5486d9079dca1e32b2d4ec728
-
-        # 이미지 파일 가져오기
+        # 이미지 저장
         image_file = request.files['image']
         image_path = os.path.join(UPLOAD_FOLDER, image_file.filename)
         image_file.save(image_path)
 
-        # 이미지 열기 및 텐서로 변환 후 객체 탐지 수행
-        image = Image.open(image_path).convert("RGB")
-        original_size = image.size  # 원본 이미지 크기 저장 (width, height)
-        image = transform(image).unsqueeze(0)  # 배치 차원 추가
-        predictions = model(image)
+        # 이미지 전처리
+        input_tensor = preprocess_image(image_path)
 
-        # 비최대 억제 및 결과 처리
-        predictions = non_max_suppression(predictions)[0]
-        if predictions is None:
-            return jsonify({"detections": []})
+        # ONNX 모델 추론
+        input_name = session.get_inputs()[0].name
+        output_name = session.get_outputs()[0].name
+        outputs = session.run([output_name], {input_name: input_tensor})
 
-        # 원본 이미지 크기로 스케일 복원
-        predictions[:, :4] = scale_boxes(image.shape[2:], predictions[:, :4], original_size)
-        
-        # 결과를 pandas 형식으로 변환
-        df = pd.DataFrame(predictions.cpu().numpy(), columns=['xmin', 'ymin', 'xmax', 'ymax', 'confidence', 'class'])
-        df['name'] = df['class'].apply(lambda x: model.names[int(x)])
+        # Non-Maximum Suppression 적용
+        predictions = outputs[0]
+        boxes, scores, classes = non_max_suppression(predictions[0], conf_threshold=0.3)
 
-        # JSON 형식으로 변환하여 응답
-        response = {"detections": df.to_dict(orient="records")}
-        os.remove(image_path)
-        
-        return jsonify(response)
+        # 클래스 이름 추출
+        detected_classes = [CLASS_NAMES[class_id] for class_id in classes]
+
+        # 클래스 이름과 개수 계산
+        class_counts = Counter(detected_classes)
+
+        # JSON 응답 생성 (ensure_ascii=False로 설정)
+        return json.dumps({"detections": class_counts}, ensure_ascii=False), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
     except Exception as e:
-        print(f"Error occurred: {e}")  # 서버 콘솔에 오류 메시지 출력
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
-# Flask 서버 실행
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
+
