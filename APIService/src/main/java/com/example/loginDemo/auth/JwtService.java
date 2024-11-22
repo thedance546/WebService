@@ -120,7 +120,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 블랙리스트에 있는지 확인하는 메서드
     public boolean isTokenBlacklisted(String token) {
         return blacklistService.isTokenBlacklisted(token);
     }
