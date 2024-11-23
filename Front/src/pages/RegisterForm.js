@@ -1,8 +1,8 @@
-// src/components/Auth/Register.js
+// src/pages/Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/Api';
-import GlobalBackground from '../Common/GlobalBackground';
+import api from '../services/Api';
+import GlobalBackground from '../components/Layout/GlobalBackground';
 
 const Register = () => {
   const [emailLocal, setEmailLocal] = useState('');

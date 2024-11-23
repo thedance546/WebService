@@ -1,10 +1,10 @@
-// src/components/Home/Home.js
+// src/pages/MainPage.js
 import React, { useState } from 'react';
-import MyIngredients from '../Ingredients/MyIngredients';
-import ChatBot from '../ChatBot/ChatBot';
-import Notification from '../Notification/Notification';
-import Settings from '../Settings/Settings';
-import './HomeCommonStyle.css'
+import MyIngredients from '../features/Ingredients/MyIngredients';
+import ChatBot from '../features/ChatBot/ChatBot';
+import Notification from '../features/Notification/Notification';
+import Settings from '../features/Settings/Settings';
+import './MainPageStyle.css'
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState('myIngredients');

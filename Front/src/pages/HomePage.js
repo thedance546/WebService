@@ -1,7 +1,7 @@
-// src/components/Welcome/Welcome.js
+// src/pages/Welcome.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import GlobalBackground from '../Common/GlobalBackground';
+import GlobalBackground from '../components/Layout/GlobalBackground';
 
 const Welcome = () => {
   return (
