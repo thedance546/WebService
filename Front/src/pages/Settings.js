@@ -1,12 +1,13 @@
-// src/features/Settings/Settings.js
+// src/pages/Settings.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import LogoutButton from './LogoutButton';
-import DeleteAccountButton from './DeleteAccountButton';
-import TeamInfo from './TeamInfo';
-import PrivacyPolicy from './PrivacyPolicy';
-import ContactForm from './ContactForm';
-import ThemeSelector from './ThemeSelector';
+import LogoutButton from '../features/Settings/LogoutButton';
+import DeleteAccountButton from '../features/Settings/DeleteAccountButton';
+import TeamInfo from '../features/Settings/TeamInfo';
+import PrivacyPolicy from '../features/Settings/PrivacyPolicy';
+import ContactForm from '../features/Settings/ContactForm';
+import ThemeSelector from '../features/Settings/ThemeSelector';
+import NavBar from '../components/UI/NavBar';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -34,6 +35,8 @@ const Settings = () => {
           <DeleteAccountButton onAccountDeleted={handleLogoutSuccess} />
         </div>
       </div>
+      
+      <NavBar />
     </div>
   );
 };

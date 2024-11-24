@@ -1,9 +1,9 @@
-// src/features/ChatBot/ChatBot.js
+// src/pages/ChatBot.js
 import React, { useState, useEffect } from 'react';
-import ChatMessages from './ChatMessages';
-import ChatInput from './ChatInput';
-import OptionsModal from './OptionsModal';
-import './ChatBotStylesConfig.css';
+import ChatMessages from '../features/ChatBot/ChatMessages';
+import ChatInput from '../features/ChatBot/ChatInput';
+import OptionsModal from '../features/ChatBot/OptionsModal';
+import NavBar from '../components/UI/NavBar';
 
 const ChatBot = () => {
   const [messages, setMessages] = useState(() => {
@@ -78,6 +78,8 @@ const ChatBot = () => {
 
       {/* 옵션 모달 */}
       <OptionsModal isOpen={isOptionsOpen} onClose={toggleOptions} options={options} />
+
+      <NavBar />
     </div>
   );
 };

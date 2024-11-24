@@ -1,11 +1,12 @@
-// src/features/Ingredients/MyIngredients.js
+// src/pages/MyIngredients.js
 import React, { useState } from "react";
-import IngredientModal from "./IngredientModal";
-import RecognitionResultModal from "./RecognitionResultModal";
-import LoadingModal from "./LoadingModal";
-import IngredientsTable from "./IngredientsTable";
-import { useModalState } from "../../hooks/useModalState";
+import IngredientModal from "../features/MyIngredients/IngredientModal";
+import RecognitionResultModal from "../features/MyIngredients/RecognitionResultModal";
+import LoadingModal from "../features/MyIngredients/LoadingModal";
+import IngredientsTable from "../features/MyIngredients/IngredientsTable";
+import { useModalState } from "../hooks/useModalState";
 import { Plus } from "react-bootstrap-icons";
+import NavBar from "../components/UI/NavBar";
 
 const getRandomIngredients = (ingredients, count) => {
   const shuffled = [...ingredients].sort(() => 0.5 - Math.random());
@@ -120,6 +121,8 @@ const MyIngredients = () => {
 
       {/* IngredientsTable */}
       <IngredientsTable data={dataFrame} />
+
+      <NavBar />
     </div>
   );
 };

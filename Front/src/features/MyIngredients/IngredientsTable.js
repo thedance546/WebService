@@ -1,6 +1,6 @@
 // src/features/Ingredients/IngredientsTable.js
 import React, { useState, useEffect } from "react";
-import "./IngredientsTable.css"; // CSS 추가
+import "./IngredientsTable.css";
 
 const IngredientsTable = ({ data }) => {
   const [filter, setFilter] = useState("전체");

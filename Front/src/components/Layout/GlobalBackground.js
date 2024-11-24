@@ -1,9 +1,9 @@
-// src/components/Common/GlobalBackground.js
+// src/components/Layout/GlobalBackground.js
 import React from 'react';
 
 const GlobalBackground = ({ title, children, cardStyle = {}, cardClassName = '' }) => {
   const style = {
-    backgroundImage: 'url(/Images/Background_Welcome.webp)', // 정적 URL로 참조
+    backgroundImage: 'url(/Images/Background_Welcome.webp)',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',

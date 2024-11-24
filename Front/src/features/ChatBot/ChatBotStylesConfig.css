@@ -1,4 +1,5 @@
 /* src/features/ChatBot/ChatBotStylesConfig.css */
+
 :root {
   /* 색상 */
   --text-color: #333;
@@ -22,7 +23,7 @@
   /* 입력창 */
   --input-bottom: var(--navbar-height);
   --input-height: 41px;
-  --input-left: 1%; /* 입력창의 왼쪽 간격 */
+  --input-left: 0.5%; /* 입력창의 왼쪽 간격 */
   --input-width: calc(100% - 2 * var(--input-left)); /* 화면 너비에서 --input-left의 두 배를 뺀 값 */
 
   /* 버튼 */

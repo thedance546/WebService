@@ -1,5 +1,6 @@
-// src/features/Notification/Notification.js
+// src/pages/Notification.js
 import React from 'react';
+import NavBar from '../components/UI/NavBar';
 
 const Notification = () => {
   const notifications = [
@@ -14,6 +15,8 @@ const Notification = () => {
           {notif.text}
         </div>
       ))}
+      
+      <NavBar />
     </div>
   );
 };

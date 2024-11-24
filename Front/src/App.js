@@ -4,19 +4,26 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RegisterForm from './pages/RegisterForm';
 import LoginPage from './pages/LoginPage';
-import MainPage from './pages/MainPage';
+import MyIngredients from './pages/MyIngredients';
+import ChatBot from './pages/ChatBot';
+import Notification from './pages/Notification';
+import Settings from './pages/Settings';
 
 function App() {
   return (
     <Router>
-      <div className="d-flex flex-column min-vh-100 bg-light">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/Register" element={<RegisterForm />} />
-          <Route path="/Login" element={<LoginPage />} />
-          <Route path="/Home" element={<MainPage />} />
-        </Routes>
-      </div>
+      <Routes>
+        {/* 로그인 관련 경로 */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* 기능 탭 경로 */}
+        <Route path="/my-ingredients" element={<MyIngredients />} />
+        <Route path="/chatbot" element={<ChatBot />} />
+        <Route path="/notifications" element={<Notification />} />
+        <Route path="/settings" element={<Settings />} />
+      </Routes>
     </Router>
   );
 }
