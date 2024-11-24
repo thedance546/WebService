@@ -1,4 +1,4 @@
-// src/components/Ingredients/IngredientsTable.js
+// src/features/Ingredients/IngredientsTable.js
 import React, { useState, useEffect } from "react";
 import "./IngredientsTable.css"; // CSS 추가
 

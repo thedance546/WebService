@@ -1,4 +1,4 @@
-// src/components/Ingredients/MyIngredients.js
+// src/features/Ingredients/MyIngredients.js
 import React, { useState } from "react";
 import IngredientModal from "./IngredientModal";
 import RecognitionResultModal from "./RecognitionResultModal";
@@ -15,14 +15,15 @@ const getRandomIngredients = (ingredients, count) => {
 const MyIngredients = () => {
   const ingredientModal = useModalState({ selectedFile: null, photoType: "" });
   const recognitionModal = useModalState({ resultImage: null, resultList: [] });
-
   const [loading, setLoading] = useState(false);
   const [dataFrame, setDataFrame] = useState([]);
+
   const ingredientList = [
-    '당근', '계란', '마늘', '감자', '생닭고기', '생 소고기', '밥', '고구마', '두부', '토마토',
-    '대파', '고등어', '김치', '돼지고기', '양배추', '버섯', '콩나물', '애호박', '고추', '깻잎',
-    '시리얼', '김', '라면', '참치캔', '냉동 만두', '베이컨', '시금치', '오이', '게맛살', '삼겹살'
+    "당근", "계란", "마늘", "감자", "생닭고기", "생 소고기", "밥", "고구마", "두부", "토마토",
+    "대파", "고등어", "김치", "돼지고기", "양배추", "버섯", "콩나물", "애호박", "고추", "깻잎",
+    "시리얼", "김", "라면", "참치캔", "냉동 만두", "베이컨", "시금치", "오이", "게맛살", "삼겹살"
   ];
+
   const categories = ["채소", "육류", "가공식품", "발효식품", "과일"];
   const storageMethods = ["냉장", "냉동", "상온"];
 
@@ -55,8 +56,8 @@ const MyIngredients = () => {
       ...item,
       shelfLife: `${Math.floor(Math.random() * 10) + 1}일`, // Random shelf life
       consumeBy: `${Math.floor(Math.random() * 15) + 5}일`, // Random consume by
-      category: categories[Math.floor(Math.random() * categories.length)], // 랜덤 카테고리
-      storage: storageMethods[Math.floor(Math.random() * storageMethods.length)], // 랜덤 저장 방식
+      category: categories[Math.floor(Math.random() * categories.length)], // Random category
+      storage: storageMethods[Math.floor(Math.random() * storageMethods.length)], // Random storage method
     }));
 
     setDataFrame((prev) => [...prev, ...combinedData]);
@@ -118,7 +119,7 @@ const MyIngredients = () => {
       {loading && <LoadingModal />}
 
       {/* IngredientsTable */}
-      {<IngredientsTable data={dataFrame} />}
+      <IngredientsTable data={dataFrame} />
     </div>
   );
 };

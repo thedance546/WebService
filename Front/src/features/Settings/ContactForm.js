@@ -1,4 +1,4 @@
-// src/components/Settings/ContactForm.js
+// src/features/Settings/ContactForm.js
 import React, { useState } from 'react';
 
 const ContactForm = () => {

@@ -1,4 +1,4 @@
-// src/components/Settings/PrivacyPolicy.js
+// src/features/Settings/PrivacyPolicy.js
 import React from 'react';
 
 const PrivacyPolicy = () => {

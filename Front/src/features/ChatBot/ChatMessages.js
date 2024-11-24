@@ -1,4 +1,4 @@
-// src/components/ChatBot/ChatMessages.js
+// src/features/ChatBot/ChatMessages.js
 import React, { useRef, useEffect } from 'react';
 import './ChatBotStylesConfig.css';
 

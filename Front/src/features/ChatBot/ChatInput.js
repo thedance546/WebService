@@ -1,4 +1,4 @@
-// src/components/ChatBot/ChatInput.js
+// src/features/ChatBot/ChatInput.js
 import React, { useState } from 'react';
 import { Send } from 'react-bootstrap-icons';
 import './ChatBotStylesConfig.css';

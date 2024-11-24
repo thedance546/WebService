@@ -1,4 +1,4 @@
-// src/components/Settings/DeleteAccountButton.js
+// src/features/Settings/DeleteAccountButton.js
 import React, { useState } from 'react';
 import api from '../../services/Api';
 

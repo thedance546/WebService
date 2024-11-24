@@ -1,4 +1,4 @@
-// src/components/Settings/ThemeSelector.js
+// src/features/Settings/ThemeSelector.js
 import React, { useState } from 'react';
 
 const ThemeSelector = () => {

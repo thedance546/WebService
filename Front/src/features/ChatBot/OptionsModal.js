@@ -1,4 +1,4 @@
-// src/components/ChatBot/OptionsModal.js
+// src/features/ChatBot/OptionsModal.js
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './ChatBotStylesConfig.css';

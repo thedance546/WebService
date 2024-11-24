@@ -1,4 +1,4 @@
-// src/components/Ingredients/FileUploader.js
+// src/features/Ingredients/FileUploader.js
 import React from 'react';
 
 const FileUploader = ({ selectedFile, onFileChange }) => (

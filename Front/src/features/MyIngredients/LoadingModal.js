@@ -1,4 +1,4 @@
-// src/components/Ingredients/LoadingModal.js
+// src/features/Ingredients/LoadingModal.js
 import React from 'react';
 import { Modal, Spinner } from 'react-bootstrap';
 

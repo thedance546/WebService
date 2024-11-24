@@ -1,4 +1,4 @@
-// src/components/ChatBot/ChatBot.js
+// src/features/ChatBot/ChatBot.js
 import React, { useState, useEffect } from 'react';
 import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';

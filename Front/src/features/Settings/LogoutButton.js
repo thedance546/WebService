@@ -1,4 +1,4 @@
-// src/components/Settings/LogoutButton.js
+// src/features/Settings/LogoutButton.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

@@ -1,4 +1,4 @@
-// src/components/Ingredients/IngredientModal.js
+// src/features/Ingredients/IngredientModal.js
 import React from 'react';
 import FileUploader from './FileUploader';
 import PhotoTypeOptions from './PhotoTypeOptions';

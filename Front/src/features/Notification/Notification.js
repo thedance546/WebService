@@ -1,4 +1,4 @@
-// src/components/Notification/Notification.js
+// src/features/Notification/Notification.js
 import React from 'react';
 
 const Notification = () => {

@@ -1,4 +1,4 @@
-// src/components/Settings/TeamInfo.js
+// src/features/Settings/TeamInfo.js
 import React, { useState, useEffect } from 'react';
 
 const TeamInfo = () => {
