@@ -1,6 +1,6 @@
 // src/pages/MainPage.js
 import React, { useState } from 'react';
-import MyIngredients from '../features/Ingredients/MyIngredients';
+import MyIngredients from '../features/MyIngredients/MyIngredients';
 import ChatBot from '../features/ChatBot/ChatBot';
 import Notification from '../features/Notification/Notification';
 import Settings from '../features/Settings/Settings';
