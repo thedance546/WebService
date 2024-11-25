@@ -67,10 +67,12 @@ public class AuthService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        //token 생성
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        // 토큰 생성
+        var accessToken = jwtService.generateAccessToken(user, user.getRole().name());
+        var refreshToken = jwtService.generateRefreshToken(user, user.getRole().name());
 
+
+        // 응답 생성
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -85,10 +87,13 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         userRepository.delete(user);
+
         // Access token 만료 시간 추출
         long expirationTime = jwtService.extractExpiration(accessToken).getTime();
+
         // 토큰을 블랙리스트에 추가
         blacklistService.addToBlacklist(accessToken, expirationTime,"account_deleted");
+
         // 응답 메시지 생성
         Map<String, String> response = new HashMap<>();
         response.put("message", "Successfully deleted the account");
@@ -100,8 +105,7 @@ public class AuthService {
     private boolean isValidEmailFormat(String email) {
         // 이메일 형식 검사를 위한 정규식
         String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        return pattern.matcher(email).matches();
+        return Pattern.compile(emailRegex).matcher(email).matches();
     }
 
 
