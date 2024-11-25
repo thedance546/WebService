@@ -22,7 +22,7 @@ const Authenticate = () => {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       alert('로그인 성공');
-      navigate('/home');
+      navigate('/my-ingredients');
     } catch (error) {
       setError('로그인에 실패했습니다. 다시 시도해 주세요.');
     } finally {

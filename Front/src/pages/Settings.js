@@ -1,12 +1,12 @@
 // src/pages/Settings.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import LogoutButton from '../features/Settings/LogoutButton';
 import DeleteAccountButton from '../features/Settings/DeleteAccountButton';
 import TeamInfo from '../features/Settings/TeamInfo';
 import PrivacyPolicy from '../features/Settings/PrivacyPolicy';
 import ContactForm from '../features/Settings/ContactForm';
 import ThemeSelector from '../features/Settings/ThemeSelector';
+import LogoutButton from '../components/UI/LogoutButton';
 import NavBar from '../components/UI/NavBar';
 
 const Settings = () => {

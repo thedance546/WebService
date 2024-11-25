@@ -4,10 +4,12 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RegisterForm from './pages/RegisterForm';
 import LoginPage from './pages/LoginPage';
+
 import MyIngredients from './pages/MyIngredients';
 import ChatBot from './pages/ChatBot';
 import Notification from './pages/Notification';
 import Settings from './pages/Settings';
+import Admin from './pages/AdminPage';
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/notifications" element={<Notification />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </Router>
   );
