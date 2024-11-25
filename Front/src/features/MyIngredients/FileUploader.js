@@ -1,5 +1,5 @@
-// src/features/Ingredients/FileUploader.js
-import React from 'react';
+// src/features/MyIngredients/FileUploader.js
+import React from "react";
 
 const FileUploader = ({ selectedFile, onFileChange }) => (
   <div className="my-3">

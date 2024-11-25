@@ -1,26 +1,30 @@
-/* src/features/Ingredients/IngredientsTable.css */
+/* src/features/MyIngredients/IngredientsTable.css */
 
 /* 여백 최소화 */
 .container-fluid.px-0 {
-    margin: 0;
-    padding: 0;
-  }
-  
-  .table-responsive-scrollable {
-    overflow-x: auto; /* 가로 스크롤 허용 */
-    overflow-y: auto; /* 세로 스크롤 허용 */
-    max-height: 75dvh; /* 세로 높이를 뷰포트 비율로 제한 */
-    border: 1px solid #ddd; /* 스크롤 가능한 영역 표시 */
-  }
-  
-  .table-nowrap th,
-  .table-nowrap td {
-    white-space: nowrap; /* 줄바꿈 방지 */
-  }
-  
-  /* 반응형 테이블의 크기를 최대한 유지 */
-  .table-nowrap {
-    table-layout: auto;
-    width: 100%;
-  }
-  
+  margin: 0;
+  padding: 0;
+}
+
+.table-responsive-scrollable {
+  overflow-x: auto;
+  /* 가로 스크롤 허용 */
+  overflow-y: auto;
+  /* 세로 스크롤 허용 */
+  max-height: 75dvh;
+  /* 세로 높이를 뷰포트 비율로 제한 */
+  border: 1px solid #ddd;
+  /* 스크롤 가능한 영역 표시 */
+}
+
+.table-nowrap th,
+.table-nowrap td {
+  white-space: nowrap;
+  /* 줄바꿈 방지 */
+}
+
+/* 반응형 테이블의 크기를 최대한 유지 */
+.table-nowrap {
+  table-layout: auto;
+  width: 100%;
+}

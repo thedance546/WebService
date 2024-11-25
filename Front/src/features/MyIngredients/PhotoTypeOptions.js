@@ -1,4 +1,4 @@
-// src/features/Ingredients/PhotoTypeOptions.js
+// src/features/MyIngredients/PhotoTypeOptions.js
 import React from 'react';
 import { ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 

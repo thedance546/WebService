@@ -1,4 +1,4 @@
-// src/features/Ingredients/RecognitionResultModal.js
+// src/features/MyIngredients/RecognitionResultModal.js
 import React, { useState } from 'react';
 
 const RecognitionResultModal = ({ result, onConfirm, onClose }) => {

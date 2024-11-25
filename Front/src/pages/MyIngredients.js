@@ -28,6 +28,16 @@ const MyIngredients = () => {
   const categories = ["채소", "육류", "가공식품", "발효식품", "과일"];
   const storageMethods = ["냉장", "냉동", "상온"];
 
+  const handleSaveRow = (index, updatedRow) => {
+    setDataFrame((prevData) =>
+      prevData.map((item, i) => (i === index ? updatedRow : item))
+    );
+  };
+
+  const handleDeleteRow = (index) => {
+    setDataFrame((prevData) => prevData.filter((_, i) => i !== index));
+  };
+
   const handleUploadConfirm = () => {
     const { selectedFile, photoType } = ingredientModal.state;
 
@@ -53,6 +63,7 @@ const MyIngredients = () => {
   };
 
   const handleRecognitionConfirm = (editedIngredients) => {
+    console.log("Edited Ingredients:", editedIngredients); // 데이터 확인용 로그
     const combinedData = editedIngredients.map((item) => ({
       ...item,
       shelfLife: `${Math.floor(Math.random() * 10) + 1}일`, // Random shelf life
@@ -120,7 +131,11 @@ const MyIngredients = () => {
       {loading && <LoadingModal />}
 
       {/* IngredientsTable */}
-      <IngredientsTable data={dataFrame} />
+      <IngredientsTable
+        data={dataFrame}
+        onSaveRow={handleSaveRow}
+        onDeleteRow={handleDeleteRow}
+      />
 
       <NavBar />
     </div>
