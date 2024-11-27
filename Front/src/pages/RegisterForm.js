@@ -1,7 +1,7 @@
 // src/pages/RegisterForm.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/Api';
+import { register } from '../services/Api'; // Api.js의 register 함수 임포트
 import GlobalBackground from '../components/Layout/GlobalBackground';
 
 const RegisterForm = () => {
@@ -21,7 +21,7 @@ const RegisterForm = () => {
     setLoading(true);
     try {
       const email = `${emailLocal}@${emailDomain}`;
-      const response = await api.post('/auth/check-email', { email });
+      const response = await register(email, username, password);
       alert(response.data.available ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.');
     } catch (error) {
       alert('이메일 확인 중 오류가 발생했습니다.');
@@ -32,14 +32,18 @@ const RegisterForm = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const email = `${emailLocal}@${emailDomain}`;
-      const response = await api.post('/auth/register', { email, username, password });
-      alert(response.data.message || "회원가입이 완료되었습니다.");
+      // Api.js의 register 함수 호출
+      const response = await register(email, username, password);
+      alert(response.message || '회원가입이 완료되었습니다.');
       navigate('/');
     } catch (error) {
-      alert(error.response?.data || '회원가입에 실패했습니다. 다시 시도해 주세요.');
+      alert(error.response?.data?.message || '회원가입에 실패했습니다. 다시 시도해 주세요.');
+    } finally {
+      setLoading(false);
     }
   };
 

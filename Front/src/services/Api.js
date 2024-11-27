@@ -7,6 +7,20 @@ const api = axios.create({
 
 let isRefreshing = false;
 
+export const register = async (email, username, password) => {
+  try {
+    const response = await api.post("/auth/register", {
+      email,
+      username,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("회원가입 실패:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 export const logout = async () => {
   let accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
