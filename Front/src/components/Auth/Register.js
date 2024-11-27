@@ -1,7 +1,7 @@
 // src/components/Auth/Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../Services/Api';
+import api from '../../services/Api';
 import GlobalBackground from '../Common/GlobalBackground';
 
 const Register = () => {
@@ -9,7 +9,7 @@ const Register = () => {
   const [emailDomain, setEmailDomain] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // 로딩 상태
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const verifyEmail = async () => {

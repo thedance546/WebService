@@ -7,7 +7,6 @@ import TeamInfo from './TeamInfo';
 import PrivacyPolicy from './PrivacyPolicy';
 import ContactForm from './ContactForm';
 import ThemeSelector from './ThemeSelector';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Settings = () => {
   const navigate = useNavigate();

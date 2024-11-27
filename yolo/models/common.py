@@ -10,7 +10,7 @@ import warnings
 import zipfile
 from collections import OrderedDict, namedtuple
 from copy import copy
-from pathlib import Path
+from pathlib import PosixPath as Path
 from urllib.parse import urlparse
 
 import cv2

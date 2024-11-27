@@ -45,7 +45,7 @@ const TeamInfo = () => {
               <div className="modal-body">
                 <div className="row">
                   {teamMembers.map((member, index) => (
-                    <div key={index} className="col-md-6 col-sm-12 mb-3">
+                    <div key={index} className="col-12 mb-3"> {/* 세로 1열 */}
                       <div className="card shadow-sm">
                         <div className="card-body">
                           <h5 className="card-title">
