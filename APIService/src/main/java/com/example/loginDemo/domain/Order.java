@@ -23,10 +23,6 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // OrderItem과 1:N 단방향
-    @JoinColumn(name = "order_id") // FK 설정
-    private List<OrderItem> orderItems;
-
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
 }

@@ -20,9 +20,9 @@ public class ShelfLife {
     @Column(name = "shelf_life_id", updatable = false)
     private Long id;
 
-    @Column(name = "sell_by_date", nullable = false)
+    @Column(name = "sell_by_days", nullable = false)
     private int sellByDays;  // 유통기한 일수
 
-    @Column(name = "use_by_date", nullable = false)
+    @Column(name = "use_by_days", nullable = false)
     private int  useByDays;   // 소비기한 일수
 }
