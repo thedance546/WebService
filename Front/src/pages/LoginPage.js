@@ -32,10 +32,8 @@ const Authenticate = () => {
       // role에 따른 페이지 네비게이션
       if (userRole === 'ADMIN') {
         navigate('/admin');
-      } else if (userRole === 'USER') {
-        navigate('/my-ingredients');
       } else {
-        navigate('/'); // 기타 역할의 경우 홈으로 이동
+        navigate('/my-ingredients');
       }
     } catch (error) {
       setError('로그인에 실패했습니다. 다시 시도해 주세요.');

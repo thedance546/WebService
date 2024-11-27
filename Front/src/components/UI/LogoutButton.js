@@ -2,15 +2,12 @@
 import React from "react";
 import useLogout from "../../hooks/useLogout";
 
-const LogoutButton = ({ onLogoutSuccess }) => {
+const LogoutButton = () => {
   const logout = useLogout();
   
   const handleLogout = async () => {
     const message = await logout();
     alert(message);
-    if (onLogoutSuccess) {
-      onLogoutSuccess();
-    }
   };
 
   return (

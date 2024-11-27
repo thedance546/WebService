@@ -7,34 +7,20 @@ const api = axios.create({
 
 let isRefreshing = false;
 
-const removeTokens = async () => {
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-};
-
-export const logout = async (isSessionExpired = false) => {
+export const logout = async () => {
   let accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
 
   if (!accessToken || !refreshToken) {
-    removeTokens();
-    return { success: false, message: isSessionExpired ? '세션이 만료되었습니다.' : '로그아웃 실패' };
+    return { success: false, message: '로그아웃 실패' };
   }
 
   try {
-    const newAccessToken = await refreshAccessToken();
-    accessToken = newAccessToken || accessToken;
-    
-    console.log(encodeURIComponent(refreshToken));
     const response = await api.post(
-      `/auth/logout?refreshToken=${encodeURIComponent(refreshToken)}`, 
-      {},
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
+      `/auth/logout?refreshToken=${encodeURIComponent(refreshToken)}`, {},
+      { headers: { Authorization: `Bearer ${accessToken}` }, }
     );
-    
-    removeTokens();
+
     return { success: true, message: response.message };
   } catch (error) {
     const errorMessage =
@@ -68,6 +54,30 @@ export const refreshAccessToken = async () => {
   }
 };
 
+export const deleteAccount = async () => {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    return { success: false, message: '로그인이 필요합니다.' };
+  }
+
+  try {
+    const response = await api.delete('/api/auth/delete-account', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    console.log('회원탈퇴 성공:', response.message);
+    return { success: true, message: '회원탈퇴가 완료되었습니다.' };
+  } catch (error) {
+    console.error('회원탈퇴 실패:', error.response?.status, error.response?.data);
+
+    const errorMessage =
+      error.response?.status === 403
+        ? '권한이 없어 회원탈퇴에 실패했습니다.'
+        : '회원탈퇴 요청이 실패했습니다.';
+    return { success: false, message: errorMessage };
+  }
+};
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
