@@ -7,20 +7,49 @@ const api = axios.create({
 
 let isRefreshing = false;
 
+// 회원가입 API
 export const register = async (email, username, password) => {
   try {
-    const response = await api.post("/auth/register", {
-      email,
-      username,
-      password,
-    });
-    return response.data;
+    const response = await api.post(
+      '/auth/register',
+      { email, username, password },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.message;
   } catch (error) {
-    console.error("회원가입 실패:", error.response?.data || error.message);
-    throw error;
+    throw error.response?.data?.message || '회원가입 중 오류 발생';
   }
 };
 
+// 로그인 API
+export const login = async (email, password) => {
+  try {
+    const response = await api.post(
+      '/auth/authenticate',
+      { email, password },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const { accessToken, refreshToken } = response.data;
+
+    // 토큰 저장 (local Storage - 임시)
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+
+    return { success: true, message: '로그인 성공' };
+  } catch (error) {
+    throw error.response?.data?.message || '로그인 실패';
+  }
+};
+
+// 로그아웃 API
 export const logout = async () => {
   let accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
@@ -45,14 +74,12 @@ export const logout = async () => {
   }
 };
 
+// 액세스 토큰 갱신
 export const refreshAccessToken = async () => {
   if (isRefreshing) return null;
 
   const refreshToken = localStorage.getItem('refreshToken');
-  if (!refreshToken) {
-    console.warn('Refresh Token이 없습니다.');
-    return null;
-  }
+  if (!refreshToken) return null;
 
   isRefreshing = true;
   try {
@@ -68,15 +95,13 @@ export const refreshAccessToken = async () => {
   }
 };
 
+// 회원탈퇴 API
 export const deleteAccount = async () => {
   const accessToken = localStorage.getItem('accessToken');
-
-  if (!accessToken) {
-    return { success: false, message: '로그인이 필요합니다.' };
-  }
+  if (!accessToken) return { success: false, message: '로그인이 필요합니다.' };
 
   try {
-    const response = await api.delete('/api/auth/delete-account', {
+    const response = await api.delete('/auth/delete-account', {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -93,6 +118,7 @@ export const deleteAccount = async () => {
   }
 };
 
+// Axios 요청 인터셉터 (액세스 토큰 추가)
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
@@ -101,26 +127,22 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Axios 응답 인터셉터 (401 처리)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // HTTP 401 처리
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // 재요청 방지 플래그 설정
-
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
       const newAccessToken = await refreshAccessToken();
       if (newAccessToken) {
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest); // 갱신된 토큰으로 재요청
+        return api(originalRequest);
       }
+    }
 
-      // Refresh Token도 만료된 경우
-      await logout(true);
-    };
-
-    return Promise.reject(error); // 다른 에러는 그대로 반환
+    return Promise.reject(error);
   }
 );
 

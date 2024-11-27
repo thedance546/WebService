@@ -15,15 +15,10 @@ const Authenticate = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
-      const response = await api.post('/auth/authenticate', { email, password });
-      const { accessToken, refreshToken } = response.data;
-
-      // 로컬 스토리지에 토큰 저장
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      await api.login(email, password);
+      let accessToken = localStorage.getItem('accessToken');
 
       // 토큰에서 role 추출
       const decodedToken = jwtDecode(accessToken);
