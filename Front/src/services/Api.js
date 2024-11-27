@@ -13,8 +13,6 @@ const removeTokens = async () => {
 };
 
 export const logout = async (isSessionExpired = false) => {
-  // removeTokens();
-  // return { success: false, message: 'good' }
   let accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
 
@@ -26,17 +24,19 @@ export const logout = async (isSessionExpired = false) => {
   try {
     const newAccessToken = await refreshAccessToken();
     accessToken = newAccessToken || accessToken;
-
-    const response = await api.post('/auth/logout', { refreshToken }, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    console.log('로그아웃 성공:', response.data);
+    
+    console.log(encodeURIComponent(refreshToken));
+    const response = await api.post(
+      `/auth/logout?refreshToken=${encodeURIComponent(refreshToken)}`, 
+      {},
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    
     removeTokens();
-    return { success: true, message: '로그아웃 성공' };
+    return { success: true, message: response.message };
   } catch (error) {
-    console.error('로그아웃 실패:', error.response?.status, error.response?.data);
-
     const errorMessage =
       error.response?.status === 403
         ? '권한이 없어 로그아웃에 실패했습니다.'
