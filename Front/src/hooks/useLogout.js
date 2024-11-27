@@ -1,16 +1,16 @@
 // src/hooks/useLogout.js
 import { useNavigate } from "react-router-dom";
-import { logoutService } from "../services/logoutService";
+import { logout } from "../services/Api";
 
 const useLogout = () => {
     const navigate = useNavigate();
-
-    const logout = () => {
-        logoutService();
-        navigate("/");
+    return async () => {
+      const { success, message } = await logout();
+      if (success) {
+        navigate('/');
+      }
+      return message;
     };
-
-    return logout;
 };
 
 export default useLogout;

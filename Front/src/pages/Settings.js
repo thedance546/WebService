@@ -1,6 +1,5 @@
 // src/pages/Settings.js
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import DeleteAccountButton from '../features/Settings/DeleteAccountButton';
 import TeamInfo from '../features/Settings/TeamInfo';
 import PrivacyPolicy from '../features/Settings/PrivacyPolicy';
@@ -10,11 +9,6 @@ import LogoutButton from '../components/UI/LogoutButton';
 import NavBar from '../components/UI/NavBar';
 
 const Settings = () => {
-  const navigate = useNavigate();
-
-  const handleLogoutSuccess = () => {
-    navigate('/');
-  };
 
   return (
     <div className="settings-container">
@@ -31,8 +25,8 @@ const Settings = () => {
 
         <div className="d-grid gap-2 mt-4">
           <TeamInfo />
-          <LogoutButton onLogoutSuccess={handleLogoutSuccess} />
-          <DeleteAccountButton onAccountDeleted={handleLogoutSuccess} />
+          <LogoutButton />
+          <DeleteAccountButton />
         </div>
       </div>
       

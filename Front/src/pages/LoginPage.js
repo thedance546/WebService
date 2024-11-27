@@ -1,6 +1,7 @@
 // src/pages/LoginPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import api from '../services/Api';
 import GlobalBackground from '../components/Layout/GlobalBackground';
 
@@ -19,10 +20,23 @@ const Authenticate = () => {
     try {
       const response = await api.post('/auth/authenticate', { email, password });
       const { accessToken, refreshToken } = response.data;
+
+      // 로컬 스토리지에 토큰 저장
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
-      alert('로그인 성공');
-      navigate('/my-ingredients');
+
+      // 토큰에서 role 추출
+      const decodedToken = jwtDecode(accessToken);
+      const userRole = decodedToken.role;
+
+      // role에 따른 페이지 네비게이션
+      if (userRole === 'ADMIN') {
+        navigate('/admin');
+      } else if (userRole === 'USER') {
+        navigate('/my-ingredients');
+      } else {
+        navigate('/'); // 기타 역할의 경우 홈으로 이동
+      }
     } catch (error) {
       setError('로그인에 실패했습니다. 다시 시도해 주세요.');
     } finally {

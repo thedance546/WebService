@@ -1,6 +1,7 @@
 // src/pages/AdminPage.js
 import React, { useState } from "react";
 import { Container, Nav, Tab, Table, Form, Button } from "react-bootstrap";
+import LogoutButton from "../components/UI/LogoutButton";
 
 function AdminPage() {
   const [users, setUsers] = useState([
@@ -35,6 +36,9 @@ function AdminPage() {
           </Nav.Item>
           <Nav.Item>
             <Nav.Link eventKey="posts">Post Management</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="settings">Settings</Nav.Link>
           </Nav.Item>
         </Nav>
         <Tab.Content>
@@ -100,6 +104,10 @@ function AdminPage() {
                 ))}
               </tbody>
             </Table>
+          </Tab.Pane>
+          <Tab.Pane eventKey="settings">
+            <h3>Settings</h3>
+            <LogoutButton />
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>

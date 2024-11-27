@@ -9,7 +9,7 @@ import MyIngredients from './pages/MyIngredients';
 import ChatBot from './pages/ChatBot';
 import Notification from './pages/Notification';
 import Settings from './pages/Settings';
-import Admin from './pages/AdminPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/notifications" element={<Notification />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </Router>
   );
