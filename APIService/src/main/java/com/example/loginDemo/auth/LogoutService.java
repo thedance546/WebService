@@ -14,10 +14,16 @@ public class LogoutService {
     private final BlacklistService blacklistService;
 
     public void logout(String accessToken, String refreshToken) {
-        long accessTokenExpiration = jwtService.extractExpiration(accessToken).getTime() - System.currentTimeMillis();
-        long refreshTokenExpiration = jwtService.extractExpiration(refreshToken).getTime() - System.currentTimeMillis();
+        try {
+            long accessTokenExpiration = jwtService.extractExpiration(accessToken).getTime() - System.currentTimeMillis();
+            long refreshTokenExpiration = jwtService.extractExpiration(refreshToken).getTime() - System.currentTimeMillis();
 
-        blacklistService.addToBlacklist(accessToken, accessTokenExpiration,"logout");
-        blacklistService.addToBlacklist(refreshToken, refreshTokenExpiration,"logout");
+            blacklistService.addToBlacklist(accessToken, accessTokenExpiration, "logout");
+            blacklistService.addToBlacklist(refreshToken, refreshTokenExpiration, "logout");
+        } catch (Exception e) {
+            System.err.println("Error during logout: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
 }
