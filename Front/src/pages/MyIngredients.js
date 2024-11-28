@@ -6,7 +6,7 @@ import LoadingModal from "../features/MyIngredients/LoadingModal";
 import IngredientsTable from "../features/MyIngredients/IngredientsTable";
 import { useModalState } from "../hooks/useModalState";
 import { Plus } from "react-bootstrap-icons";
-import NavBar from "../components/UI/NavBar";
+import NavBar from "../components/organisms/NavBar";
 
 const getRandomIngredients = (ingredients, count) => {
   const shuffled = [...ingredients].sort(() => 0.5 - Math.random());

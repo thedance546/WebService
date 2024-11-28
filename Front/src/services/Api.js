@@ -5,21 +5,12 @@ const api = axios.create({
   baseURL: 'http://localhost:8080/api',
 });
 
-let isRefreshing = false;
-
 // 회원가입 API
 export const register = async (email, username, password) => {
   try {
-    const response = await api.post(
-      '/auth/register',
-      { email, username, password },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    return response.message;
+    const response =
+    await api.post('/auth/register', { email, username, password });
+    return response.data.message;
   } catch (error) {
     throw error.response?.data?.message || '회원가입 중 오류 발생';
   }
@@ -28,15 +19,8 @@ export const register = async (email, username, password) => {
 // 로그인 API
 export const login = async (email, password) => {
   try {
-    const response = await api.post(
-      '/auth/authenticate',
-      { email, password },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response =
+    await api.post('/auth/authenticate', { email, password });
     const { accessToken, refreshToken } = response.data;
 
     // 토큰 저장 (local Storage - 임시)
@@ -51,7 +35,7 @@ export const login = async (email, password) => {
 
 // 로그아웃 API
 export const logout = async () => {
-  let accessToken = localStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
 
   if (!accessToken || !refreshToken) {
@@ -60,38 +44,18 @@ export const logout = async () => {
 
   try {
     const response = await api.post(
-      `/auth/logout?refreshToken=${encodeURIComponent(refreshToken)}`, {},
-      { headers: { Authorization: `Bearer ${accessToken}` }, }
+      `/auth/logout?refreshToken=${encodeURIComponent(refreshToken)}`,
+      {}, // 본문이 아닌 쿼리에 포함된 형태로 전달
+      { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
-    return { success: true, message: response.message };
+    return { success: true, message: response.data.message };
   } catch (error) {
     const errorMessage =
       error.response?.status === 403
         ? '권한이 없어 로그아웃에 실패했습니다.'
         : '로그아웃 요청이 실패했습니다.';
     return { success: false, message: errorMessage };
-  }
-};
-
-// 액세스 토큰 갱신
-export const refreshAccessToken = async () => {
-  if (isRefreshing) return null;
-
-  const refreshToken = localStorage.getItem('refreshToken');
-  if (!refreshToken) return null;
-
-  isRefreshing = true;
-  try {
-    const response = await api.post('/auth/refresh', { refreshToken });
-    const newAccessToken = response.data.accessToken;
-    localStorage.setItem('accessToken', newAccessToken);
-    return newAccessToken;
-  } catch (err) {
-    console.error('Access Token 갱신 실패:', err.response?.data || err.message);
-    return null;
-  } finally {
-    isRefreshing = false;
   }
 };
 
@@ -105,11 +69,8 @@ export const deleteAccount = async () => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    console.log('회원탈퇴 성공:', response.message);
-    return { success: true, message: '회원탈퇴가 완료되었습니다.' };
+    return { success: true, message: response.message };
   } catch (error) {
-    console.error('회원탈퇴 실패:', error.response?.status, error.response?.data);
-
     const errorMessage =
       error.response?.status === 403
         ? '권한이 없어 회원탈퇴에 실패했습니다.'
@@ -117,33 +78,5 @@ export const deleteAccount = async () => {
     return { success: false, message: errorMessage };
   }
 };
-
-// Axios 요청 인터셉터 (액세스 토큰 추가)
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Axios 응답 인터셉터 (401 처리)
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const newAccessToken = await refreshAccessToken();
-      if (newAccessToken) {
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
 
 export default api;

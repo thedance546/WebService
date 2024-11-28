@@ -1,37 +1,24 @@
 // src/pages/LoginPage.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import api from '../services/Api';
-import GlobalBackground from '../components/Layout/GlobalBackground';
+import useAuth from '../hooks/useAuth';
+import GlobalBackground from '../components/templates/GlobalBackground';
+import BackButton from '../components/molecules/BackButton';
+import Button from '../components/atoms/Button';
 
-const Authenticate = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const { handleLogin } = useAuth();
 
-  const handleLogin = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      await api.login(email, password);
-      let accessToken = localStorage.getItem('accessToken');
-
-      // 토큰에서 role 추출
-      const decodedToken = jwtDecode(accessToken);
-      const userRole = decodedToken.role;
-
-      // role에 따른 페이지 네비게이션
-      if (userRole === 'ADMIN') {
-        navigate('/admin');
-      } else {
-        navigate('/my-ingredients');
-      }
-    } catch (error) {
-      setError('로그인에 실패했습니다. 다시 시도해 주세요.');
+      await handleLogin(email, password);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -39,7 +26,7 @@ const Authenticate = () => {
 
   return (
     <GlobalBackground title="맛집사">
-      <form onSubmit={handleLogin}>
+      <form onSubmit={onSubmit}>
         <div className="mb-3">
           <label className="form-label">이메일</label>
           <input
@@ -64,24 +51,14 @@ const Authenticate = () => {
         </div>
         {error && <div className="text-danger mt-2">{error}</div>}
         <div className="d-flex justify-content-between mt-3">
-          <button
-            type="button"
-            className="btn btn-secondary w-50 me-2"
-            onClick={() => navigate('/')}
-          >
-            뒤로가기
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary w-50 ms-2"
-            disabled={loading}
-          >
+          <BackButton />
+          <Button type="submit" className="btn btn-primary w-50 ms-2" disabled={loading}>
             {loading ? '로그인 중...' : '로그인'}
-          </button>
+          </Button>
         </div>
       </form>
     </GlobalBackground>
   );
 };
 
-export default Authenticate;
+export default LoginPage;

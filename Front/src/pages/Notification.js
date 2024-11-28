@@ -1,6 +1,6 @@
 // src/pages/Notification.js
 import React from 'react';
-import NavBar from '../components/UI/NavBar';
+import NavBar from "../components/organisms/NavBar";
 
 const Notification = () => {
   const notifications = [

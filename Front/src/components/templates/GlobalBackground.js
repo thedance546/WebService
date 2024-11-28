@@ -1,4 +1,4 @@
-// src/components/Layout/GlobalBackground.js
+// src/components/templates/GlobalBackground.js
 import React from 'react';
 
 const GlobalBackground = ({ title, children, cardStyle = {}, cardClassName = '' }) => {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/OptionsModal';
-import NavBar from '../components/UI/NavBar';
+import NavBar from "../components/organisms/NavBar";
 
 const ChatBot = () => {
   const [messages, setMessages] = useState(() => {

@@ -1,7 +1,7 @@
 // src/pages/HomePage.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import GlobalBackground from '../components/Layout/GlobalBackground';
+import GlobalBackground from '../components/templates/GlobalBackground';
 
 const Home = () => {
   return (

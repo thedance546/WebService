@@ -1,7 +1,7 @@
 // src/pages/AdminPage.js
 import React, { useState } from "react";
 import { Container, Nav, Tab, Table, Form, Button } from "react-bootstrap";
-import LogoutButton from "../components/UI/LogoutButton";
+import LogoutButton from "../components/molecules/LogoutButton";
 
 function AdminPage() {
   const [users, setUsers] = useState([
