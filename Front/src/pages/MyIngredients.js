@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import IngredientModal from "../features/MyIngredients/IngredientModal";
 import RecognitionResultModal from "../features/MyIngredients/RecognitionResultModal";
-import LoadingModal from "../features/MyIngredients/LoadingModal";
+import LoadingModal from "../components/organisms/LoadingModal";
 import IngredientsTable from "../features/MyIngredients/IngredientsTable";
 import { useModalState } from "../hooks/useModalState";
 import { Plus } from "react-bootstrap-icons";
@@ -28,16 +28,6 @@ const MyIngredients = () => {
   const categories = ["채소", "육류", "가공식품", "발효식품", "과일"];
   const storageMethods = ["냉장", "냉동", "상온"];
 
-  const handleSaveRow = (index, updatedRow) => {
-    setDataFrame((prevData) =>
-      prevData.map((item, i) => (i === index ? updatedRow : item))
-    );
-  };
-
-  const handleDeleteRow = (index) => {
-    setDataFrame((prevData) => prevData.filter((_, i) => i !== index));
-  };
-
   const handleUploadConfirm = () => {
     const { selectedFile, photoType } = ingredientModal.state;
 
@@ -49,7 +39,7 @@ const MyIngredients = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      const randomCount = Math.floor(Math.random() * 5) + 1;
+      const randomCount = Math.floor(Math.random() * 5) + 4;
       const randomIngredients = getRandomIngredients(ingredientList, randomCount);
 
       recognitionModal.setState({
@@ -133,8 +123,10 @@ const MyIngredients = () => {
       {/* IngredientsTable */}
       <IngredientsTable
         data={dataFrame}
-        onSaveRow={handleSaveRow}
-        onDeleteRow={handleDeleteRow}
+        onSaveRow={(index, updatedRow) => setDataFrame((prevData) =>
+          prevData.map((item, i) => (i === index ? updatedRow : item))
+        )}
+        onDeleteRow={(index) => setDataFrame((prevData) => prevData.filter((_, i) => i !== index))}
       />
 
       <NavBar />

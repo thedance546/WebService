@@ -1,70 +1,67 @@
+// TableRow.js 수정 코드
 import React from "react";
+import Input from "../../components/atoms/Input";
 
 const TableRow = ({
   row = { name: "", quantity: 1, category: "", purchaseDate: "", shelfLife: 0, storage: "" },
   index,
   onDeleteRow,
-  onSaveRow, // SaveRow 핸들러 추가
+  onSaveRow,
   editableRowIndex,
   setEditableRowIndex,
+  setEditedRow,
   calculateDate,
   dateType,
 }) => {
   const handleRowEdit = (field, value) => {
-    const updatedRow = { ...row, [field]: value };
-    onSaveRow(index, updatedRow); // SaveRow 호출
+    setEditedRow((prev) => ({ ...prev, [field]: value }));
   };
 
   const saveRow = () => {
-    const updatedRow = {
-      ...row,
-      quantity: row.quantity > 0 ? row.quantity : 1, // 기본값 1
-    };
-    setEditableRowIndex(null); // 편집 모드 종료
-    onSaveRow(index, updatedRow); // 상위 컴포넌트로 데이터 전달
+    onSaveRow();
   };
 
   const deleteRow = () => {
-    onDeleteRow(index);
-    setEditableRowIndex(null); // 편집 모드 종료
+    onDeleteRow();
+    setEditableRowIndex(null);
   };
 
   return (
     <tr
-      onClick={() => editableRowIndex !== index && setEditableRowIndex(index)}
+      onClick={() => editableRowIndex !== row.originalIndex && setEditableRowIndex(index)}
       style={{ position: "relative" }}
     >
       <td>
-        {editableRowIndex === index ? (
-          <input
+        {editableRowIndex === row.originalIndex ? (
+          <Input
             type="text"
-            className="form-control"
             value={row.name || ""}
             onChange={(e) => handleRowEdit("name", e.target.value)}
+            className="form-control"
           />
         ) : (
           row.name || ""
         )}
       </td>
       <td>
-        {editableRowIndex === index ? (
-          <input
+        {editableRowIndex === row.originalIndex ? (
+          <Input
             type="number"
-            className="form-control"
             value={row.quantity || 1}
             onChange={(e) => handleRowEdit("quantity", e.target.value)}
+            className="form-control"
           />
         ) : (
           row.quantity || 1
         )}
       </td>
       <td>
-        {editableRowIndex === index ? (
-          <input
+        {editableRowIndex === row.originalIndex ? (
+          <Input
             type="text"
-            className="form-control"
             value={row.category || ""}
             onChange={(e) => handleRowEdit("category", e.target.value)}
+            className="form-control"
           />
         ) : (
           row.category || ""
@@ -78,7 +75,7 @@ const TableRow = ({
       </td>
       <td>{row.storage}</td>
 
-      {editableRowIndex === index && (
+      {editableRowIndex === row.originalIndex && (
         <div
           className="floating-save-delete-buttons"
           style={{
@@ -93,7 +90,7 @@ const TableRow = ({
             className="btn btn-success me-2"
             onClick={(e) => {
               e.stopPropagation();
-              saveRow(); // SaveRow 호출
+              saveRow();
             }}
           >
             확인

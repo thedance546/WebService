@@ -1,5 +1,6 @@
 // src/features/MyIngredients/RecognitionResultModal.js
 import React, { useState } from 'react';
+import Input from '../../components/atoms/Input';
 
 const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
   const [editedResult, setEditedResult] = useState(result.resultList);
@@ -49,12 +50,12 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
           {/* 구매일자 입력 */}
           <div className="mb-3">
             <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
-            <input
+            <Input
               type="date"
               id="purchaseDate"
-              className="form-control"
               value={purchaseDate}
               onChange={(e) => setPurchaseDate(e.target.value)}
+              className="form-control"
             />
           </div>
 
@@ -71,19 +72,19 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
               {editedResult.map((item, index) => (
                 <tr key={index}>
                   <td>
-                    <input
+                    <Input
                       type="text"
-                      className="form-control"
                       value={item.name}
                       onChange={(e) => handleChange(index, 'name', e.target.value)}
+                      className="form-control"
                     />
                   </td>
                   <td>
-                    <input
+                    <Input
                       type="number"
-                      className="form-control"
                       value={item.quantity || ''}
                       onChange={(e) => handleChange(index, 'quantity', e.target.value)}
+                      className="form-control"
                     />
                   </td>
                   <td>
