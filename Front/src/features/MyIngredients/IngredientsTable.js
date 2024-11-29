@@ -1,61 +1,69 @@
-import React, { useState, useEffect } from "react";
+// src/features/MyIngredients/IngredientsTable.js
+import React, { useState } from "react";
+import Switch from "react-switch";
 import TableRow from "./TableRow";
 import IngredientsFilter from "./IngredientsFilter";
-import { calculateDate } from "../../utils/Utils";
+import EditIngredientModal from "./EditIngredientModal";
 import "./IngredientsTable.css";
 
 const IngredientsTable = ({ data, onDeleteRow, onSaveRow }) => {
   const [filter, setFilter] = useState("전체");
   const [dateType, setDateType] = useState("유통기한");
-  const [editableRowIndex, setEditableRowIndex] = useState(null);
-  const [editedRow, setEditedRow] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
 
-  // 원본 데이터의 인덱스를 포함하여 필터링된 데이터 생성
   const filteredData = filter === "전체"
     ? data.map((item, index) => ({ ...item, originalIndex: index }))
     : data
         .map((item, index) => ({ ...item, originalIndex: index }))
         .filter((item) => item.storage === filter);
 
-  useEffect(() => {
-    // 필터가 변경될 때만 수정 상태 초기화
-    if (editableRowIndex !== null) {
-      setEditableRowIndex(null);
-      setEditedRow(null);
-    }
-  }, [filter]); // 필터가 변경될 때만 실행
-
   const toggleDateType = () => {
     setDateType((prev) => (prev === "유통기한" ? "소비기한" : "유통기한"));
   };
 
-  const handleRowEdit = (index) => {
-    const originalIndex = filteredData[index].originalIndex; // 원본 데이터의 인덱스 참조
-    setEditableRowIndex(originalIndex);
-    setEditedRow({ ...filteredData[index] }); // 필터링된 데이터 기준으로 수정 상태 저장
+  const toggleEditMode = (checked) => {
+    setIsEditMode(checked);
   };
 
-const saveRow = () => {
-  if (editedRow && editableRowIndex !== null) {
-    const updatedRow = {
-      ...editedRow,
-      quantity: editedRow.quantity > 0 ? editedRow.quantity : 1, // 수량이 0 이하인 경우 1로 설정
-    };
-    onSaveRow(editableRowIndex, updatedRow);
-    setEditableRowIndex(null);
-    setEditedRow(null);
-  }
-};
-
-  const deleteRow = (index) => {
-    if (filteredData[index]) {
-      onDeleteRow(filteredData[index].originalIndex);
+  const handleRowClick = (index) => {
+    if (isEditMode) {
+      const originalIndex = filteredData[index].originalIndex;
+      setSelectedRow({ ...filteredData[index], originalIndex });
     }
   };
-  
+
+  const handleModalSave = (updatedRow) => {
+    onSaveRow(updatedRow.originalIndex, updatedRow);
+    setSelectedRow(null);
+  };
+
+  const handleModalCancel = () => {
+    setSelectedRow(null);
+  };
+
   return (
     <div className="container-fluid px-0">
-      <IngredientsFilter filter={filter} setFilter={setFilter} />
+      <div className="d-flex justify-content-between mb-3 px-2 align-items-center">
+        <IngredientsFilter filter={filter} setFilter={setFilter} />
+        <div className="d-flex align-items-center">
+          <label className="me-2">조회 모드</label>
+          <Switch
+            checked={isEditMode}
+            onChange={toggleEditMode}
+            onColor="#86d3ff"
+            onHandleColor="#2693e6"
+            handleDiameter={22}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+            height={26}
+            width={48}
+          />
+          <label className="ms-2">수정 모드</label>
+        </div>
+      </div>
 
       <div className="table-responsive-scrollable position-relative">
         <table className="table table-striped table-bordered text-center table-nowrap">
@@ -64,11 +72,7 @@ const saveRow = () => {
               <th className="col-3">이름</th>
               <th className="col-2">수량</th>
               <th className="col-2">카테고리</th>
-              <th
-                className="col-3"
-                style={{ cursor: "pointer" }}
-                onClick={toggleDateType}
-              >
+              <th className="col-3" style={{ cursor: "pointer" }} onClick={toggleDateType}>
                 <span className="d-inline-flex align-items-center">
                   {dateType}
                   <i className="bi bi-arrow-down-up ms-2"></i>
@@ -81,20 +85,22 @@ const saveRow = () => {
             {filteredData.map((row, index) => (
               <TableRow
                 key={index}
-                row={editableRowIndex === row.originalIndex ? editedRow : row}
-                index={index}
-                onDeleteRow={deleteRow}
-                onSaveRow={saveRow}
-                editableRowIndex={editableRowIndex}
-                setEditableRowIndex={handleRowEdit}
-                setEditedRow={setEditedRow}
-                calculateDate={calculateDate}
+                row={row}
+                onClick={() => handleRowClick(index)}
                 dateType={dateType}
               />
             ))}
           </tbody>
         </table>
       </div>
+
+      {selectedRow && (
+        <EditIngredientModal
+          row={selectedRow}
+          onSave={handleModalSave}
+          onCancel={handleModalCancel}
+        />
+      )}
     </div>
   );
 };

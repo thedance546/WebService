@@ -1,5 +1,6 @@
 // src/features/MyIngredients/RecognitionResultModal.js
 import React, { useState } from 'react';
+import Modal from '../../components/atoms/Modal';
 import Input from '../../components/atoms/Input';
 
 const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
@@ -42,81 +43,75 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
   };
 
   return (
-    <div className="modal show d-block">
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content p-4">
-          <h3>인식 결과</h3>
+    <Modal title="인식 결과" onClose={onClose}>
+      {/* 구매일자 입력 */}
+      <div className="mb-3">
+        <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
+        <Input
+          type="date"
+          id="purchaseDate"
+          value={purchaseDate}
+          onChange={(e) => setPurchaseDate(e.target.value)}
+          className="form-control"
+        />
+      </div>
 
-          {/* 구매일자 입력 */}
-          <div className="mb-3">
-            <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
-            <Input
-              type="date"
-              id="purchaseDate"
-              value={purchaseDate}
-              onChange={(e) => setPurchaseDate(e.target.value)}
-              className="form-control"
-            />
-          </div>
+      {/* 상품명 및 수량 입력 */}
+      <table className="table">
+        <thead>
+          <tr>
+            <th>상품명</th>
+            <th>수량</th>
+            <th>삭제</th>
+          </tr>
+        </thead>
+        <tbody>
+          {editedResult.map((item, index) => (
+            <tr key={index}>
+              <td>
+                <Input
+                  type="text"
+                  value={item.name}
+                  onChange={(e) => handleChange(index, 'name', e.target.value)}
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <Input
+                  type="number"
+                  value={item.quantity || ''}
+                  onChange={(e) => handleChange(index, 'quantity', e.target.value)}
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleRemoveRow(index)}
+                >
+                  X
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-          {/* 상품명 및 수량 입력 */}
-          <table className="table">
-            <thead>
-              <tr>
-                <th>상품명</th>
-                <th>수량</th>
-                <th>삭제</th>
-              </tr>
-            </thead>
-            <tbody>
-              {editedResult.map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <Input
-                      type="text"
-                      value={item.name}
-                      onChange={(e) => handleChange(index, 'name', e.target.value)}
-                      className="form-control"
-                    />
-                  </td>
-                  <td>
-                    <Input
-                      type="number"
-                      value={item.quantity || ''}
-                      onChange={(e) => handleChange(index, 'quantity', e.target.value)}
-                      className="form-control"
-                    />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleRemoveRow(index)}
-                    >
-                      X
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* 버튼 그룹 */}
-          <div className="d-flex justify-content-between mt-3">
-            <button className="btn btn-primary" onClick={handleAddRow}>
-              항목 추가
-            </button>
-            <div>
-              <button className="btn btn-success me-2" onClick={handleConfirm}>
-                확인
-              </button>
-              <button className="btn btn-danger" onClick={onClose}>
-                취소
-              </button>
-            </div>
-          </div>
+      {/* 버튼 그룹 */}
+      <div className="d-flex justify-content-between mt-3">
+        <button className="btn btn-primary" onClick={handleAddRow}>
+          항목 추가
+        </button>
+        <div>
+          <button className="btn btn-success me-2" onClick={handleConfirm}>
+            확인
+          </button>
+          <button className="btn btn-danger" onClick={onClose}>
+            취소
+          </button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 
