@@ -33,75 +33,77 @@ public class AuthService {
 
     @Transactional
     public Map<String, String> register(RegisterRequest request) {
-        // 이메일 형식 체크
-        if (!isValidEmailFormat(request.getEmail())) {
+        validateEmail(request.getEmail());
+        checkDuplicateEmail(request.getEmail());
+
+        User user = createUser(request);
+        userRepository.save(user);
+
+        return createResponse("회원가입이 완료되었습니다.");
+    }
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        authenticateUser(request.getEmail(), request.getPassword());
+        User user = findUserByEmail(request.getEmail());
+
+        String accessToken = jwtService.generateAccessToken(user, user.getRole().name());
+        String refreshToken = jwtService.generateRefreshToken(user, user.getRole().name());
+
+        return new AuthenticationResponse(accessToken, refreshToken);
+    }
+
+    @Transactional
+    public Map<String, String> deleteAccount(String accessToken) {
+        String email = jwtService.extractUsername(accessToken);
+        User user = findUserByEmail(email);
+
+        userRepository.delete(user);
+
+        blacklistService.addToBlacklist(accessToken, jwtService.extractExpiration(accessToken).getTime(), "account_deleted");
+
+        return createResponse("Successfully deleted the account");
+    }
+
+    //Helper Methods
+    private void validateEmail(String email) {
+        if (!isValidEmailFormat(email)) {
             throw new InvalidEmailFormatException("잘못된 이메일 형식입니다.");
         }
-        // 이메일 중복 체크
-        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
-        if (existingUser.isPresent()) {
-            throw new DuplicateEmailException("이메일이 이미 존재합니다.");
-        }
+    }
 
-        var user = User.builder()
+    private void checkDuplicateEmail(String email) {
+        userRepository.findByEmail(email)
+                .ifPresent(user -> {
+                    throw new DuplicateEmailException("이메일이 이미 존재합니다.");
+                });
+    }
+
+    private User createUser(RegisterRequest request) {
+        return User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+    }
 
-        // 응답 메시지 생성
+    private Map<String, String> createResponse(String message) {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "회원가입이 완료되었습니다.");
-
+        response.put("message", message);
         return response;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    private void authenticateUser(String email, String password) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
+                new UsernamePasswordAuthenticationToken(email, password)
         );
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        // 토큰 생성
-        var accessToken = jwtService.generateAccessToken(user, user.getRole().name());
-        var refreshToken = jwtService.generateRefreshToken(user, user.getRole().name());
-
-
-        // 응답 생성
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
     }
 
-    @Transactional
-    public Map<String, String> deleteAccount(String accessToken) {
-        // Access token 검증 및 사용자 확인
-        String email = jwtService.extractUsername(accessToken);
-        var user = userRepository.findByEmail(email)
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        userRepository.delete(user);
-
-        // Access token 만료 시간 추출
-        long expirationTime = jwtService.extractExpiration(accessToken).getTime();
-
-        // 토큰을 블랙리스트에 추가
-        blacklistService.addToBlacklist(accessToken, expirationTime,"account_deleted");
-
-        // 응답 메시지 생성
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Successfully deleted the account");
-
-        return response;
     }
 
-    // 이메일 형식 유효성 검사 메서드
     private boolean isValidEmailFormat(String email) {
         // 이메일 형식 검사를 위한 정규식
         String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
