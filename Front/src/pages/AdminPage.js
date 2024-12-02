@@ -1,117 +1,61 @@
 // src/pages/AdminPage.js
-import React, { useState } from "react";
-import { Container, Nav, Tab, Table, Form, Button } from "react-bootstrap";
-import LogoutButton from "../components/molecules/LogoutButton";
+import React from "react";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import AdminNavBar from "../components/organisms/AdminNavBar";
 
 function AdminPage() {
-  const [users, setUsers] = useState([
-    { id: 1, username: "user1", email: "user1@example.com" },
-    { id: 2, username: "user2", email: "user2@example.com" },
-  ]);
-  const [posts, setPosts] = useState([
-    { id: 1, title: "Post 1", content: "Content 1", author: "user1" },
-    { id: 2, title: "Post 2", content: "Content 2", author: "user2" },
-  ]);
-  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
-  const deleteUser = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
+  const goToPage = (path) => {
+    navigate(path);
   };
-
-  const deletePost = (id) => {
-    setPosts(posts.filter((post) => post.id !== id));
-  };
-
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
-    <Container className="mt-4">
-      <h2>Admin Page</h2>
-      <Tab.Container defaultActiveKey="users">
-        <Nav variant="pills" className="mb-3">
-          <Nav.Item>
-            <Nav.Link eventKey="users">User Management</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="posts">Post Management</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="settings">Settings</Nav.Link>
-          </Nav.Item>
-        </Nav>
-        <Tab.Content>
-          <Tab.Pane eventKey="users">
-            <h3>Users</h3>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>{user.username}</td>
-                    <td>{user.email}</td>
-                    <td>
-                      <Button variant="danger" onClick={() => deleteUser(user.id)}>
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Tab.Pane>
-          <Tab.Pane eventKey="posts">
-            <h3>Posts</h3>
-            <Form.Control
-              type="text"
-              placeholder="Search posts"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="mb-3"
-            />
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Title</th>
-                  <th>Content</th>
-                  <th>Author</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredPosts.map((post) => (
-                  <tr key={post.id}>
-                    <td>{post.id}</td>
-                    <td>{post.title}</td>
-                    <td>{post.content}</td>
-                    <td>{post.author}</td>
-                    <td>
-                      <Button variant="danger" onClick={() => deletePost(post.id)}>
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Tab.Pane>
-          <Tab.Pane eventKey="settings">
-            <h3>Settings</h3>
-            <LogoutButton />
-          </Tab.Pane>
-        </Tab.Content>
-      </Tab.Container>
-    </Container>
+    <>
+      <AdminNavBar />
+      <Container className="mt-4">
+        <h2>Admin Dashboard</h2>
+        <Row className="mt-4">
+          <Col md={3}>
+            <Card>
+              <Card.Body>
+                <Card.Title>식재료 관리</Card.Title>
+                <Card.Text>총 식재료 수: 120</Card.Text>
+                <Button variant="primary" onClick={() => goToPage("/admin/items")}>관리 페이지로 이동</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card>
+              <Card.Body>
+                <Card.Title>유저 관리</Card.Title>
+                <Card.Text>총 유저 수: 50</Card.Text>
+                <Button variant="primary" onClick={() => goToPage("/admin/users")}>관리 페이지로 이동</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card>
+              <Card.Body>
+                <Card.Title>카테고리 관리</Card.Title>
+                <Card.Text>등록된 카테고리 수: 10</Card.Text>
+                <Button variant="primary" onClick={() => goToPage("/admin/categories")}>관리 페이지로 이동</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card>
+              <Card.Body>
+                <Card.Title>보관방법 관리</Card.Title>
+                <Card.Text>등록된 보관방법 수: 5</Card.Text>
+                <Button variant="primary" onClick={() => goToPage("/admin/storage-method")}>관리 페이지로 이동</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 }
 

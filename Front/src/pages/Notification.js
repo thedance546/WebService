@@ -1,6 +1,7 @@
 // src/pages/Notification.js
 import React from 'react';
 import NavBar from "../components/organisms/NavBar";
+import navItems from "../constants/navItems";
 
 const Notification = () => {
   const notifications = [
@@ -16,7 +17,7 @@ const Notification = () => {
         </div>
       ))}
       
-      <NavBar />
+      <NavBar navItems={navItems} />
     </div>
   );
 };

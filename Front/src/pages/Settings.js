@@ -7,6 +7,7 @@ import ContactForm from '../features/Settings/ContactForm';
 import LogoutButton from '../components/molecules/LogoutButton';
 import DeleteAccountButton from '../components/molecules/DeleteAccountButton';
 import NavBar from "../components/organisms/NavBar";
+import navItems from "../constants/navItems";
 
 const Settings = () => {
 
@@ -28,7 +29,7 @@ const Settings = () => {
         </div>
       </div>
 
-      <NavBar />
+      <NavBar navItems={navItems} />
     </div>
   );
 };

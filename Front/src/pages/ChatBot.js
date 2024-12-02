@@ -4,6 +4,7 @@ import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/OptionsModal';
 import NavBar from "../components/organisms/NavBar";
+import navItems from "../constants/navItems";
 
 const ChatBot = () => {
   const [messages, setMessages] = useState(() => {
@@ -79,7 +80,7 @@ const ChatBot = () => {
       {/* 옵션 모달 */}
       <OptionsModal isOpen={isOptionsOpen} onClose={toggleOptions} options={options} />
 
-      <NavBar />
+      <NavBar navItems={navItems} />
     </div>
   );
 };
