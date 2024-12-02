@@ -3,6 +3,8 @@ package com.example.loginDemo.image;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,42 +22,22 @@ import java.util.Map;
 @RequestMapping("/api/image")
 @RequiredArgsConstructor
 public class ImageController {
+    private final RestTemplate restTemplate = new RestTemplate();
+    private String yoloApiUrl = "http://localhost:5000/detect";  // YOLO Flask API URL
 
     private final ImageService imageService;  // ImageService 주입
 
     @PostMapping("/send")
-    public ResponseEntity<Map<String, Object>> uploadImage(@RequestParam("image") MultipartFile image) throws IOException {
+    public ResponseEntity<Map<String, Object>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
         try {
-            // 1. Spring에서 Flask API로 이미지 전송
-            String flaskResponse = imageService.sendImageToYolo(image);
+            // Send image to YOLO API and get detection result
+            Map<String, Object> detectionResult = imageService.sendImageToYolo(imageFile);
 
-            // 2. Flask에서 받은 응답을 JSON으로 파싱
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> flaskResponseMap = objectMapper.readValue(flaskResponse, Map.class);
-
-            Object detections = flaskResponseMap.get("detections");
-
-            if (detections instanceof List) {
-                // "detections"가 List 형식일 경우, name만 추출
-                List<Map<String, Object>> detectionsList = (List<Map<String, Object>>) detections;
-                Map<String, Integer> classCounts = new HashMap<>();
-
-                for (Map<String, Object> detection : detectionsList) {
-                    String className = (String) detection.get("name");
-                    classCounts.put(className, classCounts.getOrDefault(className, 0) + 1);
-                }
-
-                // 3. 클라이언트에게 name 값만 응답으로 반환
-                return ResponseEntity.ok(Map.of("detectedClasses", classCounts));
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                        Map.of("error", "Invalid response format from Flask API")
-                );
-            }
+            // Return detection result as response
+            return ResponseEntity.ok(detectionResult);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    Map.of("error", "Failed to communicate with YOLO Flask API", "message", e.getMessage())
-            );
+            // Handle any errors (e.g., API failure, internal errors)
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to process image", "message", e.getMessage()));
         }
     }
 }
