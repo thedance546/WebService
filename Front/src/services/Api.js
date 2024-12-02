@@ -49,7 +49,7 @@ export const logout = async () => {
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
-    return { success: true, message: response.data.message };
+    return { success: true, message: response.message };
   } catch (error) {
     const errorMessage =
       error.response?.status === 403
@@ -78,5 +78,66 @@ export const deleteAccount = async () => {
     return { success: false, message: errorMessage };
   }
 };
+
+// 토큰 갱신 API
+export const refreshAccessToken = async () => {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) {
+    throw new Error('로그인이 필요합니다.');
+  }
+
+  try {
+    const response = await api.post('/auth/refresh', {
+      refreshToken,
+    });
+
+    const { accessToken } = response.data;
+    
+    // 새로운 accessToken 저장
+    localStorage.setItem('accessToken', accessToken);
+    
+    return accessToken;
+  } catch (error) {
+    throw error.response?.data?.message || '토큰 갱신에 실패했습니다.';
+  }
+};
+
+// Axios Response 인터셉터 설정
+api.interceptors.response.use(
+  response => response, // 성공적인 응답은 그대로 반환
+  async (error) => {
+    const originalRequest = error.config;
+
+    // 401 에러인 경우 (access token 만료 또는 유효하지 않음)
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true; // 무한 재시도 방지 플래그
+      
+      // const responseMessage = error.response.data.message;
+      const tokenType = error.response.data.tokenType;
+
+      // access token이 만료된 경우
+      if (tokenType === 'access') {
+        try {
+          // 토큰 갱신 시도
+          const newAccessToken = await refreshAccessToken();
+          localStorage.setItem('accessToken', newAccessToken);
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          
+          // 갱신 후 원래 요청 재시도
+          return api(originalRequest);
+        } catch (refreshError) {
+          console.error('토큰 갱신 실패:', refreshError);
+          window.location.href = '/login'; // 로그인 페이지로 리다이렉트
+        }
+      } else if (tokenType === 'refresh') {
+        // refresh token이 만료된 경우
+        console.error('Refresh token이 만료되었습니다. 다시 로그인하세요.');
+        window.location.href = '/login'; // 로그인 페이지로 리다이렉트
+      }
+    }
+
+    return Promise.reject(error); // 다른 에러는 그대로 반환
+  }
+);
 
 export default api;
