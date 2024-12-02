@@ -12,6 +12,8 @@ import com.example.loginDemo.repository.StorageMethodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ItemService {
@@ -36,6 +38,11 @@ public class ItemService {
         // Item 객체 생성 후 저장
         Item item = new Item(itemRequest.getItemName(), category, storageMethod, shelfLife);
         return itemRepository.save(item);  // Item 저장
+    }
+
+    // 모든 Item 조회
+    public List<Item> getAllItems() {
+        return itemRepository.findAll();
     }
 
 }

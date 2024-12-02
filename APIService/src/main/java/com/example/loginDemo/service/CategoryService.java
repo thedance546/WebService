@@ -5,6 +5,8 @@ import com.example.loginDemo.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -21,6 +23,11 @@ public class CategoryService {
         // Optional에서 값을 꺼내고, 없을 경우 예외 처리
         return categoryRepository.findByCategoryName(categoryName)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found: " + categoryName));
+    }
+
+    // 모든 카테고리 조회
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
     }
 
 }

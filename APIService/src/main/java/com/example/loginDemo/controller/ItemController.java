@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/items")
 @PreAuthorize("hasRole('ADMIN')")
@@ -42,5 +44,24 @@ public class ItemController {
         Item item = itemService.createItem(itemRequest);
         return ResponseEntity.ok(item);
     }
+
+    // 모든 카테고리 조회
+    @GetMapping("/categories")
+    public List<Category> getAllCategories() {
+        return categoryService.getAllCategories();  // CategoryService에서 모든 카테고리 조회
+    }
+
+    // 모든 보관 방법 조회
+    @GetMapping("/storage-methods")
+    public List<StorageMethod> getAllStorageMethods() {
+        return storageMethodService.getAllStorageMethods();  // StorageMethodService에서 모든 보관 방법 조회
+    }
+
+    // 모든 식재료 조회
+    @GetMapping
+    public List<Item> getAllItems() {
+        return itemService.getAllItems();  // ItemService의 getAllItems() 호출
+    }
+
 
 }
