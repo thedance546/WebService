@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Builder
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,5 +29,11 @@ public class Item {
     @JoinColumn(name = "shelf_life_id", nullable = false)
     private ShelfLife shelfLife;
 
+    public Item(String itemName, Category category, StorageMethod storageMethod, ShelfLife shelfLife) {
+        this.itemName = itemName;
+        this.category = category;
+        this.storageMethod = storageMethod;
+        this.shelfLife = shelfLife;
+    }
 
 }

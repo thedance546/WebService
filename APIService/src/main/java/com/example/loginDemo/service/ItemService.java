@@ -5,14 +5,14 @@ import com.example.loginDemo.domain.Item;
 import com.example.loginDemo.domain.ShelfLife;
 import com.example.loginDemo.domain.StorageMethod;
 import com.example.loginDemo.dto.ItemRequest;
-import com.example.loginDemo.dto.ShelfLifeDto;
 import com.example.loginDemo.repository.CategoryRepository;
 import com.example.loginDemo.repository.ItemRepository;
 import com.example.loginDemo.repository.ShelfLifeRepository;
 import com.example.loginDemo.repository.StorageMethodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,32 +22,27 @@ public class ItemService {
     private final StorageMethodRepository storageMethodRepository;
     private final ShelfLifeRepository shelfLifeRepository;
 
-    @Transactional
+    // 식재료 등록 (ItemRequest DTO 사용)
     public Item createItem(ItemRequest itemRequest) {
-        // category ID로 조회
-        Category category = categoryRepository.findById(itemRequest.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+        // 카테고리와 보관 방법 찾기 (이름으로 검색)
+        Category category = categoryRepository.findByCategoryName(itemRequest.getCategoryName())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category name"));
 
-        // storageMethod ID로 조회
-        StorageMethod storageMethod = storageMethodRepository.findById(itemRequest.getStorageMethodId())
-                .orElseThrow(() -> new IllegalArgumentException("StorageMethod not found"));
+        StorageMethod storageMethod = storageMethodRepository.findByStorageMethodName(itemRequest.getStorageMethodName())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid storage method name"));
 
-        // ShelfLifeDto 받아서 ShelfLife 객체로 변환
-        ShelfLifeDto shelfLifeDto = itemRequest.getShelfLife();
-        ShelfLife shelfLife = new ShelfLife();
-        shelfLife.setSellByDays(shelfLifeDto.getSellByDays());
-        shelfLife.setUseByDays(shelfLifeDto.getUseByDays());
-        shelfLifeRepository.save(shelfLife);
+        // ShelfLife 객체 생성 후 저장
+        ShelfLife shelfLife = new ShelfLife(itemRequest.getSellByDays(), itemRequest.getUseByDays());
+        shelfLife = shelfLifeRepository.save(shelfLife);  // ShelfLife 저장
 
-        // 새로운 Item 생성
-        Item item = Item.builder()
-                .itemName(itemRequest.getName())
-                .category(category)
-                .storageMethod(storageMethod)
-                .shelfLife(shelfLife)
-                .build();
-
-        // Item 저장 후 반환
-        return itemRepository.save(item);
+        // Item 객체 생성 후 저장
+        Item item = new Item(itemRequest.getItemName(), category, storageMethod, shelfLife);
+        return itemRepository.save(item);  // Item 저장
     }
+
+    // 모든 Item 조회
+    public List<Item> getAllItems() {
+        return itemRepository.findAll();
+    }
+
 }

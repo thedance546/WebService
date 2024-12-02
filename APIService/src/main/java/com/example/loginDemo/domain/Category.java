@@ -2,12 +2,14 @@ package com.example.loginDemo.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "categories")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class Category {
     @Id
@@ -15,6 +17,10 @@ public class Category {
     @Column(name = "caterory_id", updatable = false)
     private Long id;
 
-    @Column(name = "category", nullable = false)
-    private String category;
-}
+    @Column(name = "category_name", nullable = false)
+    private String categoryName;
+
+    public Category(String categoryName) {
+        this.categoryName = categoryName;
+    }}
+

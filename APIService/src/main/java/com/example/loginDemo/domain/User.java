@@ -33,7 +33,6 @@ public class User implements UserDetails {
     @Column(name="email", nullable = false, unique=true)
     private String email;
 
-    //유저 아이디
     @NotBlank(message = "Name cannot be blank")
     @Column(name = "username", nullable = false)
     private String username;
