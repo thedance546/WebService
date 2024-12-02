@@ -1,6 +1,6 @@
 // src/pages/Notification.js
 import React from 'react';
-import NavBar from "../components/organisms/NavBar";
+import NavBar from "../components/organisms/HomeNavBar";
 import navItems from "../constants/navItems";
 
 const Notification = () => {

@@ -6,7 +6,7 @@ import ContactForm from '../features/Settings/ContactForm';
 // import ThemeSelector from '../features/Settings/ThemeSelector';
 import LogoutButton from '../components/molecules/LogoutButton';
 import DeleteAccountButton from '../components/molecules/DeleteAccountButton';
-import NavBar from "../components/organisms/NavBar";
+import NavBar from "../components/organisms/HomeNavBar";
 import navItems from "../constants/navItems";
 
 const Settings = () => {

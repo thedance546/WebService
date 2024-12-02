@@ -6,7 +6,7 @@ import LoadingModal from "../components/organisms/LoadingModal";
 import IngredientsTable from "../features/MyIngredients/IngredientsTable";
 import { useModalState } from "../hooks/useModalState";
 import { Plus } from "react-bootstrap-icons";
-import NavBar from "../components/organisms/NavBar";
+import NavBar from "../components/organisms/HomeNavBar";
 import navItems from "../constants/navItems";
 
 const getRandomIngredients = (ingredients, count) => {
