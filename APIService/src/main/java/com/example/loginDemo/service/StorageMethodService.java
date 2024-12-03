@@ -30,4 +30,10 @@ public class StorageMethodService {
     public List<StorageMethod> getAllStorageMethods() {
         return storageMethodRepository.findAll();
     }
+
+    //삭제
+    public void deleteStorageMethod(Long id) {
+        storageMethodRepository.deleteById(id);
+    }
+
 }

@@ -11,6 +11,7 @@ import com.example.loginDemo.repository.ShelfLifeRepository;
 import com.example.loginDemo.repository.StorageMethodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,27 +23,34 @@ public class ItemService {
     private final StorageMethodRepository storageMethodRepository;
     private final ShelfLifeRepository shelfLifeRepository;
 
-    // 식재료 등록 (ItemRequest DTO 사용)
     public Item createItem(ItemRequest itemRequest) {
-        // 카테고리와 보관 방법 찾기 (이름으로 검색)
         Category category = categoryRepository.findByCategoryName(itemRequest.getCategoryName())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category name"));
-
         StorageMethod storageMethod = storageMethodRepository.findByStorageMethodName(itemRequest.getStorageMethodName())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid storage method name"));
-
-        // ShelfLife 객체 생성 후 저장
         ShelfLife shelfLife = new ShelfLife(itemRequest.getSellByDays(), itemRequest.getUseByDays());
         shelfLife = shelfLifeRepository.save(shelfLife);  // ShelfLife 저장
 
-        // Item 객체 생성 후 저장
         Item item = new Item(itemRequest.getItemName(), category, storageMethod, shelfLife);
         return itemRepository.save(item);  // Item 저장
     }
 
-    // 모든 Item 조회
     public List<Item> getAllItems() {
         return itemRepository.findAll();
+    }
+
+    public void deleteItem(Long id) {
+        itemRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteItemsByCategoryId(Long categoryId) {
+        itemRepository.deleteByCategoryId(categoryId);
+    }
+
+    @Transactional
+    public void deleteItemsByStorageMethodId(Long storageMethodId) {
+        itemRepository.deleteByStorageMethodId(storageMethodId);
     }
 
 }
