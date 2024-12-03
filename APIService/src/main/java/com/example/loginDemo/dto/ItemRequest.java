@@ -10,8 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ItemRequest {
     private String itemName;
-    private String categoryName;  // category name을 받음
-    private String storageMethodName;  // storage method name을 받음
+    private String categoryName;
+    private String storageMethodName;
     private int sellByDays;
     private int useByDays;
 }

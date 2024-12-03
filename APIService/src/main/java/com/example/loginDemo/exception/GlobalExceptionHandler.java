@@ -48,4 +48,11 @@ public class GlobalExceptionHandler {
         // HTTP 400 (Bad Request) 상태 코드와 함께 응답
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
+        // 예외 발생 시 JSON 형식으로 메시지 리턴
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("{\"message\": \"" + ex.getMessage() + "\"}");
+    }
 }

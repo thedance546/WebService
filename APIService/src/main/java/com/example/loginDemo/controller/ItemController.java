@@ -9,6 +9,7 @@ import com.example.loginDemo.service.ItemService;
 import com.example.loginDemo.service.StorageMethodService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,44 +25,73 @@ public class ItemController {
     private final CategoryService categoryService;
     private final StorageMethodService storageMethodService;
 
-    // 카테고리 등록
+    //등록
     @PostMapping("/category")
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-        Category createdCategory = categoryService.createCategory(category.getCategoryName());
-        return ResponseEntity.ok(createdCategory);
+    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+        try {
+            Category createdCategory = categoryService.createCategory(category.getCategoryName());
+            return ResponseEntity.ok(createdCategory);
+        } catch (IllegalArgumentException ex) {
+            // 예외 발생 시 JSON 형식으로 메시지 리턴
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
     }
 
-    // 보관방법 등록
     @PostMapping("/storage-method")
-    public ResponseEntity<StorageMethod> createStorageMethod(@RequestBody StorageMethod storageMethod) {
-        StorageMethod createdStorageMethod = storageMethodService.createStorageMethod(storageMethod.getStorageMethodName());
-        return ResponseEntity.ok(createdStorageMethod);
+    public ResponseEntity<?> createStorageMethod(@RequestBody StorageMethod storageMethod) {
+        try {
+            // 중복 체크 및 보관 방법 생성
+            StorageMethod createdStorageMethod = storageMethodService.createStorageMethod(storageMethod.getStorageMethodName());
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdStorageMethod);
+        } catch (IllegalArgumentException ex) {
+            // 예외 발생 시 JSON 형식으로 메시지 리턴
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
     }
 
-    // 식재료 등록
     @PostMapping("/item")
     public ResponseEntity<Item> createItem(@RequestBody ItemRequest itemRequest) {
         Item item = itemService.createItem(itemRequest);
         return ResponseEntity.ok(item);
     }
 
-    // 모든 카테고리 조회
+    //조회
     @GetMapping("/categories")
     public List<Category> getAllCategories() {
         return categoryService.getAllCategories();  // CategoryService에서 모든 카테고리 조회
     }
 
-    // 모든 보관 방법 조회
     @GetMapping("/storage-methods")
     public List<StorageMethod> getAllStorageMethods() {
         return storageMethodService.getAllStorageMethods();  // StorageMethodService에서 모든 보관 방법 조회
     }
 
-    // 모든 식재료 조회
     @GetMapping
     public List<Item> getAllItems() {
         return itemService.getAllItems();  // ItemService의 getAllItems() 호출
     }
+
+    //삭제
+    @DeleteMapping("/category/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/storage-method/{id}")
+    public ResponseEntity<Void> deleteStorageMethod(@PathVariable Long id) {
+        storageMethodService.deleteStorageMethod(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+        itemService.deleteItem(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 }
