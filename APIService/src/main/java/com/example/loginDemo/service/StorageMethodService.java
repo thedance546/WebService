@@ -17,6 +17,11 @@ public class StorageMethodService {
 
     // 보관 방법 생성
     public StorageMethod createStorageMethod(String storageMethodName) {
+        // 중복 체크
+        storageMethodRepository.findByStorageMethodName(storageMethodName)
+                .ifPresent(existingStorageMethod -> {
+                    throw new IllegalArgumentException("Storage method with name '" + storageMethodName + "' already exists.");
+                });
         StorageMethod storageMethod = new StorageMethod(storageMethodName);
         return storageMethodRepository.save(storageMethod);
     }

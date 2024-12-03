@@ -17,7 +17,7 @@ public class StorageMethod {
     @Column(name = "storage_method_id", updatable = false)
     private Long id;
 
-    @Column(name = "storage_method_name", nullable = false)
+    @Column(name = "storage_method_name", nullable = false, unique = true)
     private String storageMethodName;
 
     public StorageMethod(String storageMethodName) {

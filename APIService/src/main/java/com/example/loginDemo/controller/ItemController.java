@@ -9,6 +9,7 @@ import com.example.loginDemo.service.ItemService;
 import com.example.loginDemo.service.StorageMethodService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,15 +27,28 @@ public class ItemController {
 
     //등록
     @PostMapping("/category")
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-        Category createdCategory = categoryService.createCategory(category.getCategoryName());
-        return ResponseEntity.ok(createdCategory);
+    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+        try {
+            Category createdCategory = categoryService.createCategory(category.getCategoryName());
+            return ResponseEntity.ok(createdCategory);
+        } catch (IllegalArgumentException ex) {
+            // 예외 발생 시 JSON 형식으로 메시지 리턴
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
     }
 
     @PostMapping("/storage-method")
-    public ResponseEntity<StorageMethod> createStorageMethod(@RequestBody StorageMethod storageMethod) {
-        StorageMethod createdStorageMethod = storageMethodService.createStorageMethod(storageMethod.getStorageMethodName());
-        return ResponseEntity.ok(createdStorageMethod);
+    public ResponseEntity<?> createStorageMethod(@RequestBody StorageMethod storageMethod) {
+        try {
+            // 중복 체크 및 보관 방법 생성
+            StorageMethod createdStorageMethod = storageMethodService.createStorageMethod(storageMethod.getStorageMethodName());
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdStorageMethod);
+        } catch (IllegalArgumentException ex) {
+            // 예외 발생 시 JSON 형식으로 메시지 리턴
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"message\": \"" + ex.getMessage() + "\"}");
+        }
     }
 
     @PostMapping("/item")
@@ -72,7 +86,7 @@ public class ItemController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/item/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
         itemService.deleteItem(id);
         return ResponseEntity.noContent().build();

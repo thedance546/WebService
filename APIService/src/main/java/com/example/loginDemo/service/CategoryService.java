@@ -19,13 +19,17 @@ public class CategoryService {
 
     // 카테고리 생성
     public Category createCategory(String categoryName) {
+        //중복체크
+        categoryRepository.findByCategoryName(categoryName)
+                .ifPresent(existingCategory -> {
+                    throw new IllegalArgumentException("Category with name '" + categoryName + "' already exists.");
+                });
         Category category = new Category(categoryName);
         return categoryRepository.save(category);
     }
 
     // 카테고리 이름으로 조회
     public Category findByCategoryName(String categoryName) {
-        // Optional에서 값을 꺼내고, 없을 경우 예외 처리
         return categoryRepository.findByCategoryName(categoryName)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found: " + categoryName));
     }
