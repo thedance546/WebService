@@ -1,13 +1,17 @@
 // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
 import HomePage from './pages/HomePage';
 import RegisterForm from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
+
 import MyIngredients from './pages/MyIngredients';
 import ChatBot from './pages/ChatBot';
 import Notification from './pages/Notification';
 import Settings from './pages/Settings';
+
+import { AdminProvider } from './contexts/AdminContext';
 import AdminPage from './pages/AdminPage';
 import ItemManagement from './pages/ItemManagement';
 import UserManagement from './pages/UserManagement';
@@ -28,14 +32,17 @@ function App() {
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/notifications" element={<Notification />} />
         <Route path="/settings" element={<Settings />} />
-        
-        {/* 관리자 페이지 관련 경로 */}
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/admin/items" element={<ItemManagement />} />
-        <Route path="/admin/users" element={<UserManagement />} />
-        <Route path="/admin/categories" element={<CategoryManagement />} />
-        <Route path="/admin/storage-method" element={<StorageMethodManagement />} />
       </Routes>
+      <AdminProvider>
+        <Routes>
+          {/* 관리자 페이지 관련 경로 */}
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/items" element={<ItemManagement />} />
+          <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/categories" element={<CategoryManagement />} />
+          <Route path="/admin/storage-method" element={<StorageMethodManagement />} />
+        </Routes>
+      </AdminProvider>
     </Router>
   );
 }

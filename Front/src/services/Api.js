@@ -1,143 +1,22 @@
 // src/services/Api.js
 import axios from 'axios';
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: 'http://localhost:8080/api',
 });
 
-// 회원가입 API
-export const register = async (email, username, password) => {
-  try {
-    const response =
-    await api.post('/auth/register', { email, username, password });
-    return response.data.message;
-  } catch (error) {
-    throw error.response?.data?.message || '회원가입 중 오류 발생';
-  }
-};
-
-// 로그인 API
-export const login = async (email, password) => {
-  try {
-    const response =
-    await api.post('/auth/authenticate', { email, password });
-    const { accessToken, refreshToken } = response.data;
-
-    // 토큰 저장 (local Storage - 임시)
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-
-    return { success: true, message: '로그인 성공' };
-  } catch (error) {
-    throw error.response?.data?.message || '로그인 실패';
-  }
-};
-
-// 로그아웃 API
-export const logout = async () => {
+// 공통적으로 사용할 Authorization Header를 포함하는 함수
+export const getAuthHeaders = () => {
   const accessToken = localStorage.getItem('accessToken');
-  const refreshToken = localStorage.getItem('refreshToken');
-
-  if (!accessToken || !refreshToken) {
-    return { success: false, message: '로그아웃 실패' };
-  }
-
-  try {
-    const response = await api.post(
-      `/auth/logout?refreshToken=${encodeURIComponent(refreshToken)}`,
-      {}, // 본문이 아닌 쿼리에 포함된 형태로 전달
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
-
-    return { success: true, message: response.message };
-  } catch (error) {
-    const errorMessage =
-      error.response?.status === 403
-        ? '권한이 없어 로그아웃에 실패했습니다.'
-        : '로그아웃 요청이 실패했습니다.';
-    return { success: false, message: errorMessage };
-  }
+  return {
+    Authorization: `Bearer ${accessToken}`,
+  };
 };
 
-// 회원탈퇴 API
-export const deleteAccount = async () => {
-  const accessToken = localStorage.getItem('accessToken');
-  if (!accessToken) return { success: false, message: '로그인이 필요합니다.' };
-
-  try {
-    const response = await api.delete('/auth/delete-account', {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    return { success: true, message: response.message };
-  } catch (error) {
-    const errorMessage =
-      error.response?.status === 403
-        ? '권한이 없어 회원탈퇴에 실패했습니다.'
-        : '회원탈퇴 요청이 실패했습니다.';
-    return { success: false, message: errorMessage };
+// 공통적인 에러 핸들링 함수
+export const handleApiError = (error, defaultMessage) => {
+  if (error.response?.data?.message) {
+    return new Error(error.response.data.message);
   }
+  return new Error(defaultMessage);
 };
-
-// 토큰 갱신 API
-export const refreshAccessToken = async () => {
-  const refreshToken = localStorage.getItem('refreshToken');
-  if (!refreshToken) {
-    throw new Error('로그인이 필요합니다.');
-  }
-
-  try {
-    const response = await api.post('/auth/refresh', {
-      refreshToken,
-    });
-
-    const { accessToken } = response.data;
-    
-    // 새로운 accessToken 저장
-    localStorage.setItem('accessToken', accessToken);
-    
-    return accessToken;
-  } catch (error) {
-    throw error.response?.data?.message || '토큰 갱신에 실패했습니다.';
-  }
-};
-
-// Axios Response 인터셉터 설정
-api.interceptors.response.use(
-  response => response, // 성공적인 응답은 그대로 반환
-  async (error) => {
-    const originalRequest = error.config;
-
-    // 401 에러인 경우 (access token 만료 또는 유효하지 않음)
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // 무한 재시도 방지 플래그
-      
-      // const responseMessage = error.response.data.message;
-      const tokenType = error.response.data.tokenType;
-
-      // access token이 만료된 경우
-      if (tokenType === 'access') {
-        try {
-          // 토큰 갱신 시도
-          const newAccessToken = await refreshAccessToken();
-          localStorage.setItem('accessToken', newAccessToken);
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          
-          // 갱신 후 원래 요청 재시도
-          return api(originalRequest);
-        } catch (refreshError) {
-          console.error('토큰 갱신 실패:', refreshError);
-          window.location.href = '/login'; // 로그인 페이지로 리다이렉트
-        }
-      } else if (tokenType === 'refresh') {
-        // refresh token이 만료된 경우
-        console.error('Refresh token이 만료되었습니다. 다시 로그인하세요.');
-        window.location.href = '/login'; // 로그인 페이지로 리다이렉트
-      }
-    }
-
-    return Promise.reject(error); // 다른 에러는 그대로 반환
-  }
-);
-
-export default api;

@@ -1,53 +1,69 @@
 // src/pages/CategoryManagement.js
-import React, { useState, useEffect } from "react";
-import { Container, Form, Button, Table } from "react-bootstrap";
-import api from "../services/Api";
-import AdminNavBar from "../components/organisms/AdminNavBar";
+import React, { useState } from 'react';
+import { useAdminContext } from '../contexts/AdminContext';
+import { Container, Form, Button, Table } from 'react-bootstrap';
+import AdminNavBar from '../components/organisms/AdminNavBar';
 
 function CategoryManagement() {
-  const [categories, setCategories] = useState([]);
+  const { categories, handleAddCategory, handleDeleteCategory } = useAdminContext();
+  const [newCategoryName, setNewCategoryName] = useState("");
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await api.get("/items/categories");
-        setCategories(response.data);
-      } catch (error) {
-        console.error("카테고리 데이터를 불러오는 중 오류 발생:", error);
-      }
-    };
-    fetchCategories();
-  }, []);
+  const handleAdd = (event) => {
+    event.preventDefault();
+    if (!newCategoryName.trim()) {
+      alert("카테고리 이름을 입력해 주세요.");
+      return;
+    }
+    handleAddCategory(newCategoryName);
+    setNewCategoryName("");
+  };
 
   return (
     <>
       <AdminNavBar />
       <Container className="mt-4">
         <h3>카테고리 관리</h3>
-        <Form className="mb-3">
+        <Form onSubmit={handleAdd} className="mb-3">
           <Form.Group>
             <Form.Label>카테고리 이름</Form.Label>
-            <Form.Control type="text" placeholder="카테고리 이름 입력" />
-          </Form.Group>
-          <Button variant="primary" type="submit" className="mt-2">등록</Button>
-        </Form>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>카테고리 이름</th>
+            <Form.Control
+              type="text"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="새 카테고리 이름"
+            />
+        </Form.Group>
+        <Button variant="primary" type="submit" className="mt-3">
+          추가
+        </Button>
+      </Form>
+
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>카테고리 이름</th>
+            <th>삭제</th>
+          </tr>
+        </thead>
+        <tbody>
+          {categories.map((category) => (
+            <tr key={category.id}>
+              <td>{category.id}</td>
+              <td>{category.categoryName}</td>
+              <td>
+                <Button
+                  variant="danger"
+                  onClick={() => handleDeleteCategory(category.id)}
+                >
+                  삭제
+                </Button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {categories.map((category) => (
-              <tr key={category.id}>
-                <td>{category.id}</td>
-                <td>{category.categoryName}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Container>
+          ))}
+        </tbody>
+      </Table>
+    </Container>
     </>
   );
 }

@@ -1,53 +1,69 @@
 // src/pages/StorageMethodManagement.js
-import React, { useState, useEffect } from "react";
-import { Container, Form, Button, Table } from "react-bootstrap";
-import api from "../services/Api";
-import AdminNavBar from "../components/organisms/AdminNavBar";
+import React, { useState } from 'react';
+import { useAdminContext } from '../contexts/AdminContext';
+import { Container, Form, Button, Table } from 'react-bootstrap';
+import AdminNavBar from '../components/organisms/AdminNavBar';
 
 function StorageMethodManagement() {
-  const [storageMethods, setStorageMethods] = useState([]);
+  const { storageMethods, handleAddStorageMethod, handleDeleteStorageMethod } = useAdminContext();
+  const [newStorageMethodName, setNewStorageMethodName] = useState("");
 
-  useEffect(() => {
-    const fetchStorageMethods = async () => {
-      try {
-        const response = await api.get("/items/storage-methods");
-        setStorageMethods(response.data);
-      } catch (error) {
-        console.error("보관방법 데이터를 불러오는 중 오류 발생:", error);
-      }
-    };
-    fetchStorageMethods();
-  }, []);
+  const handleAdd = (event) => {
+    event.preventDefault();
+    if (!newStorageMethodName.trim()) {
+      alert("보관 방법 이름을 입력해 주세요.");
+      return;
+    }
+    handleAddStorageMethod(newStorageMethodName);
+    setNewStorageMethodName("");
+  };
 
   return (
     <>
       <AdminNavBar />
       <Container className="mt-4">
-        <h3>보관방법 관리</h3>
-        <Form className="mb-3">
+        <h3>보관 방법 관리</h3>
+        <Form onSubmit={handleAdd} className="mb-3">
           <Form.Group>
-            <Form.Label>보관방법 이름</Form.Label>
-            <Form.Control type="text" placeholder="보관방법 이름 입력" />
+            <Form.Label>보관 방법 이름</Form.Label>
+            <Form.Control
+              type="text"
+              value={newStorageMethodName}
+              onChange={(e) => setNewStorageMethodName(e.target.value)}
+              placeholder="새 보관 방법 이름"
+            />
           </Form.Group>
-          <Button variant="primary" type="submit" className="mt-2">등록</Button>
-        </Form>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>보관방법 이름</th>
+          <Button variant="primary" type="submit" className="mt-3">
+            추가
+          </Button>
+      </Form>
+
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>보관 방법 이름</th>
+            <th>삭제</th>
+          </tr>
+        </thead>
+        <tbody>
+          {storageMethods.map((method) => (
+            <tr key={method.id}>
+              <td>{method.id}</td>
+              <td>{method.storageMethodName}</td>
+              <td>
+                <Button
+                  variant="danger"
+                  onClick={() => handleDeleteStorageMethod(method.id)}
+                >
+                  삭제
+                </Button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {storageMethods.map((method) => (
-              <tr key={method.id}>
-                <td>{method.id}</td>
-                <td>{method.storageMethodName}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Container>
+          ))}
+        </tbody>
+      </Table>
+    </Container>
     </>
   );
 }

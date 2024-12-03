@@ -1,6 +1,6 @@
 // src/hooks/useAuth.js
 import { useNavigate } from "react-router-dom";
-import { login, logout, register, deleteAccount } from "../services/Api";
+import { login, logout, register, deleteAccount } from "../services/AuthApi";
 import { removeTokens } from "../utils/Utils";
 import { jwtDecode } from "jwt-decode";
 
