@@ -24,7 +24,6 @@ function AdminPage() {
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>이름</th>
                     <th>카테고리</th>
                     <th>보관방법</th>
@@ -33,7 +32,6 @@ function AdminPage() {
                 <tbody>
                   {items.map((item) => (
                     <tr key={item.id}>
-                      <td>{item.id}</td>
                       <td>{item.itemName}</td>
                       <td>{categories.find(cat => cat.id === item.category?.id)?.categoryName}</td>
                       <td>{storageMethods.find(method => method.id === item.storageMethod?.id)?.storageMethodName}</td>
@@ -49,14 +47,12 @@ function AdminPage() {
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>카테고리 이름</th>
                   </tr>
                 </thead>
                 <tbody>
                   {categories.map((category) => (
                     <tr key={category.id}>
-                      <td>{category.id}</td>
                       <td>{category.categoryName}</td>
                     </tr>
                   ))}
@@ -70,14 +66,12 @@ function AdminPage() {
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>보관 방법 이름</th>
                   </tr>
                 </thead>
                 <tbody>
                   {storageMethods.map((method) => (
                     <tr key={method.id}>
-                      <td>{method.id}</td>
                       <td>{method.storageMethodName}</td>
                     </tr>
                   ))}

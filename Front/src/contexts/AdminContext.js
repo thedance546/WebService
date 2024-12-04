@@ -1,5 +1,5 @@
 // src/contexts/AdminContext.js
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   fetchCategories,
   fetchStorageMethods,
@@ -8,7 +8,7 @@ import {
   deleteCategory,
   createStorageMethod,
   deleteStorageMethod,
-} from '../services/AdminApi';
+} from "../services/AdminApi";
 
 const AdminContext = createContext();
 
@@ -20,28 +20,37 @@ export const AdminProvider = ({ children }) => {
   const [error, setError] = useState("");
   const [initialized, setInitialized] = useState(false);
 
+  const fetchData = async (retry = 3) => {
+    while (retry > 0) {
+      try {
+        setLoading(true);
+        console.log("Fetching data...");
+        const [categoriesData, storageMethodsData, itemsData] = await Promise.all([
+          fetchCategories(),
+          fetchStorageMethods(),
+          fetchItems(),
+        ]);
+        setCategories(categoriesData);
+        setStorageMethods(storageMethodsData);
+        setItems(itemsData);
+        setError(""); // Clear any previous errors
+        setInitialized(true);
+        console.log("Data fetched successfully");
+        break;
+      } catch (err) {
+        retry -= 1;
+        console.error(`Data fetch failed. Retries left: ${retry}`, err);
+        if (retry === 0) {
+          setError("데이터를 불러오는 중 오류 발생");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!initialized) {
-      const fetchData = async () => {
-        try {
-          setLoading(true);
-          const [categoriesData, storageMethodsData, itemsData] = await Promise.all([
-            fetchCategories(),
-            fetchStorageMethods(),
-            fetchItems(),
-          ]);
-          setCategories(categoriesData);
-          setStorageMethods(storageMethodsData);
-          setItems(itemsData);
-          setError("");
-          setInitialized(true);
-        } catch (err) {
-          setError("데이터를 불러오는 중 오류 발생");
-          console.error(err);
-        } finally {
-          setLoading(false);
-        }
-      };
       fetchData();
     }
   }, [initialized]);
