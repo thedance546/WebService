@@ -11,7 +11,7 @@
   --navbar-height: 56px;
 
   /* 채팅창 */
-  --chat-height: calc(var(--viewport-height) - var(--input-height) - var(--navbar-height) - 22px);
+  --chat-height: calc(var(--viewport-height) - var(--input-height) - var(--navbar-height) - 5px);
 
   /* 옵션 메뉴 */
   --options-bottom: calc(var(--navbar-height) + var(--input-height));
@@ -36,6 +36,18 @@
   --msg-max-width: 60%;
   --user-msg-bg: #d1ffd6;
   --bot-msg-bg: #ffd1d1;
+
+  --highlighted-msg-bg: #f8f9fa;
+  --highlighted-msg-text-color: #333;
+}
+
+.highlighted-message {
+  background-color: var(--highlighted-msg-bg) !important;
+  color: var(--highlighted-msg-text-color) !important;
+  padding: 20px;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-radius: 20px;
 }
 
 /* 비활성화된 입력창 스타일 (명시도 강화) */
@@ -56,7 +68,7 @@
 /* 모바일 환경 - 높이가 900px 이하인 경우 */
 @media (max-height: 900px) {
   :root {
-    --input-left: 3.75%;
+    --input-left: 2%;
     --input-width: calc(100% - 2 * var(--input-left)); /* 화면 너비에서 --input-left의 두 배를 뺀 값 */
   }
 }

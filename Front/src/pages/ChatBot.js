@@ -6,10 +6,16 @@ import OptionsModal from '../features/ChatBot/OptionsModal';
 import NavBar from "../components/organisms/HomeNavBar";
 import navItems from "../constants/navItems";
 
+const DEFAULT_MESSAGE = [
+  { text: "안녕하세요! 저는 여러분의 주방 파트너, 레시피 챗봇이에요! 🥄🍲", sender: "bot" },
+  { text: "원하는 요리를 말씀해주세요. 냉장고에 있는 재료들로 가능한 레시피부터 특별한 날을 위한 요리까지 추천해 드릴게요!", sender: "bot" },
+  { text: "식재료 사진을 올리시면, YOLO 모델이 재료를 인식해서 해당 재료를 활용한 레시피도 제공해 드려요. 무엇이든 편하게 물어보세요! 함께 맛있는 요리를 만들어 봐요! 😊", sender: "bot" }
+];
+
 const ChatBot = () => {
   const [messages, setMessages] = useState(() => {
     const savedMessages = localStorage.getItem('chatMessages');
-    return savedMessages ? JSON.parse(savedMessages) : [{ text: "안녕하세요! 무엇을 도와드릴까요?", sender: "bot" }];
+    return savedMessages ? JSON.parse(savedMessages) : DEFAULT_MESSAGE;
   });
 
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
@@ -37,13 +43,20 @@ const ChatBot = () => {
   };
 
   const clearMessages = () => {
-    setMessages([{ text: "대화가 초기화되었습니다.", sender: "bot" }]);
+    setMessages(DEFAULT_MESSAGE);
     localStorage.removeItem('chatMessages');
   };
 
   const handleImageUpload = (file) => {
     const imageUrl = URL.createObjectURL(file);
     addMessage({ sender: 'user', imageUrl });
+  };
+
+  const handleBotImageUpload = (file) => {
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      addMessage({ sender: 'bot', imageUrl });
+    }
   };
 
   const toggleOptions = () => {
@@ -53,7 +66,7 @@ const ChatBot = () => {
   const options = [
     { label: '재료 사진 업로드', icon: '📷', action: () => document.getElementById('file-upload').click() },
     { label: '채팅 내역 지우기', icon: '🗑️', action: clearMessages },
-    { label: '기타 옵션 1', icon: '⚙️', action: () => alert('옵션 1') },
+    { label: '봇 사진 업로드', icon: '🤖📷', action: () => document.getElementById('bot-file-upload').click() },
   ];
 
   return (
@@ -71,6 +84,17 @@ const ChatBot = () => {
         accept="image/*"
         onChange={(e) => {
           if (e.target.files.length > 0) handleImageUpload(e.target.files[0]);
+        }}
+      />
+
+      {/* 봇 파일 업로드 인풋 (숨김 처리) */}
+      <input
+        type="file"
+        id="bot-file-upload"
+        style={{ display: 'none' }}
+        accept="image/*"
+        onChange={(e) => {
+          if (e.target.files.length > 0) handleBotImageUpload(e.target.files[0]);
         }}
       />
 

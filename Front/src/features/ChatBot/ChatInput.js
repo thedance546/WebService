@@ -9,10 +9,17 @@ const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
   const handleInputChange = (event) => setInput(event.target.value);
   const handleSendMessage = () => {
     if (input.trim() !== '') {
-      addMessage({ text: input, sender: "user" });
+      // 특정 문자가 '#'로 시작하는 경우 처리
+      if (input.startsWith('#')) {
+        const newMessage = input.slice(1).trim(); // '#' 제거 후 메시지
+        addMessage({ text: newMessage, sender: "bot" });
+      } else {
+        addMessage({ text: input, sender: "user" });
+      }
       setInput('');
     }
   };
+
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && !disabled) {
       event.preventDefault();
