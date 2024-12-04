@@ -15,19 +15,22 @@ const ChatMessages = ({ messages }) => {
         <div
           key={index}
           className={`d-flex ${message.sender === 'user' ? 'justify-content-end' : 'justify-content-start'} my-1`}
-          style={message.isHighlighted ? { width: '100%', justifyContent: 'center' } : {}}
         >
           <div
-            className={`p-2 rounded-3 ${message.isHighlighted ? 'highlighted-message' : message.sender === 'user' ? 'bg-primary text-white' : 'bg-secondary text-white'}`}
+            className={`p-2 rounded-3 ${message.sender === 'user' ? 'bg-primary text-white' : 'bg-secondary text-white'}`}
             style={{
-              maxWidth: message.isHighlighted ? '90%' : 'var(--msg-max-width)',
+              maxWidth: '60%',
               backgroundColor: message.sender === 'user' ? 'var(--user-msg-bg)' : 'var(--bot-msg-bg)',
               borderRadius: 'var(--msg-border-radius)',
-              textAlign: message.isHighlighted ? 'center' : 'left',
+              textAlign: 'left',
             }}
           >
             {message.imageUrl ? (
-              <img src={message.imageUrl} alt="미리보기" style={{ maxWidth: '100%', borderRadius: 'var(--msg-border-radius)' }} />
+              <img
+                src={message.imageUrl}
+                alt="uploaded"
+                style={{ maxWidth: '100%', borderRadius: '10px' }}
+              />
             ) : (
               message.text
             )}
