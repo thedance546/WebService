@@ -12,6 +12,11 @@ public class ChatRequest {
     private String searchResults;  // 기본값을 빈 문자열로 설정 가능
 
     public ChatRequest() {
-        this.searchResults = ""; // 기본값 설정
+        this.searchResults = "";
+    }
+
+    public ChatRequest(String question) {
+        this.question = question;
+        this.searchResults = "";
     }
 }

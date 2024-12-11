@@ -2,6 +2,7 @@ security:
   secret:
     key: "25ea99c20638c1fbdcaaa55f30d2a5222d60307de871d6c8d03395f785a31cdf"
 
+# mariadb
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
@@ -16,3 +17,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+        
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
