@@ -57,14 +57,15 @@ public class AuthService {
         String email = jwtService.extractUsername(accessToken);
         User user = findUserByEmail(email);
 
+        //db 회원 데이터 삭제
         userRepository.delete(user);
-
+        //토큰을 블랙리스트에 추가
         blacklistService.addToBlacklist(accessToken, jwtService.extractExpiration(accessToken).getTime(), "account_deleted");
 
         return createResponse("Successfully deleted the account");
     }
 
-    //Helper Methods
+    //Methods
     private void validateEmail(String email) {
         if (!isValidEmailFormat(email)) {
             throw new InvalidEmailFormatException("잘못된 이메일 형식입니다.");

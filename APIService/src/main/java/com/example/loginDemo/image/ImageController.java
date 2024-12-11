@@ -30,13 +30,9 @@ public class ImageController {
     @PostMapping("/send")
     public ResponseEntity<Map<String, Object>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
         try {
-            // Send image to YOLO API and get detection result
             Map<String, Object> detectionResult = imageService.sendImageToYolo(imageFile);
-
-            // Return detection result as response
             return ResponseEntity.ok(detectionResult);
         } catch (Exception e) {
-            // Handle any errors (e.g., API failure, internal errors)
             return ResponseEntity.status(500).body(Map.of("error", "Failed to process image", "message", e.getMessage()));
         }
     }
