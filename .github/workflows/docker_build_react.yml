@@ -29,18 +29,18 @@ jobs:
 
     # 3. Docker 로그인 (Docker Hub에 푸시하려는 경우)
     - name: Log in using Docker CLI
-      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      run: echo ${{ secrets.REACT_DOCKER_PASSWORD }} | docker login -u ${{ secrets.REACT_DOCKER_USERNAME }} --password-stdin
 
 
     # 4. Docker 이미지 빌드
     - name: Build Docker Image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/react-app:latest -f ./Front/DockerFile ./Front
+        docker build -t ${{ secrets.REACT_DOCKER_USERNAME }}/react-app:latest -f ./Front/DockerFile ./Front
 
     # 5. Docker 이미지 푸시
     - name: Push Docker Image to Docker Hub
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+        docker push ${{ secrets.REACT_DOCKER_USERNAME }}/react-app:latest
 
     # For Debugging
     - name: Debugging Current Directory
