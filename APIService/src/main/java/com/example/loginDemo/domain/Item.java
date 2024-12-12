@@ -14,7 +14,7 @@ public class Item {
     @Column(name = "item_id", updatable = false)
     private Long id;
 
-    @Column(name = "item_name", nullable = false)
+    @Column(name = "item_name", nullable = false, unique = true)
     private String itemName;
 
     @ManyToOne
