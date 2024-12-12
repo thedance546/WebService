@@ -20,40 +20,29 @@ export const AdminProvider = ({ children }) => {
   const [error, setError] = useState("");
   const [initialized, setInitialized] = useState(false);
 
-  const fetchData = async (retry = 3) => {
-    while (retry > 0) {
-      try {
-        setLoading(true);
-        console.log("Fetching data...");
-        const [categoriesData, storageMethodsData, itemsData] = await Promise.all([
-          fetchCategories(),
-          fetchStorageMethods(),
-          fetchItems(),
-        ]);
-        setCategories(categoriesData);
-        setStorageMethods(storageMethodsData);
-        setItems(itemsData);
-        setError(""); // Clear any previous errors
-        setInitialized(true);
-        console.log("Data fetched successfully");
-        break;
-      } catch (err) {
-        retry -= 1;
-        console.error(`Data fetch failed. Retries left: ${retry}`, err);
-        if (retry === 0) {
-          setError("데이터를 불러오는 중 오류 발생");
-        }
-      } finally {
-        setLoading(false);
-      }
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching data...");
+      const [categoriesData, storageMethodsData, itemsData] = await Promise.all([
+        fetchCategories(),
+        fetchStorageMethods(),
+        fetchItems(),
+      ]);
+      setCategories(categoriesData);
+      setStorageMethods(storageMethodsData);
+      setItems(itemsData);
+      setError("");
+      setInitialized(true);
+      console.log("Data fetched successfully");
+    } catch (err) {
+      console.error("Data fetch failed:", err);
+      setError("데이터를 불러오는 중 오류 발생");
+    } finally {
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (!initialized) {
-      fetchData();
-    }
-  }, [initialized]);
+  
 
   // 카테고리 추가
   const handleAddCategory = async (categoryName) => {
@@ -95,6 +84,12 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    if (!initialized) {
+      fetchData();
+    }
+  }, [initialized]);
+
   return (
     <AdminContext.Provider
       value={{
@@ -107,7 +102,7 @@ export const AdminProvider = ({ children }) => {
         handleAddCategory,
         handleDeleteCategory,
         handleAddStorageMethod,
-        handleDeleteStorageMethod,
+        handleDeleteStorageMethod
       }}
     >
       {children}

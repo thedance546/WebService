@@ -13,7 +13,10 @@ const useItem = () => {
     setLoading(true);
     try {
       const itemsData = await fetchItems();
-      setItems(itemsData);
+      const updatedItems = itemsData.map(item => ({
+        ...item,
+      }));
+      setItems(updatedItems);
       setError("");
     } catch (error) {
       setError("식재료 데이터를 불러오는 중 오류 발생");
@@ -22,6 +25,7 @@ const useItem = () => {
       setShouldFetch(false);
     }
   }, []);
+  
 
   // 컴포넌트가 마운트되거나 데이터가 갱신되면 조회
   useEffect(() => {
