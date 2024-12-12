@@ -27,7 +27,8 @@ public class ItemController {
 
     //등록
     @PostMapping("/category")
-    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+    public ResponseEntity<?> createCategory(@RequestHeader("Authorization") String accessToken,
+                                            @RequestBody Category category) {
         try {
             Category createdCategory = categoryService.createCategory(category.getCategoryName());
             return ResponseEntity.ok(createdCategory);
@@ -39,7 +40,8 @@ public class ItemController {
     }
 
     @PostMapping("/storage-method")
-    public ResponseEntity<?> createStorageMethod(@RequestBody StorageMethod storageMethod) {
+    public ResponseEntity<?> createStorageMethod(@RequestHeader("Authorization") String accessToken,
+                                                 @RequestBody StorageMethod storageMethod) {
         try {
             // 중복 체크 및 보관 방법 생성
             StorageMethod createdStorageMethod = storageMethodService.createStorageMethod(storageMethod.getStorageMethodName());
@@ -52,7 +54,8 @@ public class ItemController {
     }
 
     @PostMapping("/item")
-    public ResponseEntity<?> createItem(@RequestBody ItemRequest itemRequest) {
+    public ResponseEntity<?> createItem(@RequestHeader("Authorization") String accessToken,
+                                        @RequestBody ItemRequest itemRequest) {
         try {
             Item item = itemService.createItem(itemRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(item);  // 생성된 아이템 반환
@@ -65,35 +68,35 @@ public class ItemController {
 
     //조회
     @GetMapping("/categories")
-    public List<Category> getAllCategories() {
+    public List<Category> getAllCategories(@RequestHeader("Authorization") String accessToken) {
         return categoryService.getAllCategories();  // CategoryService에서 모든 카테고리 조회
     }
 
     @GetMapping("/storage-methods")
-    public List<StorageMethod> getAllStorageMethods() {
+    public List<StorageMethod> getAllStorageMethods(@RequestHeader("Authorization") String accessToken) {
         return storageMethodService.getAllStorageMethods();  // StorageMethodService에서 모든 보관 방법 조회
     }
 
     @GetMapping
-    public List<Item> getAllItems() {
+    public List<Item> getAllItems(@RequestHeader("Authorization") String accessToken) {
         return itemService.getAllItems();  // ItemService의 getAllItems() 호출
     }
 
     //삭제
     @DeleteMapping("/category/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCategory(@RequestHeader("Authorization") String accessToken,@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/storage-method/{id}")
-    public ResponseEntity<Void> deleteStorageMethod(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStorageMethod(@RequestHeader("Authorization") String accessToken, @PathVariable Long id) {
         storageMethodService.deleteStorageMethod(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteItem(@RequestHeader("Authorization") String accessToken, @PathVariable Long id) {
         itemService.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
