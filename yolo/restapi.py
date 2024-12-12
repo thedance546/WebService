@@ -1,20 +1,31 @@
-import os  # 추가
+import os
 from flask import Flask, request, jsonify
+import torch
+from PIL import Image
+from utils.general import non_max_suppression
+from torchvision.transforms import functional as F
 import json
-import onnxruntime as ort
-import numpy as np
-import cv2
-from collections import Counter
 
 app = Flask(__name__)
+
+import pathlib
+if os.name == 'nt':  # Windows
+    pathlib.PosixPath = pathlib.WindowsPath
+    
+# JSON 저장 경로
+JSON_SAVE_PATH = 'detection_results_simplified.json'
 
 # 업로드 폴더 설정
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# ONNX 모델 로드
-MODEL_PATH = "best.onnx"
-session = ort.InferenceSession(MODEL_PATH)
+# PyTorch 모델 로드
+from models.common import DetectMultiBackend
+
+MODEL_PATH = "best.pt"
+device = torch.device("cpu")
+model = DetectMultiBackend(MODEL_PATH, device=device)  # DetectMultiBackend 사용
+model.eval()  # 평가 모드 설정
 
 # 클래스 이름 정의
 CLASS_NAMES = ['토마토', '방울토마토', '김치', '가지', '오이', '애호박', '팽이버섯', '새송이버섯',
@@ -24,31 +35,10 @@ CLASS_NAMES = ['토마토', '방울토마토', '김치', '가지', '오이', '�
 
 # 이미지 전처리 함수
 def preprocess_image(image_path):
-    image = cv2.imread(image_path)  # BGR로 읽기
-    image = cv2.resize(image, (640, 640))
-    image_np = np.array(image).transpose(2, 0, 1) / 255.0  # 정규화
-    return np.expand_dims(image_np, axis=0).astype(np.float32)
-
-# Non-Maximum Suppression 함수
-def non_max_suppression(predictions, conf_threshold=0.3, iou_threshold=0.45):
-    boxes = predictions[:, :4]
-    scores = predictions[:, 4]
-    classes = np.argmax(predictions[:, 5:], axis=1)
-    valid_idx = scores > conf_threshold
-
-    boxes, scores, classes = boxes[valid_idx], scores[valid_idx], classes[valid_idx]
-    indices = cv2.dnn.NMSBoxes(
-        boxes.tolist(),
-        scores.tolist(),
-        conf_threshold,
-        iou_threshold
-    )
-    if len(indices) > 0:
-        indices = indices.flatten()
-        boxes = boxes[indices]
-        scores = scores[indices]
-        classes = classes[indices]
-    return boxes, scores, classes
+    image = Image.open(image_path).convert("RGB")
+    image = F.resize(image, [640, 640])  # 모델 입력 크기로 조정
+    image = F.to_tensor(image).unsqueeze(0)  # 텐서로 변환 후 배치 차원 추가
+    return image
 
 @app.route('/detect', methods=['POST'])
 def detect_objects():
@@ -65,27 +55,29 @@ def detect_objects():
         # 이미지 전처리
         input_tensor = preprocess_image(image_path)
 
-        # ONNX 모델 추론
-        input_name = session.get_inputs()[0].name
-        output_name = session.get_outputs()[0].name
-        outputs = session.run([output_name], {input_name: input_tensor})
+        # PyTorch 모델 추론
+        with torch.no_grad():
+            predictions = model(input_tensor.to(device))  # 모델 추론
 
         # Non-Maximum Suppression 적용
-        predictions = outputs[0]
-        boxes, scores, classes = non_max_suppression(predictions[0], conf_threshold=0.3)
+        predictions = non_max_suppression(predictions, conf_thres=0.3, iou_thres=0.4)[0]
 
-        # 클래스 이름 추출
-        detected_classes = [CLASS_NAMES[class_id] for class_id in classes]
+        if predictions is None:
+            return jsonify({"detections": []})
 
         # 클래스 이름과 개수 계산
-        class_counts = Counter(detected_classes)
+        detected_classes = [CLASS_NAMES[int(cls)] for cls in predictions[:, -1].cpu().numpy()]
+        class_counts = {cls: detected_classes.count(cls) for cls in set(detected_classes)}
 
-        # JSON 응답 생성 (ensure_ascii=False로 설정)
-        return json.dumps({"detections": class_counts}, ensure_ascii=False), 200, {'Content-Type': 'application/json; charset=utf-8'}
+        # JSON 파일로 저장
+        with open(JSON_SAVE_PATH, "w", encoding="utf-8") as json_file:
+            json.dump({"detections": class_counts}, json_file, ensure_ascii=False, indent=4)
+
+        # 결과 반환
+        return jsonify({"detections": class_counts})
 
     except Exception as e:
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-

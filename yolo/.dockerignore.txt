@@ -6,19 +6,17 @@ __pycache__/
 *.log
 *.jpg
 *.png
-runs/                # YOLOv5 결과물 폴더
-data/                # 데이터셋 폴더
-*.tar                # 압축 파일
+runs/
+data/
+*.tar
 *.zip
-
 *.pyo
 .env
 
-# 포함할 파일/폴더 명시
-!models/
-!utils/
-!restapi.py
-!requirements.txt
-!best.pt
-
+# 포함할 파일/폴더 명시 (명시적 경로로 수정)
+!/models/
+!/utils/
+!./restapi.py
+!./requirements.txt
+!./best.pt
 
