@@ -52,9 +52,15 @@ public class ItemController {
     }
 
     @PostMapping("/item")
-    public ResponseEntity<Item> createItem(@RequestBody ItemRequest itemRequest) {
-        Item item = itemService.createItem(itemRequest);
-        return ResponseEntity.ok(item);
+    public ResponseEntity<?> createItem(@RequestBody ItemRequest itemRequest) {
+        try {
+            Item item = itemService.createItem(itemRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(item);  // 생성된 아이템 반환
+        } catch (IllegalArgumentException ex) {
+            // 중복된 itemName에 대한 예외 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"message\": \"" + ex.getMessage() + "\"}");  // 에러 메시지 반환
+        }
     }
 
     //조회
