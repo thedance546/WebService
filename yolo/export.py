@@ -61,8 +61,9 @@ import torch
 from torch.utils.mobile_optimizer import optimize_for_mobile
 
 import pathlib
-temp = pathlib.PosixPath
-pathlib.PosixPath = pathlib.WindowsPath
+# Windows와 Linux 경로 호환 처리
+if os.name == 'nt':  # Windows
+    pathlib.PosixPath = pathlib.WindowsPath
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
