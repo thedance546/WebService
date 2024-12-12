@@ -17,11 +17,11 @@ public class Item {
     @Column(name = "item_name", nullable = false)
     private String itemName;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "storage_method_id", nullable = false)
     private StorageMethod storageMethod;
 
