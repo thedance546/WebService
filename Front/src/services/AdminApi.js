@@ -82,7 +82,7 @@ export const fetchItems = async () => {
 export const createItem = async (item) => {
   try {
     const response = await api.post("/items/item", item, {
-      //headers: getAuthHeaders(),
+      headers: getAuthHeaders(),
     });
     return response.data;
   } catch (error) {
@@ -92,7 +92,7 @@ export const createItem = async (item) => {
 
 export const deleteItem = async (itemId) => {
   try {
-    await api.delete(`/items/item/${itemId}`, {
+    await api.delete(`/items/${itemId}`, {
       headers: getAuthHeaders(),
     });
   } catch (error) {

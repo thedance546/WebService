@@ -7,15 +7,14 @@ import AdminNavBar from "../components/organisms/AdminNavBar";
 import LoadingModal from "../components/organisms/LoadingModal";
 
 function ItemManagement() {
-  const { categories, storageMethods } = useAdminContext(); // 카테고리 및 보관 방법을 가져옴
-  const { items, loading, error, addItem, removeItem } = useItem(); // 식재료 데이터를 가져옴
+  const { categories, storageMethods } = useAdminContext();
+  const { items, loading, error, addItem, removeItem } = useItem();
   const [newItemName, setNewItemName] = useState("");
   const [sellByDays, setSellByDays] = useState("");
   const [useByDays, setUseByDays] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [storageMethodName, setStorageMethodName] = useState("");
 
-  // 식재료 추가 핸들러
   const handleAddItem = async (event) => {
     event.preventDefault();
     if (!newItemName || !categoryName || !storageMethodName) {
@@ -25,9 +24,10 @@ function ItemManagement() {
 
     const newItem = {
       itemName: newItemName,
-      category: { categoryName },
-      storageMethod: { storageMethodName },
-      shelfLife: { sellByDays, useByDays },
+      categoryName,
+      storageMethodName,
+      sellByDays,
+      useByDays,
     };
 
     await addItem(newItem);
