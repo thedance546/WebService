@@ -1,0 +1,49 @@
+name: Build and Push React Docker Image
+
+on:
+  push:
+    branches:
+      - front
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 코드 체크아웃
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Node.js 설정 및 React 빌드
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install Dependencies and Build React
+      working-directory: ./Front
+      run: |
+        npm install
+        npm run build
+
+    # 3. Docker 로그인 (Docker Hub에 푸시하려는 경우)
+    - name: Log in using Docker CLI
+      run: echo ${{ secrets.REACT_DOCKER_PASSWORD }} | docker login -u ${{ secrets.REACT_DOCKER_USERNAME }} --password-stdin
+
+
+    # 4. Docker 이미지 빌드
+    - name: Build Docker Image
+      run: |
+        docker build -t ${{ secrets.REACT_DOCKER_USERNAME }}/matjipsa-react:latest -f ./Front/DockerFile ./Front
+
+    # 5. Docker 이미지 푸시
+    - name: Push Docker Image to Docker Hub
+      run: |
+        docker push ${{ secrets.REACT_DOCKER_USERNAME }}/matjipsa-react:latest
+
+    # For Debugging
+    - name: Debugging Current Directory
+      run: |
+        pwd
+        ls -al
