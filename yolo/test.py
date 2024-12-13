@@ -1,15 +1,19 @@
 import requests
 
-# 이미지 파일 경로
-image_path = '/app/testimage.jpg'
+# Flask 서버 URL (모델 이름 포함)
+model_name = "yolov5s"  # 사용할 모델 이름
+url = f"http://localhost:5000/v1/object-detection/image_team6/{model_name}"
 
-# 파일 전송
-with open(image_path, 'rb') as f:
-    response = requests.post('http://localhost:5000/detect', files={'image': f})
+# 전송할 이미지 파일 경로
+image_path = "/app/testimage.jpg"
 
-# 서버 응답 출력
+# 이미지 파일을 POST 요청으로 전송
+with open(image_path, "rb") as image_file:
+    files = {"image": image_file}
+    response = requests.post(url, files=files)
+
+# 응답 출력
 if response.status_code == 200:
-    print(f"{response.json()}")  # 서버에서 반환된 JSON 데이터 출력
+    print("Response JSON:", response.json())
 else:
-    print(f"Error: 서버 응답 오류 - 상태 코드: {response.status_code}")
-    print("응답 내용:", response.text)
+    print(f"Failed to connect, Status Code: {response.status_code}")
