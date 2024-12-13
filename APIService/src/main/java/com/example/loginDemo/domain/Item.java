@@ -8,20 +8,20 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Builder
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_id", updatable = false)
     private Long id;
 
-    @Column(name = "item_name", nullable = false)
+    @Column(name = "item_name", nullable = false, unique = true)
     private String itemName;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "storage_method_id", nullable = false)
     private StorageMethod storageMethod;
 
@@ -29,5 +29,11 @@ public class Item {
     @JoinColumn(name = "shelf_life_id", nullable = false)
     private ShelfLife shelfLife;
 
+    public Item(String itemName, Category category, StorageMethod storageMethod, ShelfLife shelfLife) {
+        this.itemName = itemName;
+        this.category = category;
+        this.storageMethod = storageMethod;
+        this.shelfLife = shelfLife;
+    }
 
 }

@@ -27,6 +27,7 @@ public class ChatbotController {
     // 레시피 질의
     @PostMapping("/ask")
     public ResponseEntity<ChatResponse> askFlask(@RequestBody ChatRequest requestBody) {
+
         // Flask API로 보낼 데이터를 준비
         String question = requestBody.getQuestion();
         String searchResults = requestBody.getSearchResults();

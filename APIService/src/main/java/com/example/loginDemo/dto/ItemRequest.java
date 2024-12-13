@@ -1,17 +1,17 @@
 package com.example.loginDemo.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@Builder
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemRequest {
-    private String name; //식재료명
-    private Long categoryId; // 카테고리 ID
-    private Long storageMethodId;  // 보관 방법 ID
-    private ShelfLifeDto shelfLife;
+    private String itemName;
+    private String categoryName;
+    private String storageMethodName;
+    private int sellByDays;
+    private int useByDays;
 }
