@@ -1,10 +1,10 @@
-name: Build and Push React Docker Image
+name: Build and Deploy React Docker Image
 
 on:
   push:
     branches:
+      - main
       - front
-  pull_request:
 
 jobs:
   build:
@@ -43,7 +43,7 @@ jobs:
         docker push ${{ secrets.REACT_DOCKER_USERNAME }}/matjipsa-react:latest
 
     # For Debugging
-    - name: Debugging Current Directory
-      run: |
-        pwd
-        ls -al
+    # - name: Debugging Current Directory
+    #   run: |
+    #     pwd
+    #     ls -al
