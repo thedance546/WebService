@@ -1,0 +1,48 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main 
+  workflow_dispatch: 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. GitHub 레포지토리 클론
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Java 환경 설정
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Gradle 빌드
+      - name: Build JAR with Gradle
+        working-directory: ./APIService
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      # 4. Docker 이미지 빌드
+      - name: Build Docker image
+        working-directory: ./APIService
+        run: |
+          docker build -t hann546/spring-api:latest .
+
+      # 5. Docker Hub 로그인
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.SPRING_DOCKER_USERNAME }}
+          password: ${{ secrets.SPRING_DOCKER_PASSWORD }}
+
+      # 6. Docker 이미지 푸시
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push hann546/spring-api:latest
