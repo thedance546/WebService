@@ -2,16 +2,14 @@
 # Backend (Spring / Gradle)
 # -----------------------------
 
-# Gradle specific files
+Gradle specific files
 /APIService/.gradle/
 /APIService/.gradle/**/*.lock
 /APIService/.gradle/**/*.bin
 
-# Other build and IDE-specific files remain the same
+# Build and IDE-specific files
 /APIService/build/
 /APIService/out/
-
-# Compiled class files
 /APIService/**/*.class
 
 # Log files
@@ -35,68 +33,70 @@
 # -----------------------------
 
 # Dependencies
-/ReactFront/node_modules/
-/ReactFront/.pnp
-/ReactFront/.pnp.js
+/Front/node_modules/
+/Front/.pnp
+/Front/.pnp.js
 
 # Production build
-/ReactFront/build
+/Front/build
 
 # Environment variables
-/ReactFront/.env
-/ReactFront/.env.local
-/ReactFront/.env.development
-/ReactFront/.env.production
-/ReactFront/.env.test
+/Front/.env
+/Front/.env.local
+/Front/.env.development
+/Front/.env.production
+/Front/.env.test
 
 # Log files
-/ReactFront/npm-debug.log*
-/ReactFront/yarn-debug.log*
-/ReactFront/yarn-error.log*
+/Front/npm-debug.log*
+/Front/yarn-debug.log*
+/Front/yarn-error.log*
 
 # Editor-specific files
-/ReactFront/.idea
-/ReactFront/.vscode
-/ReactFront/*.suo
-/ReactFront/*.ntvs*
-/ReactFront/*.njsproj
-/ReactFront/*.sln
-/ReactFront/*.sw?
+/Front/.idea
+/Front/.vscode
+/Front/*.suo
+/Front/*.ntvs*
+/Front/*.njsproj
+/Front/*.sln
+/Front/*.sw?
+
 
 # -----------------------------
-# Flask ignore List
+# Flask ignore List - LLM and YOLO
 # -----------------------------
-### 
-# Python 관련
+
+# Python related files
 *.pyc
 *.pyo
 *.pyd
 __pycache__/
 *.db
 
-# 가상환경 폴더 (myenv 등)
+# Virtual environment folders
 myenv/
 venv/
-.env
 
-# 환경 변수 파일
+# Environment variables
 *.env
 
-# VSCode 설정 파일
+# VSCode settings
 .vscode/
 
-# Jupyter Notebook 체크포인트 파일
+# Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# macOS 관련
-.DS_Store
+# Model files
+*.pt
+*.onnx
 
-# 로그 파일
-*.log
-*.sqlite3
+# Training and log directories
+runs/
 
-# 파이참 설정 파일
-.idea/
+# Datasets and results
+datasets/
+results/
+
 
 # -----------------------------
 # Common
@@ -107,3 +107,10 @@ venv/
 
 # Windows system files
 Thumbs.db
+
+# Log files
+*.log
+*.sqlite3
+
+# PyCharm settings
+# .idea/

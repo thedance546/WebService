@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,11 +33,9 @@ public class User implements UserDetails {
     @Column(name="email", nullable = false, unique=true)
     private String email;
 
-    //유저 아이디
     @NotBlank(message = "Name cannot be blank")
     @Column(name = "username", nullable = false)
     private String username;
-
 
     @NotBlank(message = "Password cannot be blank")
     @Column(name="password", nullable = false)
