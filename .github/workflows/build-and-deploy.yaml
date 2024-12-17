@@ -27,7 +27,7 @@ jobs:
         working-directory: ./APIService
         run: |
           chmod +x gradlew 
-          ./gradlew clean build -Dspring.profiles.active=test
+          ./gradlew clean build -x test
 
       # 4. Docker 이미지 빌드
       - name: Build Docker image
