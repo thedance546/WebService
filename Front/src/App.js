@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import HomePage from './pages/HomePage';
@@ -19,6 +19,11 @@ import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';
 
 function App() {
+  useEffect(() => {
+    const hideAddressBar = () => { setTimeout(() => { window.scrollTo(0, 1); }, 0); };
+    window.addEventListener("load", hideAddressBar);
+    return () => { window.removeEventListener("load", hideAddressBar); }; }, []);
+  
   return (
     <Router>
       <Routes>

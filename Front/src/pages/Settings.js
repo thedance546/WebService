@@ -6,8 +6,7 @@ import ContactForm from '../features/Settings/ContactForm';
 // import ThemeSelector from '../features/Settings/ThemeSelector';
 import LogoutButton from '../components/molecules/LogoutButton';
 import DeleteAccountButton from '../components/molecules/DeleteAccountButton';
-import NavBar from "../components/organisms/HomeNavBar";
-import navItems from "../constants/navItems";
+import HomeNavBar from "../components/organisms/HomeNavBar";
 
 const Settings = () => {
 
@@ -29,7 +28,7 @@ const Settings = () => {
         </div>
       </div>
 
-      <NavBar navItems={navItems} />
+      <HomeNavBar />
     </div>
   );
 };

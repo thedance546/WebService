@@ -1,10 +1,10 @@
+// src/pages/ChatBot.js
 import React, { useState, useEffect } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/OptionsModal';
-import NavBar from "../components/organisms/HomeNavBar";
+import HomeNavBar from "../components/organisms/HomeNavBar";
 import RecipeCard from '../features/ChatBot/RecipeCard';
-import navItems from "../constants/navItems";
 
 const DEFAULT_MESSAGE = [
   { text: "안녕하세요! 저는 여러분의 주방 파트너, 레시피 챗봇이에요! 🥄🍲", sender: "bot" },
@@ -148,7 +148,7 @@ const ChatBot = () => {
       {/* 옵션 모달 */}
       <OptionsModal isOpen={isOptionsOpen} onClose={toggleOptions} options={options} />
 
-      <NavBar navItems={navItems} />
+      <HomeNavBar />
     </div>
   );
 };

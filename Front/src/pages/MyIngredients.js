@@ -6,8 +6,7 @@ import LoadingModal from "../components/organisms/LoadingModal";
 import IngredientsTable from "../features/MyIngredients/IngredientsTable";
 import { useModalState } from "../hooks/useModalState";
 import { Plus } from "react-bootstrap-icons";
-import NavBar from "../components/organisms/HomeNavBar";
-import navItems from "../constants/navItems";
+import HomeNavBar from "../components/organisms/HomeNavBar";
 
 const getRandomIngredients = (ingredients, count) => {
   const shuffled = [...ingredients].sort(() => 0.5 - Math.random());
@@ -130,7 +129,7 @@ const MyIngredients = () => {
         onDeleteRow={(index) => setDataFrame((prevData) => prevData.filter((_, i) => i !== index))}
       />
 
-      <NavBar navItems={navItems} />
+      <HomeNavBar />
     </div>
   );
 };

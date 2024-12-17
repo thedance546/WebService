@@ -1,8 +1,7 @@
 // src/pages/Notification.js
 import React, { useState } from 'react';
 import Switch from 'react-switch';
-import NavBar from "../components/organisms/HomeNavBar";
-import navItems from "../constants/navItems";
+import HomeNavBar from "../components/organisms/HomeNavBar";
 
 const Notification = () => {
   const [dateType, setDateType] = useState("유통기한");
@@ -83,7 +82,7 @@ const Notification = () => {
       </div>
 
       {/* 네비게이션 바 */}
-      <NavBar navItems={navItems} />
+      <HomeNavBar />
     </div>
   );
 };
