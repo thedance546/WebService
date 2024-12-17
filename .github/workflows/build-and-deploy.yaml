@@ -33,9 +33,7 @@ jobs:
       - name: Build Docker image
         working-directory: ./APIService
         run: |
-          echo "Starting Docker build process..."
-          echo "Using Docker tag: ${{ secrets.SPRING_DOCKER_USERNAME }}/spring-api:latest"
-          docker build -t ${{ secrets.SPRING_DOCKER_USERNAME }}/spring-api:latest .
+          docker build -t hann546/spring-api:latest .
 
       # 5. Docker Hub 로그인
       - name: Log in to Docker Hub
@@ -47,4 +45,4 @@ jobs:
       # 6. Docker 이미지 푸시
       - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ secrets.SPRING_DOCKER_USERNAME }}/spring-api:latest
+          docker push hann546/spring-api:latest
