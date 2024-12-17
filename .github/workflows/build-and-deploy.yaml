@@ -26,15 +26,16 @@ jobs:
       - name: Build JAR with Gradle
         working-directory: ./APIService
         run: |
-          chmod +x gradlew 
+          chmod +x gradlew
           ./gradlew clean build -x test
 
       # 4. Docker 이미지 빌드
       - name: Build Docker image
         working-directory: ./APIService
         run: |
+          echo "Starting Docker build process..."
+          echo "Using Docker tag: ${{ secrets.SPRING_DOCKER_USERNAME }}/spring-api:latest"
           docker build -t ${{ secrets.SPRING_DOCKER_USERNAME }}/spring-api:latest .
-
 
       # 5. Docker Hub 로그인
       - name: Log in to Docker Hub
