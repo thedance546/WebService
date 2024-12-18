@@ -1,7 +1,7 @@
 // src/features/ChatBot/ChatMessages.js
 import React, { useRef, useEffect } from 'react';
 import MessageBubble from './MessageBubble';
-import './ChatBotStylesConfig.css';
+import './ChatMessages.css';
 
 const ChatMessages = ({ messages }) => {
   const messagesEndRef = useRef(null);

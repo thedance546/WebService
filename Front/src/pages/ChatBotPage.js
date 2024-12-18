@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/OptionsModal';
-import HomeNavBar from "../components/organisms/HomeNavBar";
+import HomeNavBar from '../components/organisms/HomeNavBar';
+import NotificationBar from '../features/ChatBot/NotificationBar';
 
 const ChatBotPage = () => {
   const [messages, setMessages] = useState(() => {
@@ -37,10 +38,16 @@ const ChatBotPage = () => {
 
   return (
     <div className="chatbot-container">
-      <ChatMessages messages={messages} style={{ height: 'var(--chat-height)', overflowY: 'auto' }} />
+      {/* 상단 알림창 */}
+      <NotificationBar />
 
+      {/* 채팅 메시지 영역 */}
+      <ChatMessages messages={messages} />
+
+      {/* 입력창 */}
       <ChatInput addMessage={addMessage} toggleOptions={toggleOptions} disabled={isOptionsOpen} />
 
+      {/* 옵션 모달 */}
       <OptionsModal
         isOpen={isOptionsOpen}
         onClose={toggleOptions}
@@ -49,6 +56,7 @@ const ChatBotPage = () => {
         handleImageUpload={handleImageUpload}
       />
 
+      {/* 하단 네비게이션 바 */}
       <HomeNavBar />
     </div>
   );
