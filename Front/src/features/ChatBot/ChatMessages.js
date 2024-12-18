@@ -11,7 +11,7 @@ const ChatMessages = ({ messages }) => {
 
   return (
     <div className="overflow-auto p-3 bg-white border rounded" style={{ height: 'var(--chat-height)' }}>
-      {messages.map((message, index) => (
+      {(messages || []).map((message, index) => (
         <div
           key={index}
           className={`d-flex ${message.sender === 'user' ? 'justify-content-end' : 'justify-content-start'} my-1`}
@@ -37,6 +37,7 @@ const ChatMessages = ({ messages }) => {
           </div>
         </div>
       ))}
+
       <div ref={messagesEndRef} />
     </div>
   );
