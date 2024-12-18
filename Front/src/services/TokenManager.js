@@ -1,4 +1,5 @@
 // src/services/TokenManager.js
+import { handleApiError } from '../utils/Utils';
 
 let accessToken = null;
 
@@ -15,9 +16,8 @@ export const clearAccessToken = () => {
 // Access Token 갱신 함수
 export const refreshAccessToken = async (api) => {
   try {
-    const response = await api.post('/auth/refresh', {
-      refreshToken: true, // Refresh Token은 HttpOnly Cookie에 의해 전달됨
-    });
+    const response = await api.post('/auth/refresh', { });
+    // refreshToken: true, Refresh Token은 HttpOnly Cookie에 의해 전달됨
     const newAccessToken = response.data.accessToken;
 
     // Access Token 갱신
@@ -26,6 +26,6 @@ export const refreshAccessToken = async (api) => {
     return newAccessToken;
   } catch (error) {
     clearAccessToken();
-    throw new Error('Access Token 갱신 실패: 사용자 로그인이 필요합니다.');
+    throw handleApiError(error, '로그인이 필요합니다.');
   }
 };

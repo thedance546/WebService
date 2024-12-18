@@ -1,6 +1,7 @@
 // src/services/AuthApi.js
-import { api, getAuthHeaders, handleApiError } from './Api';
+import { api, getAuthHeaders } from './Api';
 import { setAccessToken, clearAccessToken } from './TokenManager';
+import { handleApiError } from '../utils/Utils';
 
 // 회원가입 API
 export const register = async (email, username, password) => {
