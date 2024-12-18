@@ -9,18 +9,16 @@ const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
   const handleInputChange = (event) => setInput(event.target.value);
   const handleSendMessage = () => {
     if (input.trim() !== '') {
+      let messageToAdd;
+
       // 특정 문자가 '#'로 시작하는 경우 bot 메시지로 출력
       if (input.startsWith('#')) {
-        const newMessage = input.slice(1).trim(); // '#' 제거 후 메시지
-        addMessage({ text: newMessage, sender: "bot" });
-      } 
-      // 특정 문자가 '!'로 시작하는 경우 highlight 메시지로 출력
-      else if (input.startsWith('!')) {
-        const newMessage = input.slice(1).trim(); // '!' 제거 후 메시지
-        addMessage({ text: newMessage, sender: "user", isHighlighted: true });
+        messageToAdd = { text: input.slice(1).trim(), sender: "bot" };
       } else {
-        addMessage({ text: input, sender: "user" });
+        messageToAdd = { text: input, sender: "user" };
       }
+
+      addMessage(messageToAdd);
       setInput('');
     }
   };

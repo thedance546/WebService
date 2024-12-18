@@ -1,4 +1,4 @@
-// src/pages/MyIngredients.js
+// src/pages/MyIngredientsPage.js
 import React, { useState } from "react";
 import IngredientModal from "../features/MyIngredients/IngredientModal";
 import RecognitionResultModal from "../features/MyIngredients/RecognitionResultModal";
@@ -13,7 +13,7 @@ const getRandomIngredients = (ingredients, count) => {
   return shuffled.slice(0, count).map((item) => ({ name: item, quantity: 1 }));
 };
 
-const MyIngredients = () => {
+const MyIngredientsPage = () => {
   const ingredientModal = useModalState({ selectedFile: null, photoType: "" });
   const recognitionModal = useModalState({ resultImage: null, resultList: [] });
   const [loading, setLoading] = useState(false);
@@ -71,24 +71,6 @@ const MyIngredients = () => {
     <div className="container text-center my-ingredients">
       <h2 className="my-3">나의 식재료</h2>
 
-      {/* 추가 버튼 */}
-      <button
-        className="btn btn-success position-fixed"
-        style={{
-          bottom: "80px",
-          right: "20px",
-          width: "56px",
-          height: "56px",
-          borderRadius: "50%",
-        }}
-        onClick={() => {
-          ingredientModal.reset();
-          ingredientModal.open();
-        }}
-      >
-        <Plus size={28} />
-      </button>
-
       {/* IngredientModal */}
       {ingredientModal.isOpen && (
         <IngredientModal
@@ -129,9 +111,27 @@ const MyIngredients = () => {
         onDeleteRow={(index) => setDataFrame((prevData) => prevData.filter((_, i) => i !== index))}
       />
 
+      {/* 추가 버튼 */}
+      <button
+        className="btn btn-success position-fixed"
+        style={{
+          bottom: "80px",
+          right: "20px",
+          width: "56px",
+          height: "56px",
+          borderRadius: "50%",
+        }}
+        onClick={() => {
+          ingredientModal.reset();
+          ingredientModal.open();
+        }}
+      >
+        <Plus size={28} />
+      </button>
+
       <HomeNavBar />
     </div>
   );
 };
 
-export default MyIngredients;
+export default MyIngredientsPage;

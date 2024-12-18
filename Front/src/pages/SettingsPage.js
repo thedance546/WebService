@@ -1,4 +1,4 @@
-// src/pages/Settings.js
+// src/pages/SettingsPage.js
 import React from 'react';
 import TeamInfo from '../features/Settings/TeamInfo';
 import PrivacyPolicy from '../features/Settings/PrivacyPolicy';
@@ -8,7 +8,7 @@ import LogoutButton from '../components/molecules/LogoutButton';
 import DeleteAccountButton from '../components/molecules/DeleteAccountButton';
 import HomeNavBar from "../components/organisms/HomeNavBar";
 
-const Settings = () => {
+const SettingsPage = () => {
 
   return (
     <div className="settings-container">
@@ -33,4 +33,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default SettingsPage;

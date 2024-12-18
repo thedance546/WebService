@@ -6,9 +6,9 @@ import HomePage from './pages/HomePage';
 import RegisterForm from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 
-import MyIngredients from './pages/MyIngredients';
-import ChatBot from './pages/ChatBot';
-import Settings from './pages/Settings';
+import MyIngredientsPage from './pages/MyIngredientsPage';
+import ChatBotPage from './pages/ChatBotPage';
+import SettingsPage from './pages/SettingsPage';
 
 import { AdminProvider } from './contexts/AdminContext';
 import AdminPage from './pages/AdminPage';
@@ -32,10 +32,11 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
 
         {/* 기능 탭 경로 */}
-        <Route path="/my-ingredients" element={<MyIngredients />} />
-        <Route path="/chatbot" element={<ChatBot />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/my-ingredients" element={<MyIngredientsPage />} />
+        <Route path="/chatbot" element={<ChatBotPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
+      
       <AdminProvider>
         <Routes>
           {/* 관리자 페이지 관련 경로 */}
