@@ -11,7 +11,7 @@ const ChatMessages = ({ messages }) => {
   }, [messages]);
 
   return (
-    <div className="overflow-auto p-3 bg-white border rounded" style={{ height: 'var(--chat-height)' }}>
+    <div className="chat-messages-container">
       {(messages || []).map((message, index) => (
         <MessageBubble
           key={index}
@@ -20,10 +20,9 @@ const ChatMessages = ({ messages }) => {
           imageUrl={message.imageUrl}
         />
       ))}
-
       <div ref={messagesEndRef} />
     </div>
-  );
+  );  
 };
 
 export default ChatMessages;
