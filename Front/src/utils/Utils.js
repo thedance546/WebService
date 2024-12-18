@@ -5,8 +5,3 @@ export const calculateDate = (baseDate, daysToAdd) => {
     const format = (num) => num.toString().padStart(2, "0");
     return `${date.getFullYear().toString().slice(-2)}-${format(date.getMonth() + 1)}-${format(date.getDate())}`;
 };
-
-export const removeTokens = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-};
