@@ -7,7 +7,6 @@ import RegisterForm from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 
 import MyIngredients from './pages/MyIngredients';
-import Notification from './pages/Notification';
 import ChatBot from './pages/ChatBot';
 import Settings from './pages/Settings';
 
@@ -34,7 +33,6 @@ function App() {
 
         {/* 기능 탭 경로 */}
         <Route path="/my-ingredients" element={<MyIngredients />} />
-        <Route path="/notifications" element={<Notification />} />
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>
