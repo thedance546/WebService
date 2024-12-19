@@ -54,7 +54,6 @@ const ChatBotPage = () => {
       <OptionsModal
         isOpen={isOptionsOpen}
         onClose={toggleOptions}
-        addMessage={addMessage}
         clearMessages={clearMessages}
         handleImageUpload={handleImageUpload}
       />

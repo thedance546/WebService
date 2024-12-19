@@ -1,4 +1,5 @@
 /* src/features/ChatBot/ChatInput.css */
+
 :root {
     --input-bg-color: #f5f0ff;
     --input-border-color: #ddd;
@@ -20,10 +21,8 @@
     width: 100%;
     height: var(--input-height);
     background-color: var(--input-bg-color);
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
     border-top: 1px solid var(--input-border-color);
+    z-index: 1000;
 }
 
 .chat-input input {

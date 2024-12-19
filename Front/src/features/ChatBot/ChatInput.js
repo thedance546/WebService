@@ -1,4 +1,5 @@
 // src/features/ChatBot/ChatInput.js
+
 import React, { useState } from 'react';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
@@ -28,20 +29,13 @@ const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
   };
 
   return (
-    <div className="chat-input">
+    <div className="chat-input d-flex align-items-center justify-content-between">
       <Button
         onClick={toggleOptions}
-        className="me-2"
-        style={{
-          width: 'var(--button-size)',
-          height: 'var(--button-size)',
-          color: 'var(--button-icon-color)',
-          fontSize: 'var(--option-icon-size)',
-          borderRadius: '50%',
-          backgroundColor: 'transparent',
-        }}
+        className="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center me-2"
+        style={{ width: 'var(--button-size)', height: 'var(--button-size)' }}
       >
-        <Plus />
+        <Plus size="var(--option-icon-size)" />
       </Button>
 
       <Input
@@ -55,15 +49,10 @@ const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
 
       <Button
         onClick={handleSendMessage}
-        className="ms-2"
-        style={{
-          width: 'var(--button-size)',
-          height: 'var(--button-size)',
-          borderRadius: '50%',
-          backgroundColor: 'transparent',
-        }}
+        className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center ms-2"
+        style={{ width: 'var(--button-size)', height: 'var(--button-size)' }}
       >
-        <Send />
+        <Send size="var(--option-icon-size)" />
       </Button>
     </div>
   );
