@@ -1,8 +1,9 @@
-name: Test YOLO REST API
+name: YOLO API Test and Docker Build
 
 on:
   push:
     branches:
+      - main
       - yolo
   pull_request:
 
@@ -45,14 +46,31 @@ jobs:
       run: |
         cd yolo
         python restapi.py --port 5000 --model yolov5s &
-        sleep 10  # 서버가 실행될 시간을 기다림
+        sleep 10 
 
     - name: Test API with curl
       run: |
         curl -X POST http://localhost:5000/v1/object-detection/image_team6/yolov5s \
           -F image=@yolo/tests/test_image.jpg
 
-    # 7. Cleanup
+    # 7. Docker 이미지 빌드
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest .
+
+    # 8. Docker Hub 로그인
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.YOLO_DOCKER_USERNAME }}
+        password: ${{ secrets.YOLO_DOCKERHUB_TOKEN }}
+
+    # 9. Docker 이미지 푸시
+    - name: Push Docker image to Docker Hub
+      run: |
+        docker push ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
+
+    # 10. Cleanup
     - name: Stop Flask Server
       run: |
         pkill -f restapi.py
