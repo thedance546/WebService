@@ -28,9 +28,9 @@ jobs:
     - name: Build and push Docker image (without cache)
       run: |
         docker buildx build --no-cache -t ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest ./yolo
-        docker push ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
+    #     docker push ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
 
-    - name: Verify Docker image
-      run: |
-        docker pull ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
-        docker images
+    # - name: Verify Docker image
+    #   run: |
+    #     docker pull ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
+    #     docker images
