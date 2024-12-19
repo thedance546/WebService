@@ -1,6 +1,7 @@
 // src/features/ChatBot/ChatMessages.js
 import React, { useRef, useEffect } from 'react';
-import './ChatBotStylesConfig.css';
+import MessageBubble from './MessageBubble';
+import './ChatMessages.css';
 
 const ChatMessages = ({ messages }) => {
   const messagesEndRef = useRef(null);
@@ -10,36 +11,18 @@ const ChatMessages = ({ messages }) => {
   }, [messages]);
 
   return (
-    <div className="overflow-auto p-3 bg-white border rounded" style={{ height: 'var(--chat-height)' }}>
-      {messages.map((message, index) => (
-        <div
+    <div className="chat-messages-container">
+      {(messages || []).map((message, index) => (
+        <MessageBubble
           key={index}
-          className={`d-flex ${message.sender === 'user' ? 'justify-content-end' : 'justify-content-start'} my-1`}
-        >
-          <div
-            className={`p-2 rounded-3 ${message.sender === 'user' ? 'bg-primary text-white' : 'bg-secondary text-white'}`}
-            style={{
-              maxWidth: '60%',
-              backgroundColor: message.sender === 'user' ? 'var(--user-msg-bg)' : 'var(--bot-msg-bg)',
-              borderRadius: 'var(--msg-border-radius)',
-              textAlign: 'left',
-            }}
-          >
-            {message.imageUrl ? (
-              <img
-                src={message.imageUrl}
-                alt="uploaded"
-                style={{ maxWidth: '100%', borderRadius: '10px' }}
-              />
-            ) : (
-              message.text
-            )}
-          </div>
-        </div>
+          sender={message.sender}
+          text={message.text}
+          imageUrl={message.imageUrl}
+        />
       ))}
       <div ref={messagesEndRef} />
     </div>
-  );
+  );  
 };
 
 export default ChatMessages;

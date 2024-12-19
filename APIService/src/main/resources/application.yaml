@@ -3,6 +3,10 @@ security:
     key: "25ea99c20638c1fbdcaaa55f30d2a5222d60307de871d6c8d03395f785a31cdf"
 
 spring:
+  sql:
+    init:
+      mode: always
+
   profiles:
     active: test
 

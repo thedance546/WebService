@@ -1,0 +1,54 @@
+/* src/features/ChatBot/ChatInput.css */
+:root {
+    --input-bg-color: #f5f0ff;
+    --input-border-color: #ddd;
+    --input-text-color: #333;
+    --input-height: 60px;
+    --button-size: 50px;
+    --option-icon-size: 24px;
+    --button-icon-color: #007bff;
+
+    /* HomeNavBar 높이 */
+    --navbar-height: 50px;
+    --chat-height: calc(100vh - var(--notification-height) - var(--navbar-height) - var(--input-height));
+}
+
+.chat-input {
+    position: fixed;
+    bottom: var(--navbar-height);
+    left: 0;
+    width: 100%;
+    height: var(--input-height);
+    background-color: var(--input-bg-color);
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-top: 1px solid var(--input-border-color);
+}
+
+.chat-input input {
+    flex-grow: 1;
+    height: var(--input-height);
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 20px;
+    color: var(--input-text-color);
+    padding: 5px 10px;
+}
+
+.chat-input button {
+    width: var(--button-size);
+    height: var(--button-size);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: var(--button-icon-color);
+}
+
+@media (max-width: 768px) {
+    .chat-input {
+        bottom: var(--navbar-height);
+    }
+}
