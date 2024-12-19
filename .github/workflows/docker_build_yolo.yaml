@@ -27,7 +27,7 @@ jobs:
 
     - name: Build and push Docker image (without cache)
       run: |
-        docker build --no-cache --memory=4g --cpus=2 -t ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest ./yolo
+        docker buildx build --no-cache -t ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest ./yolo
         docker push ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
 
     - name: Verify Docker image
