@@ -30,30 +30,29 @@ const MyIngredientsPage = () => {
 
   const handleUploadConfirm = () => {
     const { selectedFile, photoType } = ingredientModal.state;
-  
+
     if (!selectedFile || !photoType) {
       alert("사진과 이미지 타입을 선택해주세요.");
       return;
     }
-  
+
     setLoading(true);
-  
+
     setTimeout(() => {
       setLoading(false);
-  
+
       const randomCount = Math.floor(Math.random() * 5) + 4;
       const randomIngredients = getRandomIngredients(ingredientList, randomCount);
-  
+
       recognitionModal.setState({
-        resultImage: URL.createObjectURL(selectedFile),
+        resultImage: selectedFile, // 파일 객체 자체 전달
         resultList: randomIngredients,
       });
-  
+
       ingredientModal.close();
       recognitionModal.open();
     }, 3000);
   };
-  
 
   const handleRecognitionConfirm = (editedIngredients) => {
     console.log("Edited Ingredients:", editedIngredients); // 데이터 확인용 로그
@@ -80,10 +79,10 @@ const MyIngredientsPage = () => {
           onConfirm={handleUploadConfirm}
           onCancel={ingredientModal.close}
           selectedFile={ingredientModal.state.selectedFile}
-          fileChangeHandler={(e) =>
+          fileChangeHandler={(file) =>
             ingredientModal.setState({
               ...ingredientModal.state,
-              selectedFile: e.target.files[0] ? URL.createObjectURL(e.target.files[0]) : null,
+              selectedFile: file,
             })
           }
           photoType={ingredientModal.state.photoType}

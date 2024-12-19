@@ -46,9 +46,11 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
   return (
     <Modal title="인식 결과" onClose={onClose}>
       {/* 탐지 결과 이미지 */}
-      <div className="mb-3 text-center">
-        <img src={result.resultImage} alt="탐지 결과 이미지" className="img-fluid rounded mb-3" />
-      </div>
+      {result.resultImage && (
+        <div className="mb-3 text-center">
+          <img src={URL.createObjectURL(result.resultImage)} alt="탐지 결과 이미지" className="img-fluid rounded mb-3" />
+        </div>
+      )}
 
       {/* 구매일자 입력 */}
       <div className="mb-3">
