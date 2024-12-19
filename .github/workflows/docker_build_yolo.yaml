@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - yolo
   workflow_dispatch:
 
 jobs:
