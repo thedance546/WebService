@@ -6,7 +6,7 @@ import OptionsModal from '../features/ChatBot/OptionsModal';
 import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import NotificationBar from '../features/ChatBot/NotificationBar';
-import { useModalState } from '../hooks/useModalState';
+import { usePopupState } from '../hooks/usePopupState';
 
 const ChatBotPage = () => {
   const [messages, setMessages] = useState(() => {
@@ -14,8 +14,8 @@ const ChatBotPage = () => {
     return savedMessages ? JSON.parse(savedMessages) : [];
   });
 
-  const optionsModal = useModalState();
-  const recipeModal = useModalState();
+  const optionsModal = usePopupState();
+  const recipeModal = usePopupState();
 
   const addMessage = (message) => {
     setMessages((prevMessages) => (Array.isArray(prevMessages) ? [...prevMessages, message] : [message]));

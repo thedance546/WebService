@@ -4,7 +4,7 @@ import IngredientModal from "../features/MyIngredients/IngredientModal";
 import RecognitionResultModal from "../features/MyIngredients/RecognitionResultModal";
 import LoadingModal from "../components/organisms/LoadingModal";
 import IngredientsTable from "../features/MyIngredients/IngredientsTable";
-import { useModalState } from "../hooks/useModalState";
+import { usePopupState } from "../hooks/usePopupState";
 import { Plus } from "react-bootstrap-icons";
 import HomeNavBar from "../components/organisms/HomeNavBar";
 
@@ -14,8 +14,8 @@ const getRandomIngredients = (ingredients, count) => {
 };
 
 const MyIngredientsPage = () => {
-  const ingredientModal = useModalState({ selectedFile: null, photoType: "" });
-  const recognitionModal = useModalState({ resultImage: null, resultList: [] });
+  const ingredientModal = usePopupState({ selectedFile: null, photoType: "" });
+  const recognitionModal = usePopupState({ resultImage: null, resultList: [] });
   const [loading, setLoading] = useState(false);
   const [dataFrame, setDataFrame] = useState([]);
 

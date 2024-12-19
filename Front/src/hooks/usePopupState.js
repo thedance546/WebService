@@ -1,7 +1,7 @@
-// src/hooks/useModalState.js
+// src/hooks/usePopupState.js
 import { useState } from 'react';
 
-export const useModalState = (initialState = {}) => {
+export const usePopupState = (initialState = {}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState(initialState);
   const initialCopy = { ...initialState };

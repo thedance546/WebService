@@ -1,6 +1,6 @@
 // src/features/MyIngredients/IngredientModal.js
 import React from 'react';
-import Modal from '../../components/atoms/Modal';
+import Modal from '../../components/molecules/Modal';
 import FileUploader from './FileUploader';
 import PhotoTypeOptions from './PhotoTypeOptions';
 
