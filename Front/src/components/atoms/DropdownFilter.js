@@ -1,22 +1,25 @@
 // src/components/atoms/DropdownFilter.js
-import React from "react";
-import PropTypes from "prop-types";
 
-const Filter = ({ options, value, onChange, className }) => {
+import React from 'react';
+import { Dropdown } from 'react-bootstrap';
+import PropTypes from 'prop-types';
+
+const DropdownFilter = ({ options, value, onChange }) => {
   return (
-    <select
-      className={`form-select ${className}`}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      {options.map((option, index) => (
-        <option key={index} value={option.value}>{option.label}</option>
-      ))}
-    </select>
+    <Dropdown>
+      <Dropdown.Toggle variant="secondary">{value}</Dropdown.Toggle>
+      <Dropdown.Menu>
+        {options.map((option, index) => (
+          <Dropdown.Item key={index} onClick={() => onChange(option.value)}>
+            {option.label}
+          </Dropdown.Item>
+        ))}
+      </Dropdown.Menu>
+    </Dropdown>
   );
 };
 
-Filter.propTypes = {
+DropdownFilter.propTypes = {
   options: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string.isRequired,
@@ -25,11 +28,6 @@ Filter.propTypes = {
   ).isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  className: PropTypes.string,
 };
 
-Filter.defaultProps = {
-  className: "",
-};
-
-export default Filter;
+export default DropdownFilter;

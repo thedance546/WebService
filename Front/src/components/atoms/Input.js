@@ -1,6 +1,7 @@
 // src/components/atoms/Input.js
-import React from "react";
-import PropTypes from "prop-types";
+
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const Input = ({ type, value, onChange, placeholder, className, disabled, ...props }) => {
   return (
@@ -9,8 +10,8 @@ const Input = ({ type, value, onChange, placeholder, className, disabled, ...pro
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`form-control ${className} ${disabled ? 'is-disabled' : ''}`}
-      disabled={props.disabled}
+      className={`form-control ${className}`}
+      disabled={disabled}
       {...props}
     />
   );
@@ -25,9 +26,9 @@ Input.propTypes = {
 };
 
 Input.defaultProps = {
-  type: "text",
-  placeholder: "",
-  className: "",
+  type: 'text',
+  placeholder: '',
+  className: '',
 };
 
 export default Input;
