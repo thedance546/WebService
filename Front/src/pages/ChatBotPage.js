@@ -1,11 +1,10 @@
 // src/pages/ChatBotPage.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/OptionsModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import NotificationBar from '../features/ChatBot/NotificationBar';
-import QuickActions from '../features/ChatBot/QuickActions';
 
 const ChatBotPage = () => {
   const [messages, setMessages] = useState(() => {
@@ -14,9 +13,11 @@ const ChatBotPage = () => {
   });
 
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem('chatMessages', JSON.stringify(messages));
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const addMessage = (message) => {
@@ -37,12 +38,6 @@ const ChatBotPage = () => {
     addMessage({ sender: 'user', imageUrl });
   };
 
-  const quickActions = [
-    { label: '도움말', icon: '❓', onClick: () => alert('도움말 보기') },
-    { label: '초기화', icon: '♻️', onClick: clearMessages },
-    { label: '사진 업로드', icon: '📷', onClick: () => document.getElementById('file-upload').click() },
-  ];
-
   return (
     <div className="chatbot-container">
       {/* 상단 알림창 */}
@@ -50,6 +45,7 @@ const ChatBotPage = () => {
 
       {/* 채팅 메시지 영역 */}
       <ChatMessages messages={messages} />
+      <div ref={chatEndRef} />
 
       {/* 입력창 */}
       <ChatInput addMessage={addMessage} toggleOptions={toggleOptions} disabled={isOptionsOpen} />
@@ -65,10 +61,6 @@ const ChatBotPage = () => {
 
       {/* 하단 네비게이션 바 */}
       <HomeNavBar />
-      
-      {/* 빠른 액션 버튼 */}
-      <QuickActions actions={quickActions} />
-      
     </div>
   );
 };

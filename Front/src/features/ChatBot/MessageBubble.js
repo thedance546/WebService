@@ -1,28 +1,24 @@
 // src/features/ChatBot/MessageBubble.js
 import React from 'react';
 import PropTypes from 'prop-types';
+import './MessageBubble.css';
 
 const MessageBubble = ({ sender, text, imageUrl }) => {
   const isUser = sender === 'user';
+  const isBot = sender === 'bot';
 
   return (
     <div
-      className={`d-flex ${isUser ? 'justify-content-end' : 'justify-content-start'} my-1`}
+      className={`message-container ${isUser ? 'user-message' : isBot ? 'bot-message' : 'generic-message'}`}
     >
       <div
-        className={`p-2 rounded-3 ${isUser ? 'bg-primary text-white' : 'bg-secondary text-white'}`}
-        style={{
-          maxWidth: '60%',
-          backgroundColor: isUser ? 'var(--user-msg-bg)' : 'var(--bot-msg-bg)',
-          borderRadius: 'var(--msg-border-radius)',
-          textAlign: 'left',
-        }}
+        className={`message-bubble ${isUser ? 'user-bubble' : isBot ? 'bot-bubble' : 'generic-bubble'}`}
       >
         {imageUrl ? (
           <img
             src={imageUrl}
             alt="uploaded"
-            style={{ maxWidth: '100%', borderRadius: '10px' }}
+            className="message-image"
           />
         ) : (
           text
