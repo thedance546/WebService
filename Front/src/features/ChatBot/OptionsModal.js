@@ -1,7 +1,5 @@
 // src/features/ChatBot/OptionsModal.js
 
-// src/features/ChatBot/OptionsModal.js
-
 import React from 'react';
 import Modal from '../../components/atoms/Modal';
 import Button from '../../components/atoms/Button';

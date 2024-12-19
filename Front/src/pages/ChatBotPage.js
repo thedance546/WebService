@@ -1,5 +1,4 @@
 // src/pages/ChatBotPage.js
-
 import React, { useState } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
@@ -7,6 +6,7 @@ import OptionsModal from '../features/ChatBot/OptionsModal';
 import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import NotificationBar from '../features/ChatBot/NotificationBar';
+import { useModalState } from '../hooks/useModalState';
 
 const ChatBotPage = () => {
   const [messages, setMessages] = useState(() => {
@@ -14,8 +14,8 @@ const ChatBotPage = () => {
     return savedMessages ? JSON.parse(savedMessages) : [];
   });
 
-  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
+  const optionsModal = useModalState();
+  const recipeModal = useModalState();
 
   const addMessage = (message) => {
     setMessages((prevMessages) => (Array.isArray(prevMessages) ? [...prevMessages, message] : [message]));
@@ -24,10 +24,6 @@ const ChatBotPage = () => {
   const clearMessages = () => {
     setMessages([]);
     localStorage.removeItem('chatMessages');
-  };
-
-  const toggleOptions = () => {
-    setIsOptionsOpen(!isOptionsOpen);
   };
 
   const handleImageUpload = (file) => {
@@ -44,21 +40,21 @@ const ChatBotPage = () => {
       <ChatMessages messages={messages} />
 
       {/* 입력창 */}
-      <ChatInput addMessage={addMessage} toggleOptions={toggleOptions} disabled={isOptionsOpen} />
+      <ChatInput addMessage={addMessage} toggleOptions={optionsModal.open} disabled={optionsModal.isOpen} />
 
       {/* 옵션 모달 */}
       <OptionsModal
-        isOpen={isOptionsOpen}
-        onClose={toggleOptions}
+        isOpen={optionsModal.isOpen}
+        onClose={optionsModal.close}
         clearMessages={clearMessages}
         handleImageUpload={handleImageUpload}
-        openRecipeModal={() => setIsRecipeModalOpen(true)}
+        openRecipeModal={recipeModal.open}
       />
 
       {/* 레시피 추천 모달 */}
       <RecipeRecommendationModal
-        isOpen={isRecipeModalOpen}
-        onClose={() => setIsRecipeModalOpen(false)}
+        isOpen={recipeModal.isOpen}
+        onClose={recipeModal.close}
       />
 
       {/* 하단 네비게이션 바 */}

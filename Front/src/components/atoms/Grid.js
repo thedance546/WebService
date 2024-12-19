@@ -4,21 +4,43 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Grid = ({ children, columns, columnsMd, className }) => {
-  const gridClass = `row row-cols-${columns} ${columnsMd ? `row-cols-md-${columnsMd}` : ''} ${className}`;
+  const gridStyle = {
+    display: 'grid',
+    gap: '1rem',
+    gridTemplateColumns: `repeat(${columns}, 1fr)`, // 기본 열 개수
+  };
 
-  return <div className={gridClass.trim()}>{children}</div>;
+  const mediaQueryStyle = columnsMd
+    ? `@media (min-width: 768px) { 
+         grid-template-columns: repeat(${columnsMd}, 1fr); 
+       }`
+    : '';
+
+  return (
+    <>
+      <style>
+        {`
+          .responsive-grid {
+            ${mediaQueryStyle}
+          }
+        `}
+      </style>
+      <div className={`responsive-grid ${className}`} style={gridStyle}>
+        {children}
+      </div>
+    </>
+  );
 };
 
 Grid.propTypes = {
   children: PropTypes.node.isRequired,
-  columns: PropTypes.number,
-  columnsMd: PropTypes.number,
-  className: PropTypes.string,
+  columns: PropTypes.number.isRequired, // 기본 열 개수
+  columnsMd: PropTypes.number, // 중간 화면 이상 열 개수
+  className: PropTypes.string, // 추가 클래스
 };
 
 Grid.defaultProps = {
-  columns: 2,
-  columnsMd: 3,
+  columnsMd: null,
   className: '',
 };
 
