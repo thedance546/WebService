@@ -1,11 +1,12 @@
 // src/services/AdminApi.js
-import { api, getAuthHeaders, handleApiError } from "./Api";
+import { api, getAuthHeaders } from './Api';
+import { handleApiError } from '../utils/Utils';
 
 // 카테고리 관련 API
 export const fetchCategories = async () => {
   try {
     const response = await api.get("/items/categories", {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
     return response.data;
   } catch (error) {
@@ -16,7 +17,7 @@ export const fetchCategories = async () => {
 export const createCategory = async (categoryName) => {
   try {
     const response = await api.post("/items/category", { categoryName }, {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
     return response.data;
   } catch (error) {
@@ -27,7 +28,7 @@ export const createCategory = async (categoryName) => {
 export const deleteCategory = async (categoryId) => {
   try {
     await api.delete(`/items/category/${categoryId}`, {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
   } catch (error) {
     throw handleApiError(error, "카테고리 삭제 중 오류 발생");
@@ -38,7 +39,7 @@ export const deleteCategory = async (categoryId) => {
 export const fetchStorageMethods = async () => {
   try {
     const response = await api.get("/items/storage-methods", {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
     return response.data;
   } catch (error) {
@@ -49,7 +50,7 @@ export const fetchStorageMethods = async () => {
 export const createStorageMethod = async (methodName) => {
   try {
     const response = await api.post("/items/storage-method", { storageMethodName: methodName }, {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
     return response.data;
   } catch (error) {
@@ -60,7 +61,7 @@ export const createStorageMethod = async (methodName) => {
 export const deleteStorageMethod = async (methodId) => {
   try {
     await api.delete(`/items/storage-method/${methodId}`, {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
   } catch (error) {
     throw handleApiError(error, "보관 방법 삭제 중 오류 발생");
@@ -71,7 +72,7 @@ export const deleteStorageMethod = async (methodId) => {
 export const fetchItems = async () => {
   try {
     const response = await api.get("/items", {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
     return response.data;
   } catch (error) {
@@ -82,7 +83,7 @@ export const fetchItems = async () => {
 export const createItem = async (item) => {
   try {
     const response = await api.post("/items/item", item, {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
     return response.data;
   } catch (error) {
@@ -93,7 +94,7 @@ export const createItem = async (item) => {
 export const deleteItem = async (itemId) => {
   try {
     await api.delete(`/items/${itemId}`, {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('Bearer'),
     });
   } catch (error) {
     throw handleApiError(error, "식재료 삭제 중 오류 발생");

@@ -20,6 +20,6 @@ public class MultipartInputStreamFileResource extends InputStreamResource {
 
     @Override
     public long contentLength() {
-        return -1; // Content length를 계산하지 않음
+        return -1;
     }
 }

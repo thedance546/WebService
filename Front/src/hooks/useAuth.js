@@ -1,7 +1,7 @@
 // src/hooks/useAuth.js
 import { useNavigate } from "react-router-dom";
 import { login, logout, register, deleteAccount } from "../services/AuthApi";
-import { removeTokens } from "../utils/Utils";
+import { getAccessToken } from "../services/TokenManager";
 import { jwtDecode } from "jwt-decode";
 
 const useAuth = () => {
@@ -11,7 +11,7 @@ const useAuth = () => {
     try {
       const { success, message } = await login(email, password);
       if (success) {
-        let accessToken = localStorage.getItem('accessToken');
+        let accessToken = getAccessToken();
         const userRole = jwtDecode(accessToken).role;
         navigate(userRole === 'ADMIN' ? '/admin' : '/my-ingredients');
       }
@@ -33,7 +33,6 @@ const useAuth = () => {
   const handleLogout = async () => {
     const { success, message } = await logout();
     if (success) {
-      removeTokens();
       navigate('/');
     }
     return message;
@@ -42,7 +41,6 @@ const useAuth = () => {
   const handleDeleteAccount = async () => {
     const { success, message } = await deleteAccount();
     if (success) {
-      removeTokens();
       navigate('/');
     }
     return message;

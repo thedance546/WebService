@@ -2,14 +2,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const Input = ({ type, value, onChange, placeholder, className, ...props }) => {
+const Input = ({ type, value, onChange, placeholder, className, disabled, ...props }) => {
   return (
     <input
       type={type}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`form-control ${className}`}
+      className={`form-control ${className} ${disabled ? 'is-disabled' : ''}`}
+      disabled={props.disabled}
       {...props}
     />
   );

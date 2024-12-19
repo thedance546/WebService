@@ -1,7 +1,9 @@
 // src/features/ChatBot/ChatInput.js
 import React, { useState } from 'react';
-import { Send } from 'react-bootstrap-icons';
-import './ChatBotStylesConfig.css';
+import Button from '../../components/atoms/Button';
+import Input from '../../components/atoms/Input';
+import { Send, Plus } from 'react-bootstrap-icons';
+import './ChatInput.css';
 
 const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
   const [input, setInput] = useState('');
@@ -9,18 +11,11 @@ const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
   const handleInputChange = (event) => setInput(event.target.value);
   const handleSendMessage = () => {
     if (input.trim() !== '') {
-      // 특정 문자가 '#'로 시작하는 경우 bot 메시지로 출력
-      if (input.startsWith('#')) {
-        const newMessage = input.slice(1).trim(); // '#' 제거 후 메시지
-        addMessage({ text: newMessage, sender: "bot" });
-      } 
-      // 특정 문자가 '!'로 시작하는 경우 highlight 메시지로 출력
-      else if (input.startsWith('!')) {
-        const newMessage = input.slice(1).trim(); // '!' 제거 후 메시지
-        addMessage({ text: newMessage, sender: "user", isHighlighted: true });
-      } else {
-        addMessage({ text: input, sender: "user" });
-      }
+      const messageToAdd = input.startsWith('#')
+        ? { text: input.slice(1).trim(), sender: 'bot' }
+        : { text: input, sender: 'user' };
+
+      addMessage(messageToAdd);
       setInput('');
     }
   };
@@ -33,43 +28,43 @@ const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
   };
 
   return (
-    <div
-      className="chat-input d-flex align-items-center position-fixed"
-      style={{
-        height: 'var(--input-height)',
-        bottom: 'var(--input-bottom)',
-        left: 'var(--input-left)',
-        width: 'var(--input-width)',
-        zIndex: 10,
-      }}
-    >
-      <button
-        className="btn btn-outline-secondary me-2"
-        style={{ width: 'var(--button-width)', height: 'var(--button-height)' }}
+    <div className="chat-input">
+      <Button
         onClick={toggleOptions}
-        disabled={disabled}
+        className="me-2"
+        style={{
+          width: 'var(--button-size)',
+          height: 'var(--button-size)',
+          color: 'var(--button-icon-color)',
+          fontSize: 'var(--option-icon-size)',
+          borderRadius: '50%',
+          backgroundColor: 'transparent',
+        }}
       >
-        +
-      </button>
-      <input
-        type="text"
-        className="form-control flex-grow-1"
-        placeholder="메시지를 입력하세요..."
+        <Plus />
+      </Button>
+
+      <Input
         value={input}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
+        placeholder="메시지를 입력하세요..."
+        className="flex-grow-1"
         disabled={disabled}
-        style={{ height: 'var(--input-height)' }}
       />
-      <button
-        className="btn btn-primary ms-2"
-        style={{ width: 'var(--button-width)', height: 'var(--button-height)' }}
+
+      <Button
         onClick={handleSendMessage}
-        aria-label="전송"
-        disabled={disabled}
+        className="ms-2"
+        style={{
+          width: 'var(--button-size)',
+          height: 'var(--button-size)',
+          borderRadius: '50%',
+          backgroundColor: 'transparent',
+        }}
       >
-        <Send size="var(--icon-size)" />
-      </button>
+        <Send />
+      </Button>
     </div>
   );
 };
