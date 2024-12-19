@@ -24,15 +24,10 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./yolo
-        file: ./yolo/Dockerfile
-        platforms: linux/amd64,linux/arm64
-        push: true
-        tags: |
-          ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
+    - name: Build and push Docker image (without cache)
+      run: |
+        docker build --no-cache -t ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest ./yolo
+        docker push ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
 
     - name: Verify Docker image
       run: |
