@@ -1,0 +1,58 @@
+name: Test YOLO REST API
+
+on:
+  push:
+    branches:
+      - yolo
+  pull_request:
+
+jobs:
+  test-restapi:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Repository Checkout
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Set up Python Environment
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    # 3. Change to YOLO Directory
+    - name: Change to YOLO directory
+      run: cd yolo
+
+    # 4. Install Dependencies
+    - name: Install dependencies
+      run: |
+        cd yolo
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu  # CPU 전용
+
+    # 5. Lint the Code
+    - name: Run flake8 for linting
+      run: |
+        cd yolo
+        pip install flake8
+        flake8 restapi.py
+
+    # 6. Test API
+    - name: Start Flask Server
+      run: |
+        cd yolo
+        python restapi.py --port 5000 --model yolov5s &
+        sleep 10  # 서버가 실행될 시간을 기다림
+
+    - name: Test API with curl
+      run: |
+        curl -X POST http://localhost:5000/v1/object-detection/image_team6/yolov5s \
+          -F image=@yolo/tests/test_image.jpg
+
+    # 7. Cleanup
+    - name: Stop Flask Server
+      run: |
+        pkill -f restapi.py
