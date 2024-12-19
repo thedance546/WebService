@@ -1,4 +1,5 @@
 // src/pages/ChatBotPage.js
+
 import React, { useState } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
@@ -15,7 +16,11 @@ const ChatBotPage = () => {
   });
 
   const optionsModal = usePopupState();
-  const recipeModal = usePopupState();
+  const recipeModal = usePopupState({
+    selectedFile: null,
+    detectionResult: null,
+    loading: false,
+  });
 
   const addMessage = (message) => {
     setMessages((prevMessages) => (Array.isArray(prevMessages) ? [...prevMessages, message] : [message]));
@@ -52,10 +57,17 @@ const ChatBotPage = () => {
       />
 
       {/* 레시피 추천 모달 */}
-      <RecipeRecommendationModal
-        isOpen={recipeModal.isOpen}
-        onClose={recipeModal.close}
-      />
+      {recipeModal.isOpen && (
+        <RecipeRecommendationModal
+          isOpen={recipeModal.isOpen}
+          onClose={() => {
+            recipeModal.close();
+            recipeModal.reset(); // 상태 초기화
+          }}
+          state={recipeModal.state}
+          setState={recipeModal.setState}
+        />
+      )}
 
       {/* 하단 네비게이션 바 */}
       <HomeNavBar />

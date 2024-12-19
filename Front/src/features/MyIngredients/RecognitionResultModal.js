@@ -1,126 +1,80 @@
-// src/features/MyIngredients/RecognitionResultModal.js
+// src/features/ChatBot/RecipeRecommendationModal.js
 
 import React, { useState } from 'react';
-import Modal from '../../components/molecules/Modal';
-import Input from '../../components/atoms/Input';
+import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
+import FileUploader from '../../components/molecules/FileUploader';
+import Button from '../../components/atoms/Button';
 
-const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
-  const [editedResult, setEditedResult] = useState(result.resultList);
-  const [purchaseDate, setPurchaseDate] = useState("");
+const RecipeRecommendationModal = ({ isOpen, onClose }) => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [detectionResult, setDetectionResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (index, field, value) => {
-    const updated = [...editedResult];
-    updated[index][field] = value;
-    setEditedResult(updated);
+  const handleFileChange = (file) => {
+    setSelectedFile(file);
   };
 
-  const handleAddRow = () => {
-    setEditedResult([...editedResult, { name: '', quantity: '' }]);
-  };
-
-  const handleRemoveRow = (index) => {
-    const updated = editedResult.filter((_, i) => i !== index);
-    setEditedResult(updated);
-  };
-
-  const handleConfirm = () => {
-    if (!purchaseDate) {
-      alert("구매일자를 입력해주세요.");
+  const handleDetection = async () => {
+    if (!selectedFile) {
+      alert('이미지를 업로드해주세요.');
       return;
     }
 
-    const validItems = editedResult.filter((item) => item.name.trim() !== "");
-    if (validItems.length === 0) {
-      alert("추가할 유효한 항목이 없습니다.");
-      return;
-    }
+    setLoading(true);
 
-    const resultWithDate = validItems.map((item) => ({
-      ...item,
-      purchaseDate,
-    }));
-
-    onConfirm(resultWithDate);
+    // 테스트용 코드: 실제 API 호출 대신 가짜 결과를 반환
+    setTimeout(() => {
+      const fakeResult = {
+        processedImage: 'https://via.placeholder.com/400x300.png?text=Detection+Result',
+        objects: [
+          { name: 'Tomato', confidence: 0.95 },
+          { name: 'Carrot', confidence: 0.89 },
+        ],
+      };
+      setDetectionResult(fakeResult);
+      setLoading(false);
+    }, 2000);
   };
 
   return (
-    <Modal title="인식 결과" onClose={onClose}>
-      {/* 탐지 결과 이미지 */}
-      {result.resultImage && (
-        <div className="mb-3 text-center">
-          <img src={URL.createObjectURL(result.resultImage)} alt="탐지 결과 이미지" className="img-fluid rounded mb-3" />
+    isOpen && (
+      <FullScreenOverlay
+        title="레시피 추천"
+        onClose={onClose}
+        headerStyle={{ backgroundColor: '#007bff', color: '#fff' }}
+      >
+        <FileUploader onFileSelect={handleFileChange} />
+
+        <div className="d-flex flex-column align-items-center">
+          {/* 처리 결과 자리 */}
+          {detectionResult ? (
+            <div className="mb-3">
+              <h5>탐지 결과 이미지</h5>
+              <img
+                src={detectionResult.processedImage}
+                alt="객체 탐지 결과"
+                className="img-fluid mb-3"
+              />
+              <h6>탐지된 객체</h6>
+              <pre>{JSON.stringify(detectionResult.objects, null, 2)}</pre>
+            </div>
+          ) : (
+            <div className="mb-3" style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8f9fa', border: '1px dashed #ced4da' }}>
+              <span>탐지 결과가 여기에 표시됩니다.</span>
+            </div>
+          )}
         </div>
-      )}
 
-      {/* 구매일자 입력 */}
-      <div className="mb-3">
-        <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
-        <Input
-          type="date"
-          id="purchaseDate"
-          value={purchaseDate}
-          onChange={(e) => setPurchaseDate(e.target.value)}
-          className="form-control"
-        />
-      </div>
-
-      {/* 상품명 및 수량 입력 */}
-      <table className="table">
-        <thead>
-          <tr>
-            <th>상품명</th>
-            <th>수량</th>
-            <th>삭제</th>
-          </tr>
-        </thead>
-        <tbody>
-          {editedResult.map((item, index) => (
-            <tr key={index}>
-              <td>
-                <Input
-                  type="text"
-                  value={item.name}
-                  onChange={(e) => handleChange(index, 'name', e.target.value)}
-                  className="form-control"
-                />
-              </td>
-              <td>
-                <Input
-                  type="number"
-                  value={item.quantity || ''}
-                  onChange={(e) => handleChange(index, 'quantity', e.target.value)}
-                  className="form-control"
-                />
-              </td>
-              <td>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleRemoveRow(index)}
-                >
-                  X
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* 버튼 그룹 */}
-      <div className="d-flex justify-content-between mt-3">
-        <button className="btn btn-primary" onClick={handleAddRow}>
-          항목 추가
-        </button>
-        <div>
-          <button className="btn btn-success me-2" onClick={handleConfirm}>
-            확인
-          </button>
-          <button className="btn btn-danger" onClick={onClose}>
-            취소
-          </button>
-        </div>
-      </div>
-    </Modal>
+        <Button
+          onClick={handleDetection}
+          className="btn btn-primary mb-3"
+          disabled={loading}
+        >
+          {loading ? '처리 중...' : '객체 탐지 시작'}
+        </Button>
+      </FullScreenOverlay>
+    )
   );
 };
 
-export default RecognitionResultModal;
+export default RecipeRecommendationModal;
