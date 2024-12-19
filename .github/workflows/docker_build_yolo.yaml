@@ -3,6 +3,7 @@ name: YOLO API Test and Docker Build
 on:
   push:
     branches:
+      - main
       - yolo
   pull_request:
 
@@ -45,7 +46,7 @@ jobs:
       run: |
         cd yolo
         python restapi.py --port 5000 --model yolov5s &
-        sleep 10  # 서버가 실행될 시간을 기다림
+        sleep 10 
 
     - name: Test API with curl
       run: |
