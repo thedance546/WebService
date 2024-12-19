@@ -30,27 +30,30 @@ const MyIngredientsPage = () => {
 
   const handleUploadConfirm = () => {
     const { selectedFile, photoType } = ingredientModal.state;
-
+  
     if (!selectedFile || !photoType) {
       alert("사진과 이미지 타입을 선택해주세요.");
       return;
     }
-
+  
     setLoading(true);
+  
     setTimeout(() => {
       setLoading(false);
+  
       const randomCount = Math.floor(Math.random() * 5) + 4;
       const randomIngredients = getRandomIngredients(ingredientList, randomCount);
-
+  
       recognitionModal.setState({
-        resultImage: selectedFile,
+        resultImage: URL.createObjectURL(selectedFile),
         resultList: randomIngredients,
       });
-
+  
       ingredientModal.close();
       recognitionModal.open();
     }, 3000);
   };
+  
 
   const handleRecognitionConfirm = (editedIngredients) => {
     console.log("Edited Ingredients:", editedIngredients); // 데이터 확인용 로그

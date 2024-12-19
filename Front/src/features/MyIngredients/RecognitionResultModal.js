@@ -1,4 +1,5 @@
 // src/features/MyIngredients/RecognitionResultModal.js
+
 import React, { useState } from 'react';
 import Modal from '../../components/molecules/Modal';
 import Input from '../../components/atoms/Input';
@@ -44,6 +45,11 @@ const RecognitionResultModal = ({ result, onConfirm, onClose }) => {
 
   return (
     <Modal title="인식 결과" onClose={onClose}>
+      {/* 탐지 결과 이미지 */}
+      <div className="mb-3 text-center">
+        <img src={result.resultImage} alt="탐지 결과 이미지" className="img-fluid rounded mb-3" />
+      </div>
+
       {/* 구매일자 입력 */}
       <div className="mb-3">
         <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
