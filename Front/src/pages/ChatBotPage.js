@@ -1,8 +1,10 @@
 // src/pages/ChatBotPage.js
-import React, { useState, useEffect, useRef } from 'react';
+
+import React, { useState } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/OptionsModal';
+import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import NotificationBar from '../features/ChatBot/NotificationBar';
 
@@ -13,12 +15,7 @@ const ChatBotPage = () => {
   });
 
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const chatEndRef = useRef(null);
-
-  useEffect(() => {
-    localStorage.setItem('chatMessages', JSON.stringify(messages));
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
 
   const addMessage = (message) => {
     setMessages((prevMessages) => (Array.isArray(prevMessages) ? [...prevMessages, message] : [message]));
@@ -45,7 +42,6 @@ const ChatBotPage = () => {
 
       {/* 채팅 메시지 영역 */}
       <ChatMessages messages={messages} />
-      <div ref={chatEndRef} />
 
       {/* 입력창 */}
       <ChatInput addMessage={addMessage} toggleOptions={toggleOptions} disabled={isOptionsOpen} />
@@ -56,6 +52,13 @@ const ChatBotPage = () => {
         onClose={toggleOptions}
         clearMessages={clearMessages}
         handleImageUpload={handleImageUpload}
+        openRecipeModal={() => setIsRecipeModalOpen(true)}
+      />
+
+      {/* 레시피 추천 모달 */}
+      <RecipeRecommendationModal
+        isOpen={isRecipeModalOpen}
+        onClose={() => setIsRecipeModalOpen(false)}
       />
 
       {/* 하단 네비게이션 바 */}

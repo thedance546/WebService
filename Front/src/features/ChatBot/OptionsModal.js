@@ -1,16 +1,26 @@
 // src/features/ChatBot/OptionsModal.js
 
+// src/features/ChatBot/OptionsModal.js
+
 import React from 'react';
 import Modal from '../../components/atoms/Modal';
 import Button from '../../components/atoms/Button';
 import Grid from '../../components/atoms/Grid';
 
-const OptionsModal = ({ isOpen, onClose, clearMessages, handleImageUpload }) => {
+const OptionsModal = ({ isOpen, onClose, clearMessages, handleImageUpload, openRecipeModal }) => {
   if (!isOpen) return null;
 
   const options = [
     { label: '재료 사진 업로드', icon: '📷', action: () => document.getElementById('file-upload').click() },
     { label: '채팅 내역 지우기', icon: '🗑️', action: clearMessages },
+    {
+      label: '레시피 추천 받기',
+      icon: '🍴',
+      action: () => {
+        openRecipeModal();
+        onClose(); // 옵션 모달 닫기
+      },
+    },
   ];
 
   return (
