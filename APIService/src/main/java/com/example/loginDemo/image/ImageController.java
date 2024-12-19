@@ -1,17 +1,17 @@
 package com.example.loginDemo.image;
 
+import com.example.loginDemo.dto.ObjectDetectionDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,9 +20,11 @@ import java.util.Map;
 public class ImageController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String yoloApiUrl = "http://localhost:5000/v1/object-detection/image_team6/{modelName}";
+    private final String chatBotApiUrl = "";  // LLM 챗봇 API URL
 
+    //yolo
     @PostMapping("/send")
-    public ResponseEntity<Map<String, Object>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<List<ObjectDetectionDTO>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
         try {
             // Flask API로 보낼 데이터 구성
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -43,14 +45,48 @@ public class ImageController {
                     Map.class
             );
 
+            // Map을 List<ObjectDetectionDTO>로 변환
+            Map<String, String> detectedObjects = response.getBody();
+            List<ObjectDetectionDTO> objectDetectionDTOList = new ArrayList<>();
+
+            // Map을 순회하며 DTO 객체로 변환
+            for (Map.Entry<String, String> entry : detectedObjects.entrySet()) {
+                objectDetectionDTOList.add(new ObjectDetectionDTO(entry.getKey(), entry.getValue()));
+            }
+
             // 성공적인 응답 반환
-            return ResponseEntity.ok(response.getBody());
+            return ResponseEntity.ok(objectDetectionDTOList);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to process image", "message", e.getMessage()));
+                    .body(List.of(new ObjectDetectionDTO("error", "Failed to process image")));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Unexpected error occurred", "message", e.getMessage()));
+                    .body(List.of(new ObjectDetectionDTO("error", "Unexpected error occurred")));
         }
     }
+
+    //llm
+//    @PostMapping("/send-to-chatbot")
+//    public ResponseEntity<String> sendToChatbot(@RequestBody List<Map<String, String>> detectedObjects) {
+//        try {
+//            // LLM 챗봇 API에 전달할 JSON 데이터
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<List<Map<String, String>>> requestEntity = new HttpEntity<>(detectedObjects, headers);
+//
+//            // 챗봇 API로 데이터 전송
+//            ResponseEntity<String> response = restTemplate.exchange(
+//                    chatBotApiUrl,
+//                    HttpMethod.POST,
+//                    requestEntity,
+//                    String.class
+//            );
+//
+//            // 챗봇 응답 반환
+//            return ResponseEntity.ok("챗봇 응답: " + response.getBody());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("챗봇에 데이터를 전달하는 중 오류 발생: " + e.getMessage());
+//        }
+//    }
 }
