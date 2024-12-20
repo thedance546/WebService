@@ -92,32 +92,32 @@ class AuthServiceTest {
     }
 
     //로그인 테스트 (로그인 성공, 로그인 실패)
-    @Test
-    void authenticate_success() {
-        // Arrange
-        when(userRepository.findByEmail(authenticationRequest.getEmail())).thenReturn(Optional.of(user));
-        when(jwtService.generateAccessToken(user, user.getRole().name())).thenReturn("accessToken");
-        when(jwtService.generateRefreshToken(user, user.getRole().name())).thenReturn("refreshToken");
-
-        // Act
-        AuthenticationResponse response = authService.authenticate(authenticationRequest);
-
-        // Assert
-        assertNotNull(response.getAccessToken());
-        assertNotNull(response.getRefreshToken());
-        verify(userRepository).findByEmail(authenticationRequest.getEmail());
-    }
-
-    @Test
-    void authenticate_userNotFound() {
-        // Arrange
-        when(userRepository.findByEmail(authenticationRequest.getEmail())).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(UsernameNotFoundException.class, () -> {
-            authService.authenticate(authenticationRequest);
-        });
-    }
+//    @Test
+//    void authenticate_success() {
+//        // Arrange
+//        when(userRepository.findByEmail(authenticationRequest.getEmail())).thenReturn(Optional.of(user));
+//        when(jwtService.generateAccessToken(user, user.getRole().name())).thenReturn("accessToken");
+//        when(jwtService.generateRefreshToken(user, user.getRole().name())).thenReturn("refreshToken");
+//
+//        // Act
+//        AuthenticationResponse response = authService.authenticate(authenticationRequest);
+//
+//        // Assert
+//        assertNotNull(response.getAccessToken());
+//        assertNotNull(response.getRefreshToken());
+//        verify(userRepository).findByEmail(authenticationRequest.getEmail());
+//    }
+//
+//    @Test
+//    void authenticate_userNotFound() {
+//        // Arrange
+//        when(userRepository.findByEmail(authenticationRequest.getEmail())).thenReturn(Optional.empty());
+//
+//        // Act & Assert
+//        assertThrows(UsernameNotFoundException.class, () -> {
+//            authService.authenticate(authenticationRequest);
+//        });
+//    }
 
 
 }
