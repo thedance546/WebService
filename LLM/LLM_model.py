@@ -29,12 +29,15 @@ except Exception as e:
 
 
 
+WEAVIATE_URL = os.getenv("WEAVIATE_URL", "http://weaviate_with_data_container:8080")
 
 # Weaviate 클라이언트 초기화 (v4 방식)
-client = weaviate.Client("http://localhost:8081")
+client = weaviate.Client(WEAVIATE_URL)
 if not client.is_ready():
     raise ConnectionError("Weaviate 서버가 준비되지 않았습니다.")
 print("Weaviate 서버에 성공적으로 연결되었습니다!")
+
+
 
 # 스키마 이름 설정
 schema_name = "Recipe_v1"
