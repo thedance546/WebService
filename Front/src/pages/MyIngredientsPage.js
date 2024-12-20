@@ -55,13 +55,12 @@ const MyIngredientsPage = () => {
   };
 
   const handleRecognitionConfirm = (editedIngredients) => {
-    console.log("Edited Ingredients:", editedIngredients); // 데이터 확인용 로그
     const combinedData = editedIngredients.map((item) => ({
       ...item,
-      shelfLife: `${Math.floor(Math.random() * 10) + 1}일`, // Random shelf life
-      consumeBy: `${Math.floor(Math.random() * 15) + 5}일`, // Random consume by
-      category: categories[Math.floor(Math.random() * categories.length)], // Random category
-      storage: storageMethods[Math.floor(Math.random() * storageMethods.length)], // Random storage method
+      shelfLife: `${Math.floor(Math.random() * 10) + 1}일`,
+      consumeBy: `${Math.floor(Math.random() * 15) + 5}일`,
+      category: categories[Math.floor(Math.random() * categories.length)],
+      storage: storageMethods[Math.floor(Math.random() * storageMethods.length)],
     }));
 
     setDataFrame((prev) => [...prev, ...combinedData]);
@@ -73,17 +72,13 @@ const MyIngredientsPage = () => {
     <div className="container text-center my-ingredients">
       <h2 className="my-3">나의 식재료</h2>
 
-      {/* IngredientModal */}
       {ingredientModal.isOpen && (
         <IngredientModal
           onConfirm={handleUploadConfirm}
           onCancel={ingredientModal.close}
           selectedFile={ingredientModal.state.selectedFile}
           fileChangeHandler={(file) =>
-            ingredientModal.setState({
-              ...ingredientModal.state,
-              selectedFile: file,
-            })
+            ingredientModal.setState({ ...ingredientModal.state, selectedFile: file })
           }
           photoType={ingredientModal.state.photoType}
           photoTypeChangeHandler={(e) =>
@@ -92,7 +87,6 @@ const MyIngredientsPage = () => {
         />
       )}
 
-      {/* RecognitionResultModal */}
       {recognitionModal.isOpen && (
         <RecognitionResultModal
           result={recognitionModal.state}
@@ -101,19 +95,20 @@ const MyIngredientsPage = () => {
         />
       )}
 
-      {/* LoadingModal */}
       {loading && <LoadingModal />}
 
-      {/* IngredientsTable */}
       <IngredientsTable
         data={dataFrame}
-        onSaveRow={(index, updatedRow) => setDataFrame((prevData) =>
-          prevData.map((item, i) => (i === index ? updatedRow : item))
-        )}
-        onDeleteRow={(index) => setDataFrame((prevData) => prevData.filter((_, i) => i !== index))}
+        onSaveRow={(index, updatedRow) =>
+          setDataFrame((prevData) =>
+            prevData.map((item, i) => (i === index ? updatedRow : item))
+          )
+        }
+        onDeleteRow={(index) =>
+          setDataFrame((prevData) => prevData.filter((_, i) => i !== index))
+        }
       />
 
-      {/* 추가 버튼 */}
       <button
         className="btn btn-success position-fixed"
         style={{

@@ -1,10 +1,10 @@
-// src/components/molecules/FileUploader.js
+// src/components/molecules/ImageUploadPreview.js
 
 import React, { useState } from 'react';
-import FileInput from '../atoms/FileInput';
+import FileUploader from '../atoms/FileUploader';
 import ImagePreview from '../atoms/ImagePreview';
 
-const FileUploader = ({ onFileSelect }) => {
+const ImageUploadPreview = ({ onFileSelect }) => {
   const [previewSrc, setPreviewSrc] = useState(null);
 
   const handleFileChange = (e) => {
@@ -17,11 +17,11 @@ const FileUploader = ({ onFileSelect }) => {
 
   return (
     <div className="my-3">
-      <FileInput onFileChange={handleFileChange} accept="image/*" />
+      <FileUploader onFileChange={handleFileChange} accept="image/*" />
       <ImagePreview src={previewSrc} />
     </div>
   );
 };
 
-export default FileUploader;
+export default ImageUploadPreview;
 

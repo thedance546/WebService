@@ -3,7 +3,7 @@ import { api, getAuthHeaders } from './Api';
 import { setAccessToken, clearAccessToken } from './TokenManager';
 import { handleApiError } from '../utils/Utils';
 
-// 회원가입 API
+// 회원가입 API - 1220 docker complete
 export const register = async (email, username, password) => {
   try {
     const response = await api.post('/auth/register', { email, username, password });
@@ -13,7 +13,7 @@ export const register = async (email, username, password) => {
   }
 };
 
-// 로그인 API
+// 로그인 API - 1220 docker complete
 export const login = async (email, password) => {
   try {
     const response = await api.post('/auth/authenticate', { email, password });

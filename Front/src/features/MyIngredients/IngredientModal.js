@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Modal from '../../components/molecules/Modal';
-import FileUploader from '../../components/molecules/FileUploader';
+import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import PhotoTypeOptions from './PhotoTypeOptions';
 
 const IngredientModal = ({ onConfirm, onCancel, selectedFile, fileChangeHandler, photoType, photoTypeChangeHandler }) => {
@@ -21,7 +21,7 @@ const IngredientModal = ({ onConfirm, onCancel, selectedFile, fileChangeHandler,
 
   return (
     <Modal title="식재료 등록" onClose={onCancel}>
-      <FileUploader onFileSelect={handleFileChange} />
+      <ImageUploadPreview onFileSelect={handleFileChange} />
       <PhotoTypeOptions selectedType={localPhotoType} onTypeChange={handlePhotoTypeChange} />
       <div className="d-flex justify-content-around mt-3">
         <button
