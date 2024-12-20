@@ -74,7 +74,7 @@ public class AuthService {
 
             // Refresh Token을 HTTPOnly 쿠키에 설정
             ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                    .maxAge(7 * 24 * 60 * 60)  // 7일 동안 유효
+                    .maxAge(7 * 24 * 60 * 60)  // 7일
                     .path("/")  // 전체 도메인에서 접근 가능
                     .secure(true)  // HTTPS 연결에서만 전송
                     .sameSite("None")  // 크로스 사이트 쿠키 설정
@@ -86,8 +86,6 @@ public class AuthService {
             e.printStackTrace();
         }
     }
-
-
 
     @Transactional
     public Map<String, String> deleteAccount(String accessToken) {
