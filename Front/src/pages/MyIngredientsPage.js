@@ -1,4 +1,5 @@
 // src/pages/MyIngredientsPage.js
+
 import React, { useState } from "react";
 import IngredientModal from "../features/MyIngredients/IngredientModal";
 import RecognitionResultModal from "../features/MyIngredients/RecognitionResultModal";
@@ -14,7 +15,7 @@ const getRandomIngredients = (ingredients, count) => {
 };
 
 const MyIngredientsPage = () => {
-  const ingredientModal = usePopupState({ selectedFile: null, photoType: "" });
+  const ingredientModal = usePopupState({ selectedFile: null });
   const recognitionModal = usePopupState({ resultImage: null, resultList: [] });
   const [loading, setLoading] = useState(false);
   const [dataFrame, setDataFrame] = useState([]);
@@ -29,10 +30,10 @@ const MyIngredientsPage = () => {
   const storageMethods = ["냉장", "냉동", "상온"];
 
   const handleUploadConfirm = () => {
-    const { selectedFile, photoType } = ingredientModal.state;
+    const { selectedFile } = ingredientModal.state;
 
-    if (!selectedFile || !photoType) {
-      alert("사진과 이미지 타입을 선택해주세요.");
+    if (!selectedFile) {
+      alert("사진을 선택해주세요.");
       return;
     }
 
@@ -45,7 +46,7 @@ const MyIngredientsPage = () => {
       const randomIngredients = getRandomIngredients(ingredientList, randomCount);
 
       recognitionModal.setState({
-        resultImage: selectedFile, // 파일 객체 자체 전달
+        resultImage: selectedFile,
         resultList: randomIngredients,
       });
 
@@ -79,10 +80,6 @@ const MyIngredientsPage = () => {
           selectedFile={ingredientModal.state.selectedFile}
           fileChangeHandler={(file) =>
             ingredientModal.setState({ ...ingredientModal.state, selectedFile: file })
-          }
-          photoType={ingredientModal.state.photoType}
-          photoTypeChangeHandler={(e) =>
-            ingredientModal.setState({ ...ingredientModal.state, photoType: e.target.value })
           }
         />
       )}

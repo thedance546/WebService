@@ -35,7 +35,7 @@ const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
         className="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center me-2"
         style={{ width: 'var(--button-size)', height: 'var(--button-size)' }}
       >
-        <Plus size="var(--option-icon-size)" />
+        <Plus />
       </Button>
 
       <Input
@@ -52,7 +52,7 @@ const ChatInput = ({ addMessage, toggleOptions, disabled }) => {
         className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center ms-2"
         style={{ width: 'var(--button-size)', height: 'var(--button-size)' }}
       >
-        <Send size="var(--option-icon-size)" />
+        <Send />
       </Button>
     </div>
   );

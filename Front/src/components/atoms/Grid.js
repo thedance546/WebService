@@ -3,11 +3,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Grid = ({ children, columns, columnsMd, className }) => {
+const Grid = ({ children, columns, columnsMd = null, className = '' }) => {
   const gridStyle = {
     display: 'grid',
     gap: '1rem',
-    gridTemplateColumns: `repeat(${columns}, 1fr)`, // 기본 열 개수
+    gridTemplateColumns: `repeat(${columns}, 1fr)`,
   };
 
   const mediaQueryStyle = columnsMd
@@ -37,11 +37,6 @@ Grid.propTypes = {
   columns: PropTypes.number.isRequired, // 기본 열 개수
   columnsMd: PropTypes.number, // 중간 화면 이상 열 개수
   className: PropTypes.string, // 추가 클래스
-};
-
-Grid.defaultProps = {
-  columnsMd: null,
-  className: '',
 };
 
 export default Grid;

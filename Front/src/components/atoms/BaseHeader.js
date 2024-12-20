@@ -23,8 +23,4 @@ BaseHeader.propTypes = {
   headerStyle: PropTypes.object,
 };
 
-BaseHeader.defaultProps = {
-  headerStyle: { backgroundColor: '#28a745', color: '#fff' },
-};
-
 export default BaseHeader;
