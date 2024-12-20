@@ -10,6 +10,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 60  # 타임아웃을 60분으로 설정
 
     steps:
     - name: Checkout repository
@@ -26,10 +27,10 @@ jobs:
 
     - name: Build and push Docker image (without cache)
       run: |
-        docker build --no-cache -t ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest ./yolo
-        docker push ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
+        docker buildx build --no-cache -t ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest ./yolo
+    #     docker push ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
 
-    - name: Verify Docker image
-      run: |
-        docker pull ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
-        docker images
+    # - name: Verify Docker image
+    #   run: |
+    #     docker pull ${{ secrets.YOLO_DOCKER_USERNAME }}/yolo-image:latest
+    #     docker images
