@@ -12,7 +12,7 @@ const ImagePreview = ({ src, alt = '미리보기', className = '' }) => (
 );
 
 ImagePreview.propTypes = {
-  src: PropTypes.string.isRequired,
+  src: PropTypes.string,
   alt: PropTypes.string,
   className: PropTypes.string,
 };
