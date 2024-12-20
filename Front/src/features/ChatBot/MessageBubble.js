@@ -34,9 +34,4 @@ MessageBubble.propTypes = {
   imageUrl: PropTypes.string,
 };
 
-MessageBubble.defaultProps = {
-  text: '',
-  imageUrl: null,
-};
-
 export default MessageBubble;

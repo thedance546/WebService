@@ -20,8 +20,4 @@ FullScreenOverlay.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-FullScreenOverlay.defaultProps = {
-  headerStyle: { backgroundColor: '#28a745', color: '#fff' },
-};
-
 export default FullScreenOverlay;

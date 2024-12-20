@@ -19,8 +19,4 @@ Modal.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-Modal.defaultProps = {
-  headerStyle: {},
-};
-
 export default Modal;

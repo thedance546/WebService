@@ -1,4 +1,5 @@
 // src/pages/MyIngredientsPage.js
+
 import React, { useState } from "react";
 import IngredientModal from "../features/MyIngredients/IngredientModal";
 import RecognitionResultModal from "../features/MyIngredients/RecognitionResultModal";
@@ -14,7 +15,7 @@ const getRandomIngredients = (ingredients, count) => {
 };
 
 const MyIngredientsPage = () => {
-  const ingredientModal = usePopupState({ selectedFile: null, photoType: "" });
+  const ingredientModal = usePopupState({ selectedFile: null });
   const recognitionModal = usePopupState({ resultImage: null, resultList: [] });
   const [loading, setLoading] = useState(false);
   const [dataFrame, setDataFrame] = useState([]);
@@ -29,10 +30,10 @@ const MyIngredientsPage = () => {
   const storageMethods = ["냉장", "냉동", "상온"];
 
   const handleUploadConfirm = () => {
-    const { selectedFile, photoType } = ingredientModal.state;
+    const { selectedFile } = ingredientModal.state;
 
-    if (!selectedFile || !photoType) {
-      alert("사진과 이미지 타입을 선택해주세요.");
+    if (!selectedFile) {
+      alert("사진을 선택해주세요.");
       return;
     }
 
@@ -45,7 +46,7 @@ const MyIngredientsPage = () => {
       const randomIngredients = getRandomIngredients(ingredientList, randomCount);
 
       recognitionModal.setState({
-        resultImage: selectedFile, // 파일 객체 자체 전달
+        resultImage: selectedFile,
         resultList: randomIngredients,
       });
 
@@ -55,13 +56,12 @@ const MyIngredientsPage = () => {
   };
 
   const handleRecognitionConfirm = (editedIngredients) => {
-    console.log("Edited Ingredients:", editedIngredients); // 데이터 확인용 로그
     const combinedData = editedIngredients.map((item) => ({
       ...item,
-      shelfLife: `${Math.floor(Math.random() * 10) + 1}일`, // Random shelf life
-      consumeBy: `${Math.floor(Math.random() * 15) + 5}일`, // Random consume by
-      category: categories[Math.floor(Math.random() * categories.length)], // Random category
-      storage: storageMethods[Math.floor(Math.random() * storageMethods.length)], // Random storage method
+      shelfLife: `${Math.floor(Math.random() * 10) + 1}일`,
+      consumeBy: `${Math.floor(Math.random() * 15) + 5}일`,
+      category: categories[Math.floor(Math.random() * categories.length)],
+      storage: storageMethods[Math.floor(Math.random() * storageMethods.length)],
     }));
 
     setDataFrame((prev) => [...prev, ...combinedData]);
@@ -73,26 +73,17 @@ const MyIngredientsPage = () => {
     <div className="container text-center my-ingredients">
       <h2 className="my-3">나의 식재료</h2>
 
-      {/* IngredientModal */}
       {ingredientModal.isOpen && (
         <IngredientModal
           onConfirm={handleUploadConfirm}
           onCancel={ingredientModal.close}
           selectedFile={ingredientModal.state.selectedFile}
           fileChangeHandler={(file) =>
-            ingredientModal.setState({
-              ...ingredientModal.state,
-              selectedFile: file,
-            })
-          }
-          photoType={ingredientModal.state.photoType}
-          photoTypeChangeHandler={(e) =>
-            ingredientModal.setState({ ...ingredientModal.state, photoType: e.target.value })
+            ingredientModal.setState({ ...ingredientModal.state, selectedFile: file })
           }
         />
       )}
 
-      {/* RecognitionResultModal */}
       {recognitionModal.isOpen && (
         <RecognitionResultModal
           result={recognitionModal.state}
@@ -101,19 +92,20 @@ const MyIngredientsPage = () => {
         />
       )}
 
-      {/* LoadingModal */}
       {loading && <LoadingModal />}
 
-      {/* IngredientsTable */}
       <IngredientsTable
         data={dataFrame}
-        onSaveRow={(index, updatedRow) => setDataFrame((prevData) =>
-          prevData.map((item, i) => (i === index ? updatedRow : item))
-        )}
-        onDeleteRow={(index) => setDataFrame((prevData) => prevData.filter((_, i) => i !== index))}
+        onSaveRow={(index, updatedRow) =>
+          setDataFrame((prevData) =>
+            prevData.map((item, i) => (i === index ? updatedRow : item))
+          )
+        }
+        onDeleteRow={(index) =>
+          setDataFrame((prevData) => prevData.filter((_, i) => i !== index))
+        }
       />
 
-      {/* 추가 버튼 */}
       <button
         className="btn btn-success position-fixed"
         style={{

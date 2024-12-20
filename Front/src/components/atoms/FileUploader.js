@@ -1,9 +1,9 @@
-// src/components/atoms/FileInput.js
+// src/components/atoms/FileUploader.js
 
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const FileInput = ({ onFileChange, accept = 'image/*', className = '' }) => (
+const FileUploader = ({ onFileChange, accept = 'image/*', className = '' }) => (
   <input
     type="file"
     accept={accept}
@@ -12,10 +12,10 @@ const FileInput = ({ onFileChange, accept = 'image/*', className = '' }) => (
   />
 );
 
-FileInput.propTypes = {
+FileUploader.propTypes = {
   onFileChange: PropTypes.func.isRequired,
   accept: PropTypes.string,
   className: PropTypes.string,
 };
 
-export default FileInput;
+export default FileUploader;

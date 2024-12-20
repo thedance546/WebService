@@ -2,7 +2,7 @@
 
 import React from 'react';
 import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
-import FileUploader from '../../components/molecules/FileUploader';
+import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
 
 const RecipeRecommendationModal = ({ isOpen, onClose, state, setState }) => {
@@ -41,7 +41,7 @@ const RecipeRecommendationModal = ({ isOpen, onClose, state, setState }) => {
         onClose={onClose}
         headerStyle={{ backgroundColor: '#007bff', color: '#fff' }}
       >
-        <FileUploader onFileSelect={handleFileChange} />
+        <ImageUploadPreview onFileSelect={handleFileChange} />
 
         <div className="d-flex flex-column align-items-center">
           {/* 처리 결과 자리 */}
