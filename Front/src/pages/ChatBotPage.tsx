@@ -52,7 +52,6 @@ const ChatBotPage: React.FC = () => {
         isOpen={optionsModal.isOpen}
         onClose={optionsModal.close}
         clearMessages={clearMessages}
-        handleImageUpload={handleImageUpload} // Props 추가
         openRecipeModal={recipeModal.open}
       />
       {recipeModal.isOpen && (
