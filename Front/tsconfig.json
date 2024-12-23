@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    // React 18과 호환되는 JSX 변환 설정
+    "jsx": "react-jsx",
+
+    // ES2022로 변환. Node.js 22 이상에서 사용 가능.
+    "target": "ES2022",
+
+    // 최신 ECMAScript 모듈 방식 사용
+    "module": "ESNext",
+
+    // Node.js 환경에서 CommonJS 및 ES 모듈 간 호환성을 허용
+    "moduleResolution": "node",
+
+    // 기본 Node.js 모듈 및 글로벌 타입 지원 활성화
+    "types": ["node"],
+
+    // TypeScript가 ES 모듈 간 상호 운용성을 더 쉽게 허용
+    "esModuleInterop": true,
+
+    // 대소문자를 강제하여 일관된 파일 이름 사용
+    "forceConsistentCasingInFileNames": true,
+
+    // 엄격한 타입 검사 옵션 활성화 (권장)
+    "strict": true,
+
+    // TypeScript가 외부 선언 파일의 타입 검사를 건너뜀 (컴파일 속도 개선)
+    "skipLibCheck": true,
+
+    // 경로 별칭을 설정하여 import 경로를 단순화
+    "baseUrl": "./src",
+    "paths": {
+      "@components/*": ["components/*"], // 컴포넌트 경로 별칭 설정
+      "@utils/*": ["utils/*"]           // 유틸리티 경로 별칭 설정
+    },
+
+    // 소스맵 생성 (디버깅 시 유용)
+    "sourceMap": true,
+
+    // 빌드에서 선언 파일 생성 (라이브러리 개발 시 유용)
+    "declaration": true
+  },
+  "include": [
+    "src/**/*" // TypeScript 컴파일에 포함할 디렉터리
+  ],
+  "exclude": [
+    "node_modules", // 컴파일에서 제외할 디렉터리
+    "build",        // 빌드 폴더 제외
+    "dist"          // 배포 폴더 제외
+  ]
+}
