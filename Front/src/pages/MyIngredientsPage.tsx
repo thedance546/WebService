@@ -21,8 +21,7 @@ const getRandomIngredients = (ingredients: string[], count: number): Ingredient[
 
 const MyIngredientsPage: React.FC = () => {
   const ingredientModal = usePopupState<{ selectedFile: File | null }>({ selectedFile: null });
-  const recognitionModal = usePopupState<{ resultImage: File | null; resultList: Ingredient[] }>({
-    resultImage: null,
+  const recognitionModal = usePopupState<{ resultList: Ingredient[] }>({
     resultList: [],
   });
   const [loading, setLoading] = useState<boolean>(false);
@@ -65,7 +64,6 @@ const MyIngredientsPage: React.FC = () => {
       const randomIngredients = getRandomIngredients(ingredientList, randomCount);
 
       recognitionModal.setState({
-        resultImage: selectedFile,
         resultList: randomIngredients,
       });
 
@@ -77,7 +75,7 @@ const MyIngredientsPage: React.FC = () => {
   const handleRecognitionConfirm = (editedIngredients: Ingredient[]) => {
     const combinedData = editedIngredients.map((item) => ({
       ...item,
-      ingredientId: Date.now() + Math.random(), // number로 변경
+      ingredientId: Date.now() + Math.random(),
       shelfLife: `${Math.floor(Math.random() * 10) + 1}일`,
       consumeBy: `${Math.floor(Math.random() * 15) + 5}일`,
       categoryId: categories[Math.floor(Math.random() * categories.length)].id,
@@ -106,7 +104,6 @@ const MyIngredientsPage: React.FC = () => {
 
       {recognitionModal.isOpen && (
         <RecognitionResultModal
-          resultImage={recognitionModal.state.resultImage}
           resultList={recognitionModal.state.resultList}
           onConfirm={handleRecognitionConfirm}
           onClose={recognitionModal.close}

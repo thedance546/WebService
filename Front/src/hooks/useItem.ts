@@ -2,7 +2,7 @@
 
 import useResource, { ResourceHook } from "./useResource";
 import { fetchItems, createItem, deleteItem } from "../services/AdminApi";
-import { Item, Category, StorageMethod } from "../types/EntityTypes";
+import { Item } from "../types/EntityTypes";
 
 const useItem = (): ResourceHook<Item> => {
   return useResource<Item>(
