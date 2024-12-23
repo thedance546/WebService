@@ -21,4 +21,11 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public void deleteUserById(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("회원 ID가 존재하지 않습니다: " + userId);
+        }
+        userRepository.deleteById(userId);
+    }
 }
