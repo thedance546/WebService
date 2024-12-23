@@ -76,8 +76,8 @@ const MyIngredientsPage: React.FC = () => {
     const combinedData = editedIngredients.map((item) => ({
       ...item,
       ingredientId: Date.now() + Math.random(),
-      shelfLife: `${Math.floor(Math.random() * 10) + 1}일`,
-      consumeBy: `${Math.floor(Math.random() * 15) + 5}일`,
+      shelfLife: Math.floor(Math.random() * 10) + 1,
+      consumeBy: Math.floor(Math.random() * 15) + 5,
       categoryId: categories[Math.floor(Math.random() * categories.length)].id,
       storageMethodId: storageMethods[Math.floor(Math.random() * storageMethods.length)].id,
     }));
@@ -85,7 +85,7 @@ const MyIngredientsPage: React.FC = () => {
     setDataFrame((prev) => [...prev, ...combinedData]);
     recognitionModal.close();
     recognitionModal.reset();
-  };
+};
 
   return (
     <div className="container text-center my-ingredients">

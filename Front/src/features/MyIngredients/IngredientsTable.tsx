@@ -6,24 +6,35 @@ import TableRow from "./TableRow";
 import IngredientsFilter from "./IngredientsFilter";
 import EditIngredientModal from "./EditIngredientModal";
 import "./IngredientsTable.css";
+import { Ingredient } from "../../types/EntityTypes";
 
 interface IngredientsTableProps {
-  data: any[];
+  data: Ingredient[];
   onDeleteRow: (index: number) => void;
-  onSaveRow: (index: number, row: any) => void;
+  onSaveRow: (index: number, row: Ingredient) => void;
+}
+
+interface IngredientRow {
+  name: string;
+  quantity: number;
+  category: string;
+  storage: string;
+  originalIndex?: number;
 }
 
 const IngredientsTable: React.FC<IngredientsTableProps> = ({ data, onDeleteRow, onSaveRow }) => {
-  const [filter, setFilter] = useState("전체");
-  const [dateType, setDateType] = useState("유통기한");
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<any | null>(null);
+  const [filter, setFilter] = useState<string>("전체");
+  const [dateType, setDateType] = useState<"유통기한" | "소비기한">("유통기한");
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [selectedRow, setSelectedRow] = useState<IngredientRow | null>(null);
 
-  const filteredData = filter === "전체"
-    ? data.map((item, index) => ({ ...item, originalIndex: index }))
-    : data
-        .map((item, index) => ({ ...item, originalIndex: index }))
-        .filter((item) => item.storage === filter);
+  const filteredData: IngredientRow[] = data.map((item, index) => ({
+    name: item.name,
+    quantity: item.quantity,
+    category: `카테고리 ${item.categoryId || "없음"}`,
+    storage: `보관 ${item.storageMethodId || "없음"}`,
+    originalIndex: index,
+  }));
 
   const toggleDateType = () => {
     setDateType((prev) => (prev === "유통기한" ? "소비기한" : "유통기한"));
@@ -35,13 +46,21 @@ const IngredientsTable: React.FC<IngredientsTableProps> = ({ data, onDeleteRow, 
 
   const handleRowClick = (index: number) => {
     if (isEditMode) {
-      const originalIndex = filteredData[index].originalIndex;
-      setSelectedRow({ ...filteredData[index], originalIndex });
+      setSelectedRow(filteredData[index]);
     }
   };
 
-  const handleModalSave = (updatedRow: any) => {
-    onSaveRow(updatedRow.originalIndex, updatedRow);
+  const handleModalSave = (updatedRow: IngredientRow) => {
+    if (updatedRow.originalIndex !== undefined) {
+      const updatedIngredient: Ingredient = {
+        ...data[updatedRow.originalIndex],
+        name: updatedRow.name,
+        quantity: updatedRow.quantity,
+        categoryId: parseInt(updatedRow.category.split(" ")[1]) || undefined,
+        storageMethodId: parseInt(updatedRow.storage.split(" ")[1]) || undefined,
+      };
+      onSaveRow(updatedRow.originalIndex, updatedIngredient);
+    }
     setSelectedRow(null);
   };
 
@@ -95,6 +114,7 @@ const IngredientsTable: React.FC<IngredientsTableProps> = ({ data, onDeleteRow, 
                 row={row}
                 onClick={() => handleRowClick(index)}
                 dateType={dateType}
+                onDelete={() => onDeleteRow(index)}
               />
             ))}
           </tbody>

@@ -28,8 +28,8 @@ export interface Ingredient {
     ingredientId: number;
     name: string;
     quantity: number;
-    shelfLife?: string;
-    consumeBy?: string;
+    shelfLife?: number;
+    consumeBy?: number;
     categoryId?: number;
     storageMethodId?: number;
 }
