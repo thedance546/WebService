@@ -16,7 +16,7 @@ public class WebConfig {
                         .allowedOrigins("http://localhost:3000", "http://localhost:8080")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true); //브라우저에서 인증 정보를 요청에 포함할 수 있도록
             }
         };
     }

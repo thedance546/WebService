@@ -25,7 +25,7 @@ public class Item {
     @JoinColumn(name = "storage_method_id", nullable = false)
     private StorageMethod storageMethod;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "shelf_life_id", nullable = false)
     private ShelfLife shelfLife;
 
