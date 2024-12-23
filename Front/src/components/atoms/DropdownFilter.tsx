@@ -12,11 +12,17 @@ interface DropdownFilterProps {
   options: DropdownOption[];
   value: string;
   onChange: (value: string) => void;
+  className?: string;
 }
 
-const DropdownFilter: React.FC<DropdownFilterProps> = ({ options, value, onChange }) => {
+const DropdownFilter: React.FC<DropdownFilterProps> = ({
+  options,
+  value,
+  onChange,
+  className,
+}) => {
   return (
-    <Dropdown>
+    <Dropdown className={className}>
       <Dropdown.Toggle variant="secondary">{value}</Dropdown.Toggle>
       <Dropdown.Menu>
         {options.map((option, index) => (

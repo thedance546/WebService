@@ -2,13 +2,17 @@
 
 import useResource from "./useResource";
 import { fetchCategories, createCategory, deleteCategory } from "../services/AdminApi";
+import { Category } from "../types/EntityTypes";
 
-export interface Category {
-  id: string;
-  categoryName: string;
-}
-
-const useCategory = () =>
-  useResource<Category>(fetchCategories, createCategory, deleteCategory);
+const useCategory = () => {
+  return useResource<Category>(
+    fetchCategories,
+    async (category: Omit<Category, "id">) => {
+      const newCategory = await createCategory(category.name);
+      return { id: newCategory.id, name: newCategory.name };
+    },
+    deleteCategory
+  );
+};
 
 export default useCategory;

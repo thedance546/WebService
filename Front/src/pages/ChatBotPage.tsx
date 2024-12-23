@@ -8,6 +8,7 @@ import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationM
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import NotificationBar from '../features/ChatBot/NotificationBar';
 import { usePopupState } from '../hooks/usePopupState';
+import { DetectionResult } from 'types/FeatureTypes';
 
 interface Message {
   sender: string;
@@ -20,12 +21,13 @@ const ChatBotPage: React.FC = () => {
     return savedMessages ? JSON.parse(savedMessages) : [];
   });
 
-  const optionsModal = usePopupState();
+  const optionsModal = usePopupState({ isOpen: false });
   const recipeModal = usePopupState({
-    selectedFile: null,
-    detectionResult: null,
+    selectedFile: null as File | null,
+    detectionResult: null as DetectionResult | null,
     loading: false,
   });
+  
 
   const addMessage = (message: Message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
@@ -50,7 +52,7 @@ const ChatBotPage: React.FC = () => {
         isOpen={optionsModal.isOpen}
         onClose={optionsModal.close}
         clearMessages={clearMessages}
-        handleImageUpload={handleImageUpload}
+        handleImageUpload={handleImageUpload} // Props 추가
         openRecipeModal={recipeModal.open}
       />
       {recipeModal.isOpen && (

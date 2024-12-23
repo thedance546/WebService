@@ -3,12 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import UserManagementTable from '../features/Admin/UserManagementTable';
 import AdminNavBar from "../components/organisms/AdminNavBar";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { User } from "../types/EntityTypes";
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -17,7 +12,7 @@ const UserManagement: React.FC = () => {
     // const fetchUsers = async () => {
     //   try {
     //     const response = await api.get('/users');
-    //     setUsers(response.data);
+    //     setUsers(response.data.map((user: any) => ({ ...user, id: user.id.toString() })));
     //   } catch (error) {
     //     console.error("유저 데이터를 불러오는 중 오류 발생:", error);
     //   }

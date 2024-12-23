@@ -1,4 +1,5 @@
 // src/pages/AdminPage.tsx
+
 import React from "react";
 import { Container, Row, Col, Table } from "react-bootstrap";
 import AdminNavBar from "../components/organisms/AdminNavBar";
@@ -31,9 +32,9 @@ const AdminPage: React.FC = () => {
                 <tbody>
                   {items.map((item) => (
                     <tr key={item.id}>
-                      <td>{item.itemName}</td>
-                      <td>{categories.find((cat) => cat.id === item.category?.id)?.categoryName}</td>
-                      <td>{storageMethods.find((method) => method.id === item.storageMethod?.id)?.storageMethodName}</td>
+                      <td>{item.name}</td>
+                      <td>{item.category?.name}</td>
+                      <td>{item.storageMethod?.name}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -50,7 +51,7 @@ const AdminPage: React.FC = () => {
                 <tbody>
                   {categories.map((category) => (
                     <tr key={category.id}>
-                      <td>{category.categoryName}</td>
+                      <td>{category.name}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -67,7 +68,7 @@ const AdminPage: React.FC = () => {
                 <tbody>
                   {storageMethods.map((method) => (
                     <tr key={method.id}>
-                      <td>{method.storageMethodName}</td>
+                      <td>{method.name}</td>
                     </tr>
                   ))}
                 </tbody>

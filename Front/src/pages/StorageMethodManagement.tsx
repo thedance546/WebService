@@ -5,11 +5,6 @@ import { useAdminContext } from '../contexts/AdminContext';
 import { Container, Form, Button, Table } from 'react-bootstrap';
 import AdminNavBar from '../components/organisms/AdminNavBar';
 
-interface StorageMethod {
-  id: string;
-  storageMethodName: string;
-}
-
 const StorageMethodManagement: React.FC = () => {
   const { storageMethods, handleAddStorageMethod, handleDeleteStorageMethod } = useAdminContext();
   const [newStorageMethodName, setNewStorageMethodName] = useState<string>("");
@@ -53,10 +48,10 @@ const StorageMethodManagement: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {storageMethods.map((method: StorageMethod) => (
+            {storageMethods.map((method) => (
               <tr key={method.id}>
                 <td>{method.id}</td>
-                <td>{method.storageMethodName}</td>
+                <td>{method.name}</td> {/* storageMethodName -> name */}
                 <td>
                   <Button
                     variant="danger"

@@ -1,4 +1,5 @@
 // src/pages/CategoryManagement.tsx
+
 import React, { useState } from 'react';
 import { useAdminContext } from '../contexts/AdminContext';
 import { Container, Form, Button, Table } from 'react-bootstrap';
@@ -49,7 +50,7 @@ const CategoryManagement: React.FC = () => {
             {categories.map((category) => (
               <tr key={category.id}>
                 <td>{category.id}</td>
-                <td>{category.categoryName}</td>
+                <td>{category.name}</td> {/* name으로 변경 */}
                 <td>
                   <Button
                     variant="danger"

@@ -4,7 +4,11 @@ import React from 'react';
 import useAuth from '../../hooks/useAuth';
 import Button from '../atoms/Button';
 
-const LogoutButton: React.FC = () => {
+interface LogoutButtonProps {
+  className?: string;
+}
+
+const LogoutButton: React.FC<LogoutButtonProps> = ({ className }) => {
   const { handleLogout } = useAuth();
 
   const onClick = async () => {
@@ -13,7 +17,7 @@ const LogoutButton: React.FC = () => {
   };
 
   return (
-    <Button onClick={onClick} className="btn btn-warning w-100">
+    <Button onClick={onClick} className={`btn btn-warning w-100 ${className}`}>
       로그아웃
     </Button>
   );

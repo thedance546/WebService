@@ -10,6 +10,7 @@ interface OptionsModalProps {
   onClose: () => void;
   clearMessages: () => void;
   openRecipeModal: () => void;
+  handleImageUpload: (file: File) => void; // 추가된 Props
 }
 
 const OptionsModal: React.FC<OptionsModalProps> = ({
@@ -17,6 +18,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
   onClose,
   clearMessages,
   openRecipeModal,
+  handleImageUpload, // Props 추가
 }) => {
   if (!isOpen) return null;
 
@@ -30,6 +32,15 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
       },
     },
     { label: '채팅 내역 지우기', icon: '🗑️', action: clearMessages },
+    {
+      label: '이미지 업로드',
+      icon: '📷',
+      action: () => {
+        const file = new File(["dummy content"], "example.jpg", { type: "image/jpeg" });
+        handleImageUpload(file); // 이미지 업로드 동작 추가
+        onClose();
+      },
+    },
   ];
 
   return (

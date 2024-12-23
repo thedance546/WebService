@@ -8,24 +8,23 @@ import IngredientsTable from "../features/MyIngredients/IngredientsTable";
 import { usePopupState } from "../hooks/usePopupState";
 import { Plus } from "react-bootstrap-icons";
 import HomeNavBar from "../components/organisms/HomeNavBar";
-
-interface Ingredient {
-  name: string;
-  quantity: number;
-  shelfLife?: string;
-  consumeBy?: string;
-  category?: string;
-  storage?: string;
-}
+import { Ingredient } from "../types/EntityTypes";
 
 const getRandomIngredients = (ingredients: string[], count: number): Ingredient[] => {
   const shuffled = [...ingredients].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count).map((item) => ({ name: item, quantity: 1 }));
+  return shuffled.slice(0, count).map((item, index) => ({
+    ingredientId: Date.now() + index, // ingredientId를 number로 생성
+    name: item,
+    quantity: 1,
+  }));
 };
 
 const MyIngredientsPage: React.FC = () => {
-  const ingredientModal = usePopupState({ selectedFile: null });
-  const recognitionModal = usePopupState({ resultImage: null, resultList: [] });
+  const ingredientModal = usePopupState<{ selectedFile: File | null }>({ selectedFile: null });
+  const recognitionModal = usePopupState<{ resultImage: File | null; resultList: Ingredient[] }>({
+    resultImage: null,
+    resultList: [],
+  });
   const [loading, setLoading] = useState<boolean>(false);
   const [dataFrame, setDataFrame] = useState<Ingredient[]>([]);
 
@@ -35,8 +34,19 @@ const MyIngredientsPage: React.FC = () => {
     "시리얼", "김", "라면", "참치캔", "냉동 만두", "베이컨", "시금치", "오이", "게맛살", "삼겹살"
   ];
 
-  const categories = ["채소", "육류", "가공식품", "발효식품", "과일"];
-  const storageMethods = ["냉장", "냉동", "상온"];
+  const categories = [
+    { id: 1, name: "채소" },
+    { id: 2, name: "육류" },
+    { id: 3, name: "가공식품" },
+    { id: 4, name: "발효식품" },
+    { id: 5, name: "과일" },
+  ];
+
+  const storageMethods = [
+    { id: 1, name: "냉장" },
+    { id: 2, name: "냉동" },
+    { id: 3, name: "상온" },
+  ];
 
   const handleUploadConfirm = () => {
     const { selectedFile } = ingredientModal.state;
@@ -67,10 +77,11 @@ const MyIngredientsPage: React.FC = () => {
   const handleRecognitionConfirm = (editedIngredients: Ingredient[]) => {
     const combinedData = editedIngredients.map((item) => ({
       ...item,
+      ingredientId: Date.now() + Math.random(), // number로 변경
       shelfLife: `${Math.floor(Math.random() * 10) + 1}일`,
       consumeBy: `${Math.floor(Math.random() * 15) + 5}일`,
-      category: categories[Math.floor(Math.random() * categories.length)],
-      storage: storageMethods[Math.floor(Math.random() * storageMethods.length)],
+      categoryId: categories[Math.floor(Math.random() * categories.length)].id,
+      storageMethodId: storageMethods[Math.floor(Math.random() * storageMethods.length)].id,
     }));
 
     setDataFrame((prev) => [...prev, ...combinedData]);
@@ -95,7 +106,8 @@ const MyIngredientsPage: React.FC = () => {
 
       {recognitionModal.isOpen && (
         <RecognitionResultModal
-          result={recognitionModal.state}
+          resultImage={recognitionModal.state.resultImage}
+          resultList={recognitionModal.state.resultList}
           onConfirm={handleRecognitionConfirm}
           onClose={recognitionModal.close}
         />

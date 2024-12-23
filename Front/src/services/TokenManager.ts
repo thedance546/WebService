@@ -2,16 +2,16 @@
 
 import { handleApiError } from '../utils/Utils';
 
-let accessToken: string | null = null;
+let accessToken: string = "";
 
 export const setAccessToken = (token: string): void => {
   accessToken = token;
 };
 
-export const getAccessToken = (): string | null => accessToken;
+export const getAccessToken = (): string => accessToken;
 
 export const clearAccessToken = (): void => {
-  accessToken = null;
+  accessToken = "";
 };
 
 // Access Token 갱신 함수

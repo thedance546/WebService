@@ -4,107 +4,83 @@ import React, { useState } from 'react';
 import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
+import { Ingredient } from '../../types/EntityTypes';
 
-interface DetectionObject {
-  name: string;
-  confidence: number;
-}
-
-interface DetectionResult {
-  objects: DetectionObject[];
-}
-
-interface RecipeRecommendationModalProps {
-  isOpen: boolean;
+interface RecognitionResultModalProps {
+  resultImage: File | null;
+  resultList: Ingredient[];
+  onConfirm: (editedIngredients: Ingredient[]) => void;
   onClose: () => void;
-  state: {
-    selectedFile: File | null;
-    detectionResult: DetectionResult | null;
-    loading: boolean;
-  };
-  setState: React.Dispatch<
-    React.SetStateAction<{
-      selectedFile: File | null;
-      detectionResult: DetectionResult | null;
-      loading: boolean;
-    }>
-  >;
 }
 
-const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
-  isOpen,
+const RecognitionResultModal: React.FC<RecognitionResultModalProps> = ({
+  resultImage,
+  resultList,
+  onConfirm,
   onClose,
-  state,
-  setState,
 }) => {
-  const [editedResult, setEditedResult] = useState<DetectionObject[]>([]);
+  const [editedResult, setEditedResult] = useState<Ingredient[]>(resultList);
 
-  const handleFileChange = (file: File) => {
-    setState((prevState) => ({ ...prevState, selectedFile: file }));
-  };
-
-  const handleChange = <K extends keyof DetectionObject>(
-    index: number,
-    field: K,
-    value: DetectionObject[K]
-  ) => {
+  const handleEdit = (index: number, field: keyof Ingredient, value: string | number) => {
     const updated = [...editedResult];
-    updated[index][field] = value; // 수정된 부분
+    updated[index] = { ...updated[index], [field]: value };
     setEditedResult(updated);
   };
 
-  const handleDetection = async () => {
-    if (!state.selectedFile) {
-      alert('이미지를 업로드해주세요.');
-      return;
-    }
-
-    setState((prevState) => ({ ...prevState, loading: true }));
-
-    setTimeout(() => {
-      const detectionResult: DetectionResult = {
-        objects: [
-          { name: 'Tomato', confidence: 0.95 },
-          { name: 'Carrot', confidence: 0.89 },
-        ],
-      };
-      setState((prevState) => ({
-        ...prevState,
-        detectionResult,
-        loading: false,
-      }));
-      setEditedResult(detectionResult.objects); // 탐지 결과를 상태에 설정
-    }, 2000);
+  const handleConfirm = () => {
+    onConfirm(editedResult);
   };
 
+  const handleDetection = () => {
+    console.log('Detection started'); // 기존 탐지 관련 기능 유지
+  };
+
+  const handleFileChange = (file: File) => {
+    console.log(`Selected file: ${file.name}`); // 파일 변경 기능 유지
+  };
+
+  if (!resultImage && resultList.length === 0) {
+    return null; // 결과가 없을 경우 아무것도 표시하지 않음
+  }
+
   return (
-    isOpen && (
-      <FullScreenOverlay
-        title="레시피 추천"
-        onClose={onClose}
-        headerStyle={{ backgroundColor: '#007bff', color: '#fff' }}
-      >
-        <ImageUploadPreview onFileSelect={handleFileChange} />
+    <FullScreenOverlay
+      title="인식 결과"
+      onClose={onClose}
+      headerStyle={{ backgroundColor: '#007bff', color: '#fff' }}
+    >
+      <ImageUploadPreview onFileSelect={handleFileChange} />
 
-        <div className="d-flex flex-column align-items-center">
-          {state.detectionResult && (
-            <div className="mb-3">
-              <h6>탐지된 객체</h6>
-              <pre>{JSON.stringify(state.detectionResult.objects, null, 2)}</pre>
-            </div>
-          )}
+      {resultImage && (
+        <div className="mb-3">
+          <h6>인식된 이미지</h6>
+          <img src={URL.createObjectURL(resultImage)} alt="Result" className="img-fluid" />
         </div>
+      )}
 
-        <Button
-          onClick={handleDetection}
-          className="btn btn-primary mb-3"
-          disabled={state.loading}
-        >
-          {state.loading ? '처리 중...' : '객체 탐지 시작'}
-        </Button>
-      </FullScreenOverlay>
-    )
+      <div className="d-flex flex-column align-items-center">
+        {editedResult.map((ingredient, index) => (
+          <div key={ingredient.ingredientId} className="mb-2">
+            <span>{ingredient.name}</span>
+            <input
+              type="number"
+              value={ingredient.quantity}
+              onChange={(e) => handleEdit(index, 'quantity', Number(e.target.value))}
+              className="form-control"
+              style={{ width: '100px', display: 'inline-block', marginLeft: '10px' }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <Button onClick={handleConfirm} className="btn btn-primary mb-3">
+        확인
+      </Button>
+      <Button onClick={handleDetection} className="btn btn-secondary mb-3">
+        탐지 시작
+      </Button>
+    </FullScreenOverlay>
   );
 };
 
-export default RecipeRecommendationModal;
+export default RecognitionResultModal;

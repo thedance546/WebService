@@ -3,7 +3,7 @@
 import { useNavigate } from "react-router-dom";
 import { login, logout, register, deleteAccount } from "../services/AuthApi";
 import { getAccessToken } from "../services/TokenManager";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
   role: string;

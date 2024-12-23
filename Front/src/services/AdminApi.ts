@@ -2,23 +2,7 @@
 
 import { api, getAuthHeaders } from './Api';
 import { handleApiError } from '../utils/Utils';
-
-export interface Category {
-  id: string;
-  categoryName: string;
-}
-
-export interface StorageMethod {
-  id: string;
-  storageMethodName: string;
-}
-
-export interface Item {
-  id: string;
-  name: string;
-  category?: Category;
-  storageMethod?: StorageMethod;
-}
+import { Category, StorageMethod, Item } from '../types/EntityTypes';
 
 // 카테고리 관련 API
 export const fetchCategories = async (): Promise<Category[]> => {
@@ -26,7 +10,10 @@ export const fetchCategories = async (): Promise<Category[]> => {
     const response = await api.get<Category[]>("/items/categories", {
       headers: getAuthHeaders('Bearer'),
     });
-    return response.data;
+    return response.data.map((data) => ({
+      id: Number(data.id), // 타입 변환
+      name: data.name, // 적절한 필드 참조
+    }));
   } catch (error: any) {
     throw handleApiError(error, "카테고리 데이터를 불러오는 중 오류 발생");
   }
@@ -36,18 +23,21 @@ export const createCategory = async (categoryName: string): Promise<Category> =>
   try {
     const response = await api.post<Category>(
       "/items/category",
-      { categoryName },
+      { name: categoryName }, // 필드 이름 수정
       {
         headers: getAuthHeaders('Bearer'),
       }
     );
-    return response.data;
+    return {
+      id: Number(response.data.id),
+      name: response.data.name,
+    };
   } catch (error: any) {
     throw handleApiError(error, "카테고리 생성 중 오류 발생");
   }
 };
 
-export const deleteCategory = async (categoryId: string): Promise<void> => {
+export const deleteCategory = async (categoryId: number): Promise<void> => {
   try {
     await api.delete(`/items/category/${categoryId}`, {
       headers: getAuthHeaders('Bearer'),
@@ -63,7 +53,10 @@ export const fetchStorageMethods = async (): Promise<StorageMethod[]> => {
     const response = await api.get<StorageMethod[]>("/items/storage-methods", {
       headers: getAuthHeaders('Bearer'),
     });
-    return response.data;
+    return response.data.map((data) => ({
+      id: Number(data.id), // 타입 변환
+      name: data.name, // 적절한 필드 참조
+    }));
   } catch (error: any) {
     throw handleApiError(error, "보관 방법 데이터를 불러오는 중 오류 발생");
   }
@@ -73,18 +66,21 @@ export const createStorageMethod = async (methodName: string): Promise<StorageMe
   try {
     const response = await api.post<StorageMethod>(
       "/items/storage-method",
-      { storageMethodName: methodName },
+      { name: methodName }, // 필드 이름 수정
       {
         headers: getAuthHeaders('Bearer'),
       }
     );
-    return response.data;
+    return {
+      id: Number(response.data.id),
+      name: response.data.name,
+    };
   } catch (error: any) {
     throw handleApiError(error, "보관 방법 생성 중 오류 발생");
   }
 };
 
-export const deleteStorageMethod = async (methodId: string): Promise<void> => {
+export const deleteStorageMethod = async (methodId: number): Promise<void> => {
   try {
     await api.delete(`/items/storage-method/${methodId}`, {
       headers: getAuthHeaders('Bearer'),
@@ -100,7 +96,18 @@ export const fetchItems = async (): Promise<Item[]> => {
     const response = await api.get<Item[]>("/items", {
       headers: getAuthHeaders('Bearer'),
     });
-    return response.data;
+    return response.data.map((data) => ({
+      id: Number(data.id), // 타입 변환
+      name: data.name,
+      category: {
+        id: Number(data.category?.id || 0), // 타입 변환 및 Optional 처리
+        name: data.category?.name || '',
+      },
+      storageMethod: {
+        id: Number(data.storageMethod?.id || 0), // 타입 변환 및 Optional 처리
+        name: data.storageMethod?.name || '',
+      },
+    }));
   } catch (error: any) {
     throw handleApiError(error, "식재료 데이터를 불러오는 중 오류 발생");
   }
@@ -115,13 +122,24 @@ export const createItem = async (item: Partial<Item>): Promise<Item> => {
         headers: getAuthHeaders('Bearer'),
       }
     );
-    return response.data;
+    return {
+      id: Number(response.data.id),
+      name: response.data.name,
+      category: {
+        id: Number(response.data.category?.id || 0),
+        name: response.data.category?.name || '',
+      },
+      storageMethod: {
+        id: Number(response.data.storageMethod?.id || 0),
+        name: response.data.storageMethod?.name || '',
+      },
+    };
   } catch (error: any) {
     throw handleApiError(error, "식재료 생성 중 오류 발생");
   }
 };
 
-export const deleteItem = async (itemId: string): Promise<void> => {
+export const deleteItem = async (itemId: number): Promise<void> => {
   try {
     await api.delete(`/items/${itemId}`, {
       headers: getAuthHeaders('Bearer'),

@@ -4,14 +4,16 @@ import React, { useState } from 'react';
 import Modal from '../../components/molecules/Modal';
 import Input from '../../components/atoms/Input';
 
+interface IngredientRow {
+  name: string;
+  quantity: number;
+  category: string;
+  storage: string;
+}
+
 interface EditIngredientModalProps {
-  row: {
-    name: string;
-    quantity: number;
-    category: string;
-    storage: string;
-  };
-  onSave: (row: typeof row) => void;
+  row: IngredientRow;
+  onSave: (row: IngredientRow) => void;
   onCancel: () => void;
 }
 
