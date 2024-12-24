@@ -1,7 +1,7 @@
 // src/features/ChatBot/CustomInfoInputModal.tsx
 
 import React, { useState } from 'react';
-import Modal from '../../components/molecules/Modal';
+import Modal from '../../components/molecules/FullScreenOverlay';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
 
