@@ -12,38 +12,38 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatbotService {
 
-    private final String FLASK_API_URL = "http://localhost:5000/ask";
+    private final String FLASK_API_URL = "http://gpt_container:5000/ask";
     private final RestTemplate restTemplate;
-    // Flask API에 질의하는 비즈니스 로직
-    public ChatResponse askFlask(String question, String searchResults) {
-        // question이 비어있는지 확인
-        if (question == null || question.trim().isEmpty()) {
-            return new ChatResponse("The 'question' field is required and cannot be empty.");
-        }
 
-        // Flask API로 보낼 데이터를 준비
-        Map<String, String> flaskRequest = new HashMap<>();
-        flaskRequest.put("question", question);
-        flaskRequest.put("search_results", searchResults);
+    public String askFlaskApi(String question, String searchResults) {
+        // 요청 데이터 설정
+        Map<String, String> requestData = new HashMap<>();
+        requestData.put("question", question);
+        requestData.put("search_results", searchResults);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
-
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(flaskRequest, headers);
-
+        // POST 요청 보내기
         try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestData, headers);
+
             ResponseEntity<Map> response = restTemplate.exchange(
-                    FLASK_API_URL, HttpMethod.POST, request, Map.class);
+                    FLASK_API_URL,
+                    HttpMethod.POST,
+                    requestEntity,
+                    Map.class
+            );
 
-            // Flask API 응답에서 생성된 답변을 추출
-            Map<String, String> responseBody = response.getBody();
-            String answer = responseBody != null ? responseBody.get("answer") : "No answer found.";
-
-            // 응답 데이터 반환
-            return new ChatResponse(answer);
-
+            // Flask API에서 반환한 답변을 추출
+            if (response.getStatusCode() == HttpStatus.OK) {
+                Map responseBody = response.getBody();
+                return (String) responseBody.get("answer");
+            } else {
+                return "Error: " + response.getStatusCode();
+            }
         } catch (Exception e) {
-            return new ChatResponse("Failed to communicate with Flask API: " + e.getMessage());
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
         }
     }
 }
