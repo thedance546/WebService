@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. GitHub 레포지토리 클론
+      # 1. GitHub 레포지토리 clone
       - name: Checkout repository
         uses: actions/checkout@v4
 

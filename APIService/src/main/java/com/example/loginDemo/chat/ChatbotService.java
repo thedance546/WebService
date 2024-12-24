@@ -12,23 +12,38 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatbotService {
 
-    private final String flaskUrl = "http://localhost:5000/ask";
+    private final String FLASK_API_URL = "http://gpt_container:5000/ask";
     private final RestTemplate restTemplate;
 
-    public String askChatGpt(ChatRequest request) {
+    public String askFlaskApi(String question, String searchResults) {
+        // 요청 데이터 설정
+        Map<String, String> requestData = new HashMap<>();
+        requestData.put("question", question);
+        requestData.put("search_results", searchResults);
+
+        // POST 요청 보내기
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type", "application/json");
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestData, headers);
 
-            HttpEntity<ChatRequest> entity = new HttpEntity<>(request, headers);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    FLASK_API_URL,
+                    HttpMethod.POST,
+                    requestEntity,
+                    Map.class
+            );
 
-            // Flask 서버에 POST 요청
-            ResponseEntity<String> response = restTemplate.postForEntity(flaskUrl, entity, String.class);
-
-            return response.getBody(); // Flask 서버에서 반환된 응답
+            // Flask API에서 반환한 답변을 추출
+            if (response.getStatusCode() == HttpStatus.OK) {
+                Map responseBody = response.getBody();
+                return (String) responseBody.get("answer");
+            } else {
+                return "Error: " + response.getStatusCode();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error communicating with Flask server: " + e.getMessage();
+            return "Error: " + e.getMessage();
         }
     }
 }
