@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import MessageBubble from './MessageBubble';
-import { ChatMessagesProps } from 'types/FeatureTypes';
+import { ChatMessagesProps } from '../../types/FeatureTypes';
 import './ChatMessages.css';
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {

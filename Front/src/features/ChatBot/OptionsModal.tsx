@@ -10,6 +10,7 @@ interface OptionsModalProps {
   onClose: () => void;
   clearMessages: () => void;
   openRecipeModal: () => void;
+  openCustomInfoModal: () => void;
 }
 
 const OptionsModal: React.FC<OptionsModalProps> = ({
@@ -17,6 +18,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
   onClose,
   clearMessages,
   openRecipeModal,
+  openCustomInfoModal,
 }) => {
   if (!isOpen) return null;
 
@@ -26,6 +28,14 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
       icon: '🍴',
       action: () => {
         openRecipeModal();
+        onClose();
+      },
+    },
+    {
+      label: '사용자 정보 입력',
+      icon: '✍️',
+      action: () => {
+        openCustomInfoModal();
         onClose();
       },
     },

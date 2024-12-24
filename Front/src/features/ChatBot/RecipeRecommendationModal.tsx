@@ -4,7 +4,7 @@ import React from 'react';
 import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
-import { DetectionResult } from 'types/FeatureTypes';
+import { DetectionResult } from '../../types/FeatureTypes';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
@@ -22,7 +22,6 @@ interface RecipeRecommendationModalProps {
     }>
   >;
 }
-
 
 const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   isOpen,

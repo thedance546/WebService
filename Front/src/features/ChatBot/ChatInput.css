@@ -10,7 +10,7 @@
 
     /* HomeNavBar 높이 */
     --navbar-height: 50px;
-    --chat-height: calc(100vh - var(--notification-height) - var(--navbar-height) - var(--input-height));
+    --chat-height: calc(100vh - var(--navbar-height) - var(--input-height));
 }
 
 .chat-input {
