@@ -7,8 +7,8 @@ spring:
     init:
       mode: always
 
-#  profiles:
-#    active: test
+  profiles:
+    active: test
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
@@ -19,7 +19,7 @@ spring:
 
 
   jpa:
-    database-platform: org.hibernate.dialect.MariaDB106Dialect
+    database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
       ddl-auto: create
     properties:
