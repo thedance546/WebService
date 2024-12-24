@@ -12,7 +12,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatbotService {
 
-    private final String FLASK_API_URL = "http://localhost:5000/ask";
+    private final String FLASK_API_URL = "http://gpt_container:5000/ask";
     private final RestTemplate restTemplate;
 
     public String askFlaskApi(String question, String searchResults) {
