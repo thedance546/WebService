@@ -20,9 +20,7 @@ import java.util.Map;
 public class ImageController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String yoloApiUrl = "http://localhost:5000/v1/object-detection/image_team6/{modelName}";
-    private final String chatBotApiUrl = "";  // LLM 챗봇 API URL
 
-    //yolo
     @PostMapping("/send")
     public ResponseEntity<List<ObjectDetectionDTO>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
         try {
@@ -64,29 +62,4 @@ public class ImageController {
                     .body(List.of(new ObjectDetectionDTO("error", "Unexpected error occurred")));
         }
     }
-
-    //llm
-//    @PostMapping("/send-to-chatbot")
-//    public ResponseEntity<String> sendToChatbot(@RequestBody List<Map<String, String>> detectedObjects) {
-//        try {
-//            // LLM 챗봇 API에 전달할 JSON 데이터
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_JSON);
-//            HttpEntity<List<Map<String, String>>> requestEntity = new HttpEntity<>(detectedObjects, headers);
-//
-//            // 챗봇 API로 데이터 전송
-//            ResponseEntity<String> response = restTemplate.exchange(
-//                    chatBotApiUrl,
-//                    HttpMethod.POST,
-//                    requestEntity,
-//                    String.class
-//            );
-//
-//            // 챗봇 응답 반환
-//            return ResponseEntity.ok("챗봇 응답: " + response.getBody());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("챗봇에 데이터를 전달하는 중 오류 발생: " + e.getMessage());
-//        }
-//    }
 }
