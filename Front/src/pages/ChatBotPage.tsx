@@ -6,14 +6,8 @@ import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/OptionsModal';
 import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
-import NotificationBar from '../features/ChatBot/NotificationBar';
 import { usePopupState } from '../hooks/usePopupState';
-import { DetectionResult } from 'types/FeatureTypes';
-
-interface Message {
-  sender: string;
-  imageUrl?: string;
-}
+import { DetectionResult, Message } from 'types/FeatureTypes';
 
 const ChatBotPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -28,7 +22,6 @@ const ChatBotPage: React.FC = () => {
     loading: false,
   });
   
-
   const addMessage = (message: Message) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
@@ -38,14 +31,8 @@ const ChatBotPage: React.FC = () => {
     localStorage.removeItem('chatMessages');
   };
 
-  const handleImageUpload = (file: File) => {
-    const imageUrl = URL.createObjectURL(file);
-    addMessage({ sender: 'user', imageUrl });
-  };
-
   return (
     <div className="chatbot-container">
-      <NotificationBar />
       <ChatMessages messages={messages} />
       <ChatInput addMessage={addMessage} toggleOptions={optionsModal.open} disabled={optionsModal.isOpen} />
       <OptionsModal

@@ -2,17 +2,8 @@
 
 import React, { useRef, useEffect } from 'react';
 import MessageBubble from './MessageBubble';
+import { ChatMessagesProps } from 'types/FeatureTypes';
 import './ChatMessages.css';
-
-interface Message {
-  sender: string;
-  text?: string;
-  imageUrl?: string;
-}
-
-interface ChatMessagesProps {
-  messages: Message[];
-}
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -28,7 +19,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
           key={index}
           sender={message.sender}
           text={message.text}
-          imageUrl={message.imageUrl}
         />
       ))}
       <div ref={messagesEndRef} />

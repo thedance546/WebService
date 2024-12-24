@@ -1,6 +1,5 @@
 /* src/features/ChatBot/ChatMessages.css */
 :root {
-    --notification-height: 50px;
     --input-height: 60px;
     --navbar-height: 50px;
     --chat-bg-color: #ffffff;
@@ -8,7 +7,7 @@
 }
 
 .chat-messages-container {
-    height: calc(100vh - var(--notification-height) - var(--navbar-height) - var(--input-height));
+    height: calc(100vh - var(--navbar-height) - var(--input-height));
     overflow-y: auto;
     padding: 10px;
     background-color: var(--chat-bg-color);
@@ -18,6 +17,6 @@
 
 @media (max-width: 768px) {
     .chat-messages-container {
-        height: calc(100vh - var(--notification-height) - var(--navbar-height) - var(--input-height) - 50px);
+        height: calc(100vh - var(--navbar-height) - var(--input-height) - 50px);
     }
 }
