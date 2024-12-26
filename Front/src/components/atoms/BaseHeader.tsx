@@ -14,13 +14,14 @@ interface BaseHeaderProps {
 const BaseHeader: React.FC<BaseHeaderProps> = ({ title, onClose, headerStyle }) => (
   <div
     className="text-center fw-bold py-3 position-relative"
-    style={{ backgroundColor: headerStyle?.backgroundColor || '#f9e000',
-      color: headerStyle?.color || '#1e1e1e' }}
+    style={{ color: headerStyle?.color || '#1e1e1e' ,
+      backgroundColor: headerStyle?.backgroundColor || '#f9e000'
+    }}
   >
     {title}
     <button
       onClick={onClose}
-      className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+      className="btn-close btn-close-black position-absolute top-0 end-0 m-3"
       aria-label="Close"
     />
   </div>

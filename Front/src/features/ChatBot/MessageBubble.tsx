@@ -6,7 +6,7 @@ import './MessageBubble.css';
 interface MessageBubbleProps {
   sender: string;
   text?: string;
-  imageUrl?: string;
+  imageUrl?: string; // 봇 이미지를 위한 속성
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, imageUrl }) => {
@@ -17,18 +17,17 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, imageUrl })
     <div
       className={`message-container ${isUser ? 'user-message' : isBot ? 'bot-message' : 'generic-message'}`}
     >
+      {isBot && imageUrl && (
+        <img
+          src={imageUrl}
+          alt="bot avatar"
+          className="bot-avatar"
+        />
+      )}
       <div
         className={`message-bubble ${isUser ? 'user-bubble' : isBot ? 'bot-bubble' : 'generic-bubble'}`}
       >
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt="uploaded"
-            className="message-image"
-          />
-        ) : (
-          text
-        )}
+        {text}
       </div>
     </div>
   );

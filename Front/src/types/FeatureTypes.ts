@@ -7,6 +7,7 @@ export interface DetectionResult {
 export interface Message {
   sender: string;
   text: string;
+  imageUrl?: string;
 }
 
 export interface ChatMessagesProps {
