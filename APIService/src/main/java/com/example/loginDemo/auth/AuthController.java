@@ -60,8 +60,6 @@ public class AuthController {
         }
     }
 
-
-
     //회원 탈퇴
     @DeleteMapping("/delete-account")
     public ResponseEntity<Map<String, String>> deleteAccount(@RequestHeader("Authorization") String accessToken,
@@ -84,14 +82,8 @@ public class AuthController {
         return authService.refreshAccessToken(request);
     }
 
-
-
-    //methods
-
     private String extractToken(String token) {
         return token.substring(7); // Assuming "Bearer " prefix
     }
-
-
 
 }

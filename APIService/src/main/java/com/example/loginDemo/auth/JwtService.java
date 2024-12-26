@@ -90,7 +90,6 @@ public class JwtService {
                 .compact();
     }
 
-
     public boolean isTokenValid(String token, UserDetails userDetails) {
         if (isTokenExpired(token)) {
             return false;
