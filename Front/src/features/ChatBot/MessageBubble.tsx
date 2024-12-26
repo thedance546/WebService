@@ -15,17 +15,26 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, imageUrl })
 
   return (
     <div
-      className={`message-container ${isUser ? 'user-message' : isBot ? 'bot-message' : 'generic-message'}`}
+      className={`message-container d-flex ${
+        isUser ? 'justify-content-end' : 'justify-content-start'
+      } align-items-start mb-2`}
     >
       {isBot && imageUrl && (
         <img
           src={imageUrl}
           alt="bot avatar"
           className="bot-avatar"
+          style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }}
         />
       )}
       <div
-        className={`message-bubble ${isUser ? 'user-bubble' : isBot ? 'bot-bubble' : 'generic-bubble'}`}
+        className={`message-bubble p-2 rounded ${
+          isUser ? 'bg-primary text-white' : 'bg-secondary text-white w-100'
+        }`}
+        style={{
+          maxWidth: isUser ? '60%' : '100%',
+          wordBreak: 'break-word',
+        }}
       >
         {text}
       </div>

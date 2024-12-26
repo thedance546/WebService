@@ -13,7 +13,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   }, [messages]);
 
   return (
-    <div className="chat-messages-container">
+    <div className="chat-messages-container border rounded bg-white p-2">
       {messages.map((message, index) => (
         <MessageBubble
           key={index}
