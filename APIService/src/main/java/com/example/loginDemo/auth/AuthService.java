@@ -3,7 +3,6 @@ package com.example.loginDemo.auth;
 import com.example.loginDemo.domain.Role;
 import com.example.loginDemo.domain.User;
 import com.example.loginDemo.dto.AuthenticationRequest;
-import com.example.loginDemo.dto.AuthenticationResponse;
 import com.example.loginDemo.dto.RegisterRequest;
 import com.example.loginDemo.exception.DuplicateEmailException;
 import com.example.loginDemo.exception.InvalidEmailFormatException;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -62,32 +60,6 @@ public class AuthService {
         // 로그인 후 처리
         handleLogin(response, accessToken, refreshToken);
     }
-
-    // 로그인 후 처리
-    private void handleLogin(HttpServletResponse response, String accessToken, String refreshToken) {
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        response.setContentType("application/json");
-
-        try {
-            // Access Token을 JSON 응답 본문에 포함시켜 반환
-            response.getWriter().write(new ObjectMapper().writeValueAsString(tokens));
-
-            // Refresh Token을 HTTPOnly 쿠키에 설정
-            ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                    .maxAge(7 * 24 * 60 * 60)  // 7일
-                    .path("/")
-                    .secure(true)  // HTTPS 연결에서만 전송
-                    .sameSite("None")  // 크로스 사이트 요청에서 쿠키를 사용할 수 있도록
-                    .httpOnly(true)  // JS에서 접근할 수 없도록
-                    .build();
-            response.setHeader("Set-Cookie", cookie.toString());  // 응답 헤더에 쿠키 설정
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @Transactional
     public Map<String, String> deleteAccount(String accessToken, String refreshToken) {
@@ -150,6 +122,31 @@ public class AuthService {
     }
 
     //Methods
+    // 로그인 후 처리
+    private void handleLogin(HttpServletResponse response, String accessToken, String refreshToken) {
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+        response.setContentType("application/json");
+
+        try {
+            // Access Token을 JSON 응답 본문에 포함시켜 반환
+            response.getWriter().write(new ObjectMapper().writeValueAsString(tokens));
+
+            // Refresh Token을 HTTPOnly 쿠키에 설정
+            ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .maxAge(7 * 24 * 60 * 60)  // 7일
+                    .path("/")
+                    .secure(true)  // HTTPS 연결에서만 전송
+                    .sameSite("None")  // 크로스 사이트 요청에서 쿠키를 사용할 수 있도록
+                    .httpOnly(true)  // JS에서 접근할 수 없도록
+                    .build();
+            response.setHeader("Set-Cookie", cookie.toString());  // 응답 헤더에 쿠키 설정
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void validateEmail(String email) {
         if (!isValidEmailFormat(email)) {
             throw new InvalidEmailFormatException("잘못된 이메일 형식입니다.");
