@@ -6,7 +6,7 @@ import './MessageBubble.css';
 interface MessageBubbleProps {
   sender: string;
   text?: string;
-  imageUrl?: string; // 봇 이미지를 위한 속성
+  imageUrl?: string;
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, imageUrl }) => {

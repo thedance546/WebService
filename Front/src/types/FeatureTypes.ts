@@ -13,3 +13,9 @@ export interface Message {
 export interface ChatMessagesProps {
   messages: Message[];
 }
+
+export interface ChatInputProps {
+  addMessage: (message: { text: string; sender: string }) => void;
+  toggleOptions: () => void;
+  disabled: boolean;
+}

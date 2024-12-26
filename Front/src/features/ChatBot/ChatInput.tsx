@@ -4,13 +4,8 @@ import React, { useState } from 'react';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
 import { Send, Plus } from 'react-bootstrap-icons';
+import { ChatInputProps } from '../../types/FeatureTypes';
 import './ChatInput.css';
-
-interface ChatInputProps {
-  addMessage: (message: { text: string; sender: string }) => void;
-  toggleOptions: () => void;
-  disabled: boolean;
-}
 
 const ChatInput: React.FC<ChatInputProps> = ({ addMessage, toggleOptions, disabled }) => {
   const [input, setInput] = useState('');

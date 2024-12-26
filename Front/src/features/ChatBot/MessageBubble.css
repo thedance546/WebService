@@ -3,7 +3,8 @@
 /* 공통 컨테이너 스타일 */
 .message-container {
     display: flex;
-    margin: 0.5rem 0;
+    align-items: flex-start;
+    margin-bottom: 10px;
 }
 
 /* 사용자 메시지 스타일 */
@@ -23,7 +24,7 @@
 
 /* 봇 메시지 스타일 */
 .bot-message {
-    justify-content: flex-start;
+    flex-direction: row;
     align-items: center; /* 이미지와 텍스트 수직 정렬 */
     margin-left: 10px; /* 왼쪽 여백 추가 */
 }
