@@ -6,7 +6,6 @@ import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/OptionsModal';
 import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
-import QuickStartMessage from '../features/ChatBot/QuickStartMessage';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
 import { DetectionResult, Message } from '../types/FeatureTypes';
@@ -39,23 +38,14 @@ const ChatBotPage: React.FC = () => {
     localStorage.removeItem('chatMessages');
   };
 
-  const handleQuickAction = (action: string) => {
-    if (action === 'recommend_recipe') {
-      addMessage({ sender: 'bot', text: '레시피 추천을 준비합니다.', imageUrl: botAvatar });
-      recipeModal.open();
-    } else if (action === 'input_info') {
-      addMessage({ sender: 'bot', text: '정보 입력을 시작합니다.', imageUrl: botAvatar });
-      customInfoModal.open();
-    }
-  };
-
   return (
     <div className="chatbot-container">
       <ChatMessages messages={messages} />
-      {messages.length === 1 && (
-        <QuickStartMessage onQuickAction={handleQuickAction} />
-      )}
-      <ChatInput addMessage={addMessage} toggleOptions={optionsModal.open} disabled={optionsModal.isOpen} />
+      <ChatInput
+        addMessage={addMessage}
+        toggleOptions={optionsModal.open}
+        disabled={optionsModal.isOpen}
+      />
       <OptionsModal
         isOpen={optionsModal.isOpen}
         onClose={optionsModal.close}

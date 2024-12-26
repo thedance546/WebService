@@ -1,60 +1,44 @@
 // src/features/ChatBot/ChatInput.tsx
 
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
+import { useChatInput } from '../../hooks/useChatInput';
 import { Send, Plus } from 'react-bootstrap-icons';
 import { ChatInputProps } from '../../types/FeatureTypes';
 import './ChatInput.css';
-import botAvatar from '../../assets/bot-avatar.png';
 
 const ChatInput: React.FC<ChatInputProps> = ({ addMessage, toggleOptions, disabled }) => {
-  const [input, setInput] = useState('');
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setInput(event.target.value);
-
-  const handleSendMessage = () => {
-    if (input.trim() !== '') {
-      const messageToAdd = input.startsWith('#')
-        ? { text: input.slice(1).trim(), sender: 'bot', imageUrl: botAvatar }
-        : { text: input, sender: 'user' };
-
-      addMessage(messageToAdd);
-      setInput('');
-    }
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && !disabled) {
-      event.preventDefault();
-      handleSendMessage();
-    }
-  };
+  const { input, handleInputChange, handleSendMessage } = useChatInput(addMessage);
 
   return (
     <div className="chat-input d-flex align-items-center justify-content-between">
+      {/* 옵션 버튼 */}
       <Button
         onClick={toggleOptions}
-        className="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center me-2"
-        style={{ width: '50px', height: '50px' }}
+        className="chat-btn ms-2 me-2"
+        disabled={disabled}
       >
         <Plus />
       </Button>
 
+      {/* 메시지 입력 필드 */}
       <Input
         value={input}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
+        onChange={(e) => handleInputChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !disabled) handleSendMessage();
+        }}
         placeholder="메시지를 입력하세요..."
         className="form-control flex-grow-1 me-2"
         disabled={disabled}
       />
 
+      {/* 전송 버튼 */}
       <Button
         onClick={handleSendMessage}
-        className="btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
-        style={{ width: '50px', height: '50px' }}
+        className="chat-btn me-2"
+        disabled={disabled}
       >
         <Send />
       </Button>
