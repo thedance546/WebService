@@ -21,6 +21,7 @@ const CustomInfoInputModal: React.FC<CustomInfoInputModalProps> = ({ isOpen, onC
     mealTimes: [] as string[],
     foodCategories: [] as string[],
     customAllergy: '',
+    customFoodCategory: '',
   });
 
   const [error, setError] = useState('');
