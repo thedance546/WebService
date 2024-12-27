@@ -1,0 +1,22 @@
+# 제외할 파일 및 폴더
+.git
+__pycache__/
+*.pyc
+.DS_Store
+*.log
+*.jpg
+*.png
+runs/
+data/
+*.tar
+*.zip
+*.pyo
+.env
+
+# 포함할 파일/폴더 명시 (명시적 경로로 수정)
+!/models/
+!/utils/
+!./restapi.py
+!./requirements.txt
+!./best.pt
+

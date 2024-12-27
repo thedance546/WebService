@@ -1,0 +1,14 @@
+# Base ------------------------------------------------------------------------
+numpy>=1.18.5
+opencv-python>=4.1.1
+pillow==9.4.0
+requests>=2.32.0
+torch>=1.7.0
+torchvision>=0.8.1
+ultralytics>=8.2.34  # https://ultralytics.com
+Flask>=2.2.0,<2.3.0  # Flask 버전 설정
+easyocr==1.7.0
+
+
+# Plotting --------------------------------------------------------------------
+pandas>=1.1.4
