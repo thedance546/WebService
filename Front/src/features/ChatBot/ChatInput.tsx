@@ -12,7 +12,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ addMessage, toggleOptions, disabl
   const { input, handleInputChange, handleSendMessage } = useChatInput(addMessage);
 
   return (
-    <div className="chat-input d-flex align-items-center justify-content-between">
+    <div className="chat-input d-flex align-items-center justify-content-between mt-2">
       {/* 옵션 버튼 */}
       <Button
         onClick={toggleOptions}
