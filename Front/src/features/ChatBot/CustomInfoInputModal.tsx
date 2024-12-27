@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import Modal from '../../components/molecules/FullScreenOverlay';
 import Button from '../../components/atoms/Button';
+import UserInfoForm from './UserInfoForm';
 
 interface CustomInfoInputModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (info: Record<string, any>) => void;
+  onSubmit: (info: string) => void;
 }
 
 const CustomInfoInputModal: React.FC<CustomInfoInputModalProps> = ({ isOpen, onClose, onSubmit }) => {
@@ -19,31 +20,18 @@ const CustomInfoInputModal: React.FC<CustomInfoInputModalProps> = ({ isOpen, onC
     allergies: [] as string[],
     mealTimes: [] as string[],
     foodCategories: [] as string[],
+    customAllergy: '',
   });
 
-  const handleCheckboxChange = (field: string, value: string) => {
-    setFormData((prev) => {
-      const selected = prev[field as keyof typeof formData] as string[];
-      return {
-        ...prev,
-        [field]: selected.includes(value)
-          ? selected.filter((item) => item !== value)
-          : [...selected, value],
-      };
-    });
-  };
+  const [error, setError] = useState('');
 
   const handleSubmit = () => {
-    onSubmit(formData);
-    setFormData({
-      ageGroup: '',
-      gender: '',
-      activityLevel: '',
-      healthGoal: '',
-      allergies: [],
-      mealTimes: [],
-      foodCategories: [],
-    });
+    if (!formData.ageGroup || !formData.gender || !formData.activityLevel || !formData.healthGoal) {
+      setError('모든 필드를 입력해주세요.');
+      return;
+    }
+    setError('');
+    onSubmit(JSON.stringify(formData, null, 2));
     onClose();
   };
 
@@ -52,50 +40,11 @@ const CustomInfoInputModal: React.FC<CustomInfoInputModalProps> = ({ isOpen, onC
   return (
     <Modal title="사용자 정보 입력" onClose={onClose}>
       <div className="p-3">
-        {/* Age Group */}
-        <h6>나이</h6>
-        <div>
-          {['10대', '20대', '30대', '40대 이상'].map((age) => (
-            <label key={age} className="me-3">
-              <input
-                type="radio"
-                name="ageGroup"
-                value={age}
-                checked={formData.ageGroup === age}
-                onChange={(e) => setFormData({ ...formData, ageGroup: e.target.value })}
-              />
-              {age}
-            </label>
-          ))}
-        </div>
-
-        {/* Gender */}
-        <h6>성별</h6>
-        <div>
-          {['남성', '여성'].map((gender) => (
-            <label key={gender} className="me-3">
-              <input
-                type="radio"
-                name="gender"
-                value={gender}
-                checked={formData.gender === gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-              />
-              {gender}
-            </label>
-          ))}
-        </div>
-
-        {/* Other Fields */}
-        {/* Similar blocks for activity level, health goals, allergies, meal times, and food categories */}
-
+        {error && <div className="alert alert-danger">{error}</div>}
+        <UserInfoForm formData={formData} setFormData={setFormData} />
         <div className="d-flex justify-content-end mt-3">
-          <Button onClick={onClose} variant="secondary" className="me-2">
-            취소
-          </Button>
-          <Button onClick={handleSubmit} variant="primary">
-            제출
-          </Button>
+          <Button onClick={onClose} variant="secondary" className="me-2">취소</Button>
+          <Button onClick={handleSubmit} variant="primary">제출</Button>
         </div>
       </div>
     </Modal>
