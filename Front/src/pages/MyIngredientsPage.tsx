@@ -138,7 +138,7 @@ const MyIngredientsPage: React.FC = () => {
           ingredientModal.open();
         }}
       >
-        <Plus size={28} />
+        <Plus size={32} />
       </button>
 
       <HomeNavBar />

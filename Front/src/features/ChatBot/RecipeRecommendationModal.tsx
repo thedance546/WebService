@@ -1,10 +1,10 @@
 // src/features/ChatBot/RecipeRecommendationModal.tsx
 
 import React from 'react';
-import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
+import Modal from '../../components/molecules/FullScreenOverlay';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
-import { DetectionResult } from 'types/FeatureTypes';
+import { DetectionResult } from '../../types/FeatureTypes';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
@@ -22,7 +22,6 @@ interface RecipeRecommendationModalProps {
     }>
   >;
 }
-
 
 const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   isOpen,
@@ -62,10 +61,9 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   }
 
   return (
-    <FullScreenOverlay
+    <Modal
       title="레시피 추천"
       onClose={onClose}
-      headerStyle={{ backgroundColor: '#007bff', color: '#fff' }}
     >
       <ImageUploadPreview onFileSelect={handleFileChange} />
 
@@ -85,7 +83,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
       >
         {state.loading ? '처리 중...' : '객체 탐지 시작'}
       </Button>
-    </FullScreenOverlay>
+    </Modal>
   );
 };
 

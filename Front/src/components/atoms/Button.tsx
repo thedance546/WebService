@@ -9,7 +9,7 @@ interface ButtonProps {
   className?: string;
   disabled?: boolean;
   variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
-  style?: CSSProperties; // 추가된 스타일 프로퍼티
+  style?: CSSProperties;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,7 +19,7 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   disabled = false,
   variant = 'primary',
-  style, // 스타일 프로퍼티 추가
+  style,
 }) => {
   return (
     <button
@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={`btn btn-${variant} ${className}`}
       disabled={disabled}
-      style={style} // 스타일 적용
+      style={style}
     >
       {children}
     </button>

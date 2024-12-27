@@ -59,7 +59,6 @@ const RecognitionResultModal: React.FC<RecognitionResultModalProps> = ({
     <FullScreenOverlay
       title="인식 결과"
       onClose={onClose}
-      headerStyle={{ backgroundColor: '#007bff', color: '#fff' }}
     >
       {/* 구매일자 입력 */}
       <div className="mb-3">

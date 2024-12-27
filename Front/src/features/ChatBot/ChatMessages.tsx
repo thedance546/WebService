@@ -2,17 +2,8 @@
 
 import React, { useRef, useEffect } from 'react';
 import MessageBubble from './MessageBubble';
+import { ChatMessagesProps } from '../../types/FeatureTypes';
 import './ChatMessages.css';
-
-interface Message {
-  sender: string;
-  text?: string;
-  imageUrl?: string;
-}
-
-interface ChatMessagesProps {
-  messages: Message[];
-}
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -22,7 +13,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   }, [messages]);
 
   return (
-    <div className="chat-messages-container">
+    <div className="chat-messages-container border rounded bg-white p-2">
       {messages.map((message, index) => (
         <MessageBubble
           key={index}

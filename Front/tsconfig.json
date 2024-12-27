@@ -27,13 +27,6 @@
     // TypeScript가 외부 선언 파일의 타입 검사를 건너뜀 (컴파일 속도 개선)
     "skipLibCheck": true,
 
-    // 경로 별칭을 설정하여 import 경로를 단순화
-    "baseUrl": "./src",
-    "paths": {
-      "@components/*": ["components/*"], // 컴포넌트 경로 별칭 설정
-      "@utils/*": ["utils/*"]           // 유틸리티 경로 별칭 설정
-    },
-
     // 소스맵 생성 (디버깅 시 유용)
     "sourceMap": true,
 
