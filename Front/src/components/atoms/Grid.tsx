@@ -1,6 +1,7 @@
 // src/components/atoms/Grid.tsx
 
 import React, { ReactNode } from 'react';
+import './Grid.css';
 
 interface GridProps {
   children: ReactNode;
@@ -9,32 +10,14 @@ interface GridProps {
   className?: string;
 }
 
-const Grid: React.FC<GridProps> = ({ children, columns, columnsMd = null, className = '' }) => {
-  const gridStyle: React.CSSProperties = {
-    display: 'grid',
-    gap: '1rem',
-    gridTemplateColumns: `repeat(${columns}, 1fr)`,
-  };
-
-  const mediaQueryStyle = columnsMd
-    ? `@media (min-width: 768px) { 
-         grid-template-columns: repeat(${columnsMd}, 1fr); 
-       }`
-    : '';
+const Grid: React.FC<GridProps> = ({ children, columns, columnsMd, className = '' }) => {
+  const baseClass = `grid-columns-${columns}`;
+  const responsiveClass = columnsMd ? `grid-columns-md-${columnsMd}` : '';
 
   return (
-    <>
-      <style>
-        {`
-          .responsive-grid {
-            ${mediaQueryStyle}
-          }
-        `}
-      </style>
-      <div className={`responsive-grid ${className}`} style={gridStyle}>
-        {children}
-      </div>
-    </>
+    <div className={`responsive-grid ${baseClass} ${responsiveClass} ${className}`}>
+      {children}
+    </div>
   );
 };
 
