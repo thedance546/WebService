@@ -12,6 +12,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,51 +27,42 @@ public class ImageController {
     private final RestTemplate restTemplate = new RestTemplate();
 
 //    private final String yoloApiUrl = "http://localhost:5000/v1/object-detection/image_team6/{modelName}";
-    private final String yoloApiUrl = "http://yolo-container:5000/v1/object-detection/image_team6/{modelName}";
+    private final String yoloApiUrl = "http://yolo-container:5000/object-detection/object_detection";
 
 //    private final String FLASK_URL = "http://localhost:5001/object-detection/ocr_detection";
     private final String FLASK_URL = "http://receipt-container:5001/object-detection/ocr_detection";
 
     //yolo
-    @PostMapping("/send")
-    public ResponseEntity<List<ObjectDetectionDTO>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
+    @PostMapping("/detect")
+    public ResponseEntity<?> detectObjects(@RequestParam("image") MultipartFile imageFile) {
         try {
-            // Flask API로 보낼 데이터 구성
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("image", new MultipartInputStreamFileResource(imageFile.getInputStream(), imageFile.getOriginalFilename()));
+            // 이미지 파일을 Flask 서버에 전송
+            RestTemplate restTemplate = new RestTemplate();
 
-            // HTTP 요청 헤더 설정
+            // HTTP 요청을 위한 Headers 설정
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // 요청 생성
+            // MultipartBody에 이미지 추가
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("image", new MultipartInputStreamFileResource(imageFile));  // MultipartInputStreamFileResource 사용
+
+            // HttpEntity 설정 (헤더와 바디 포함)
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // Flask API 호출
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    yoloApiUrl.replace("{modelName}", "yolov5s"),
+            // Flask 서버로 POST 요청 보내기
+            ResponseEntity<String> response = restTemplate.exchange(
+                    yoloApiUrl,  // Flask 서버 URL
                     HttpMethod.POST,
                     requestEntity,
-                    Map.class
+                    String.class
             );
 
-            // Map을 List<ObjectDetectionDTO>로 변환
-            Map<String, String> detectedObjects = response.getBody();
-            List<ObjectDetectionDTO> objectDetectionDTOList = new ArrayList<>();
+            // Flask 서버에서 반환된 JSON 응답 처리
+            return ResponseEntity.ok(response.getBody());
 
-            // Map을 순회하며 DTO 객체로 변환
-            for (Map.Entry<String, String> entry : detectedObjects.entrySet()) {
-                objectDetectionDTOList.add(new ObjectDetectionDTO(entry.getKey(), entry.getValue()));
-            }
-
-            // 성공적인 응답 반환
-            return ResponseEntity.ok(objectDetectionDTOList);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(List.of(new ObjectDetectionDTO("error", "Failed to process image")));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(List.of(new ObjectDetectionDTO("error", "Unexpected error occurred")));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing the image");
         }
     }
 
