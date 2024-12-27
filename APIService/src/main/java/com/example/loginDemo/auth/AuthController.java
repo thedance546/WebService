@@ -1,12 +1,18 @@
 package com.example.loginDemo.auth;
 
 import com.example.loginDemo.dto.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -24,64 +30,60 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(request));
     }
 
-    //로그인
+    // 로그인
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
-        return ResponseEntity.ok(authService.authenticate(request));
+    public ResponseEntity<Void> authenticate(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
+        // 인증 처리 및 토큰 생성
+        authService.authenticate(request, response);
+
+        // 로그인 성공 후 200 OK 반환
+        return ResponseEntity.ok().build();
     }
 
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String accessToken,
-                                    @RequestBody Map<String, String> tokens) {
-        // Authorization 헤더에서 Access Token 추출
-        accessToken = extractToken(accessToken);
+                                    @CookieValue(name = "refreshToken", defaultValue = "") String refreshToken,
+                                    HttpServletResponse response) {
+        try {
+            // Authorization 헤더에서 Access Token 추출 (Bearer <accessToken> 형식)
+            accessToken = extractToken(accessToken);
 
-        // 요청 본문에서 Refresh Token 추출
-        String refreshToken = tokens.get("refreshToken");
+            // 로그아웃 서비스 호출
+            logoutService.logout(accessToken, refreshToken, response);
 
-        // 로그아웃 처리
-        logoutService.logout(accessToken, refreshToken);
+            return ResponseEntity.ok("Successfully logged out");
 
-        return ResponseEntity.ok("Successfully logged out");
+        } catch (Exception e) {
+            System.err.println("Error during logout: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during logout");
+        }
     }
 
     //회원 탈퇴
     @DeleteMapping("/delete-account")
-    public ResponseEntity<Map<String, String>> deleteAccount(@RequestHeader("Authorization") String accessToken) {
-        accessToken = extractToken(accessToken);
-        Map<String, String> response = authService.deleteAccount(accessToken);
-        return ResponseEntity.ok(response);
-    }
+    public ResponseEntity<Map<String, String>> deleteAccount(@RequestHeader("Authorization") String accessToken,
+                                                             @CookieValue(name = "refreshToken", defaultValue = "") String refreshToken) {
+        try {
+            accessToken = extractToken(accessToken);
+            Map<String, String> response = authService.deleteAccount(accessToken, refreshToken);
+            return ResponseEntity.ok(response);
 
-    //access token 갱신
-    @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshAccessToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
-
-        //만료된 refresh token의 경우
-        if (jwtService.isTokenExpired(refreshToken)) {
-            return ResponseEntity.status(401).body(Map.of(
-                    "message", "Refresh token is expired",
-                    "tokenType", "refresh"
-            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error occurred during account deletion"));
         }
-
-        String userEmail = jwtService.extractUsername(refreshToken);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-        String newAccessToken = jwtService.generateAccessToken(userDetails, userDetails.getAuthorities().toString());
-
-        return ResponseEntity.ok(Map.of(
-                "accessToken", newAccessToken
-        ));
     }
 
-    //methods
+    // access token 갱신
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, String>> refreshAccessToken(HttpServletRequest request) {
+        return authService.refreshAccessToken(request);
+    }
 
     private String extractToken(String token) {
         return token.substring(7); // Assuming "Bearer " prefix
     }
-
-
 
 }
