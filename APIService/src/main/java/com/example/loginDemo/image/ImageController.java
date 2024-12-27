@@ -24,8 +24,8 @@ import java.util.Map;
 public class ImageController {
     private final ImageService imageService;
     private final RestTemplate restTemplate = new RestTemplate();
-//    private final String yoloApiUrl = "http://localhost:5000/v1/object-detection/image_team6/{modelName}";
-    private final String yoloApiUrl = "http://yolo-container:5000/v1/object-detection/image_team6/{modelName}";
+    private final String yoloApiUrl = "http://localhost:5000/v1/object-detection/image_team6/{modelName}";
+//    private final String yoloApiUrl = "http://yolo-container:5000/v1/object-detection/image_team6/{modelName}";
 //    private final String FLASK_URL = "http://localhost:5001/object-detection/ocr_detection";
     private final String FLASK_URL = "http://receipt-container:5001/object-detection/ocr_detection";
     private final String chatBotApiUrl = "";  // LLM 챗봇 API URL
