@@ -16,7 +16,7 @@
 }
 
 /* 반응형 처리 */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .chat-input {
         bottom: var(--navbar-height);
     }
