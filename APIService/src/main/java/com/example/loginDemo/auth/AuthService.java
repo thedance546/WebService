@@ -87,6 +87,7 @@ public class AuthService {
         }
     }
 
+    //토큰 갱신
     @Transactional
     public ResponseEntity<Map<String, String>> refreshAccessToken(HttpServletRequest request) {
         // 쿠키에서 Refresh Token 추출
