@@ -4,8 +4,13 @@ export interface DetectionResult {
   objects: { name: string; confidence: number }[];
 }
 
+export enum Sender {
+  User = 'user',
+  Bot = 'bot',
+}
+
 export interface Message {
-  sender: string;
+  sender: Sender;
   text: string;
   imageUrl?: string;
 }
@@ -15,7 +20,7 @@ export interface ChatMessagesProps {
 }
 
 export interface ChatInputProps {
-  addMessage: (message: { text: string; sender: string }) => void;
+  addMessage: (message: Message) => void;
   toggleOptions: () => void;
   disabled: boolean;
 }

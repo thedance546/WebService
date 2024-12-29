@@ -8,18 +8,22 @@ import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationM
 import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
-import { DetectionResult, Message } from '../types/FeatureTypes';
+import { DetectionResult, Message, Sender } from '../types/FeatureTypes';
 import botAvatar from '../assets/bot-avatar.png';
 
 const ChatBotPage: React.FC = () => {
   const initialMessage: Message[] = [
-    { sender: 'bot', text: '안녕하세요! 무엇을 도와드릴까요?', imageUrl: botAvatar },
+    { sender: Sender.Bot, text: '안녕하세요! 무엇을 도와드릴까요?', imageUrl: botAvatar },
   ];
 
   const [messages, setMessages] = useState<Message[]>(() => {
     const savedMessages = localStorage.getItem('chatMessages');
     return savedMessages ? JSON.parse(savedMessages) : initialMessage;
   });
+
+  const addMessage = (message: Message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
 
   const optionsModal = usePopupState({ isOpen: false });
   const recipeModal = usePopupState({
@@ -28,10 +32,6 @@ const ChatBotPage: React.FC = () => {
     loading: false,
   });
   const customInfoModal = usePopupState({ isOpen: false });
-
-  const addMessage = (message: Message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
-  };
 
   const clearMessages = () => {
     setMessages(initialMessage);

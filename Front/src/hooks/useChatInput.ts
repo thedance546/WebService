@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import botAvatar from '../assets/bot-avatar.png';
+import { Message, Sender } from '../types/FeatureTypes';
 
-export const useChatInput = (addMessage: (message: any) => void) => {
-  const [input, setInput] = useState('');
+export const useChatInput = (addMessage: (message: Message) => void) => {
+  const [input, setInput] = useState<string>('');
 
   const handleInputChange = (value: string) => {
     setInput(value);
@@ -12,9 +13,9 @@ export const useChatInput = (addMessage: (message: any) => void) => {
 
   const handleSendMessage = () => {
     if (input.trim() !== '') {
-      const messageToAdd = input.startsWith('#')
-        ? { text: input.slice(1).trim(), sender: 'bot', imageUrl: botAvatar }
-        : { text: input, sender: 'user' };
+      const messageToAdd: Message = input.startsWith('#')
+        ? { text: input.slice(1).trim(), sender: Sender.Bot, imageUrl: botAvatar }
+        : { text: input, sender: Sender.User };
 
       addMessage(messageToAdd);
       setInput('');
