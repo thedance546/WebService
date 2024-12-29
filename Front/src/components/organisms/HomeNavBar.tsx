@@ -7,7 +7,7 @@ import './HomeNavBar.css';
 
 const HomeNavBar: React.FC = () => (
   <div
-    className="navbar bg-dark fixed-bottom d-flex"
+    className="container navbar bg-dark fixed-bottom d-flex"
     style={{
       height: 'var(--navbar-height)',
       justifyContent: 'space-around',

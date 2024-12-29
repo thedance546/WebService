@@ -44,7 +44,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
 
   return (
     <Modal title="옵션 메뉴" onClose={onClose}>
-      <Grid columns={2} columnsMd={3} className="justify-content-center">
+      <Grid columns={2} columnsMd={2} margin="0 1rem" className="gap-4">
         {options.map((option, index) => (
           <div key={index} className="col d-flex justify-content-center">
             <Button
