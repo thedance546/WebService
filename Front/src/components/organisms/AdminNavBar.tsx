@@ -11,15 +11,17 @@ const AdminNavBar: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="mb-4 shadow-sm">
+    <Navbar bg="dark" variant="dark" expand="lg" className="shadow-sm">
       <Container>
-        <Navbar.Brand onClick={() => navigate('/admin')} className="cursor-pointer">
+        <Navbar.Brand onClick={() => navigate('/admin')} className="cursor-pointer text-white">
           관리자 대시보드
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <NavList items={navItems} />
-          <LogoutButton className="btn-sm mx-2" />
+        <Navbar.Toggle aria-controls="admin-navbar-nav" />
+        <Navbar.Collapse id="admin-navbar-nav" className="d-flex justify-content-between align-items-center">
+          <NavList items={navItems} className="d-flex flex-row align-items-center" />
+          <div>
+            <LogoutButton className="btn btn-warning text-nowrap" />
+          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>
