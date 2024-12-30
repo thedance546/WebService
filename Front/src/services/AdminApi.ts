@@ -21,19 +21,21 @@ export const fetchCategories = async (): Promise<Category[]> => {
 
 export const createCategory = async (categoryName: string): Promise<Category> => {
   try {
+    console.log("Authorization Header (Category):", getAuthHeaders("Bearer")); // 로그 추가
     const response = await api.post<Category>(
-      '/items/category',
+      "/items/category",
       { name: categoryName },
       {
-        headers: getAuthHeaders('Bearer'),
-      },
+        headers: getAuthHeaders("Bearer"),
+      }
     );
     return {
       id: Number(response.data.id),
       name: response.data.name,
     };
   } catch (error: any) {
-    throw handleApiError(error, '카테고리 생성 중 오류 발생');
+    console.error("Error creating category:", error.response || error);
+    throw handleApiError(error, "카테고리 생성 중 오류 발생");
   }
 };
 
@@ -64,19 +66,21 @@ export const fetchStorageMethods = async (): Promise<StorageMethod[]> => {
 
 export const createStorageMethod = async (methodName: string): Promise<StorageMethod> => {
   try {
+    console.log("Authorization Header (Storage Method):", getAuthHeaders("Bearer")); // 로그 추가
     const response = await api.post<StorageMethod>(
-      '/items/storage-method',
+      "/items/storage-method",
       { name: methodName },
       {
-        headers: getAuthHeaders('Bearer'),
-      },
+        headers: getAuthHeaders("Bearer"),
+      }
     );
     return {
       id: Number(response.data.id),
       name: response.data.name,
     };
   } catch (error: any) {
-    throw handleApiError(error, '보관 방법 생성 중 오류 발생');
+    console.error("Error creating storage method:", error.response || error);
+    throw handleApiError(error, "보관 방법 생성 중 오류 발생");
   }
 };
 
