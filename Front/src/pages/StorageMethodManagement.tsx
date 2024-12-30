@@ -6,7 +6,7 @@ import { Container, Form, Button, Table } from 'react-bootstrap';
 import AdminNavBar from '../features/Admin/AdminNavBar';
 
 const StorageMethodManagement: React.FC = () => {
-  const { storageMethods, handleAddStorageMethod, handleDeleteStorageMethod } = useAdminContext();
+  const { storageMethods, addStorageMethod, deleteStorageMethod, loading, error } = useAdminContext();
   const [newStorageMethodName, setNewStorageMethodName] = useState<string>("");
 
   const handleAdd = (event: React.FormEvent) => {
@@ -15,15 +15,17 @@ const StorageMethodManagement: React.FC = () => {
       alert("보관 방법 이름을 입력해 주세요.");
       return;
     }
-    handleAddStorageMethod(newStorageMethodName);
+    addStorageMethod(newStorageMethodName);
     setNewStorageMethodName("");
   };
 
   return (
     <>
       <AdminNavBar />
-      <Container className="mt-4">
+      <Container className="admin-content">
         <h3>보관 방법 관리</h3>
+        {loading && <p>로딩 중...</p>}
+        {error && <p className="text-danger">{error}</p>}
         <Form onSubmit={handleAdd} className="mb-3">
           <Form.Group>
             <Form.Label>보관 방법 이름</Form.Label>
@@ -38,7 +40,6 @@ const StorageMethodManagement: React.FC = () => {
             추가
           </Button>
         </Form>
-
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -51,12 +52,9 @@ const StorageMethodManagement: React.FC = () => {
             {storageMethods.map((method) => (
               <tr key={method.id}>
                 <td>{method.id}</td>
-                <td>{method.name}</td> {/* storageMethodName -> name */}
+                <td>{method.name}</td>
                 <td>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleDeleteStorageMethod(method.id)}
-                  >
+                  <Button variant="danger" onClick={() => deleteStorageMethod(method.id)}>
                     삭제
                   </Button>
                 </td>

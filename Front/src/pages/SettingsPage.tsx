@@ -4,7 +4,6 @@ import React from 'react';
 import TeamInfo from '../features/Settings/TeamInfo';
 import PrivacyPolicy from '../features/Settings/PrivacyPolicy';
 import ContactForm from '../features/Settings/ContactForm';
-// import ThemeSelector from '../features/Settings/ThemeSelector';
 import LogoutButton from '../components/molecules/LogoutButton';
 import DeleteAccountButton from '../components/molecules/DeleteAccountButton';
 import HomeNavBar from "../components/organisms/HomeNavBar";

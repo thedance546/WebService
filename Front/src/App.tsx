@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import HomePage from './pages/HomePage';
@@ -12,46 +12,33 @@ import SettingsPage from './pages/SettingsPage';
 
 import { AdminProvider } from './contexts/AdminContext';
 import AdminPage from './pages/AdminPage';
-import ItemManagement from './pages/ItemManagement';
+import IngredientsManagement from './pages/IngredientsManagement';
 import UserManagement from './pages/UserManagement';
 import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';
 
 const App: React.FC = () => {
-  useEffect(() => {
-    const hideAddressBar = () => {
-      setTimeout(() => {
-        window.scrollTo(0, 1);
-      }, 0);
-    };
-    window.addEventListener("load", hideAddressBar);
-    return () => {
-      window.removeEventListener("load", hideAddressBar);
-    };
-  }, []);
 
   return (
     <Router>
-      <Routes>
-        {/* 로그인 관련 경로 */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/register" element={<RegisterForm />} />
-        <Route path="/login" element={<LoginPage />} />
-
-        {/* 기능 탭 경로 */}
-        <Route path="/my-ingredients" element={<MyIngredientsPage />} />
-        <Route path="/chatbot" element={<ChatBotPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-      </Routes>
-      
       <AdminProvider>
         <Routes>
+          {/* 로그인 관련 경로 */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* 기능 탭 경로 */}
+          <Route path="/my-ingredients" element={<MyIngredientsPage />} />
+          <Route path="/chatbot" element={<ChatBotPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+
           {/* 관리자 페이지 관련 경로 */}
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/items" element={<ItemManagement />} />
+          <Route path="/admin/ingredients" element={<IngredientsManagement />} />
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/categories" element={<CategoryManagement />} />
-          <Route path="/admin/storage-method" element={<StorageMethodManagement />} />
+          <Route path="/admin/storage-methods" element={<StorageMethodManagement />} />
         </Routes>
       </AdminProvider>
     </Router>

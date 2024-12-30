@@ -5,18 +5,18 @@ import Button from "../../components/atoms/Button";
 
 interface Ingredient {
   id: string;
-  itemName: string;
-  category?: { categoryName: string };
-  storageMethod?: { storageMethodName: string };
+  name: string;
+  categoryName?: string;
+  storageMethodName?: string;
   shelfLife?: { sellByDays: number; useByDays: number };
 }
 
 interface IngredientTableProps {
-  items: Ingredient[];
-  onRemoveItem: (id: string) => void;
+  ingredients: Ingredient[];
+  onDeleteIngredient: (id: string) => void;
 }
 
-const IngredientTable: React.FC<IngredientTableProps> = ({ items, onRemoveItem }) => {
+const IngredientTable: React.FC<IngredientTableProps> = ({ ingredients, onDeleteIngredient }) => {
   return (
     <table className="table table-striped table-bordered">
       <thead>
@@ -31,18 +31,18 @@ const IngredientTable: React.FC<IngredientTableProps> = ({ items, onRemoveItem }
         </tr>
       </thead>
       <tbody>
-        {items.map((item) => (
-          <tr key={item.id}>
-            <td>{item.id}</td>
-            <td>{item.itemName}</td>
-            <td>{item.category?.categoryName}</td>
-            <td>{item.storageMethod?.storageMethodName}</td>
-            <td>{item.shelfLife?.sellByDays}</td>
-            <td>{item.shelfLife?.useByDays}</td>
+        {ingredients.map((ingredient) => (
+          <tr key={ingredient.id}>
+            <td>{ingredient.id}</td>
+            <td>{ingredient.name}</td>
+            <td>{ingredient.categoryName}</td>
+            <td>{ingredient.storageMethodName}</td>
+            <td>{ingredient.shelfLife?.sellByDays}</td>
+            <td>{ingredient.shelfLife?.useByDays}</td>
             <td>
               <Button
                 className="btn btn-danger"
-                onClick={() => onRemoveItem(item.id)}
+                onClick={() => onDeleteIngredient(ingredient.id)}
               >
                 삭제
               </Button>

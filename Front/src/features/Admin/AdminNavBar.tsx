@@ -1,34 +1,35 @@
-// src/components/organisms/AdminNavBar.tsx
+// src/features/Admin/AdminNavBar.tsx
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import LogoutButton from '../../components/molecules/LogoutButton';
-import { navItems } from '../../constants/adminNavItems';
 
 const AdminNavBar: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Navbar bg="dark" variant="dark" className="fixed-top">
+    <Navbar id="admin-navbar" bg="dark" variant="dark" className="shadow fixed-top">
       <Container fluid className="d-flex justify-content-between align-items-center">
-        <Navbar.Brand
-          onClick={() => navigate('/admin')}
-          className="cursor-pointer text-white"
-        >
+        <Navbar.Brand onClick={() => navigate('/admin')} className="text-white cursor-pointer">
           관리자 대시보드
         </Navbar.Brand>
         <Nav className="d-flex flex-row">
-          {navItems.map(({ path, label }) => (
-            <Nav.Link
-              key={path}
-              onClick={() => navigate(path)}
-              className="text-white text-decoration-none px-3 text-nowrap"
-            >
-              {label}
-            </Nav.Link>
-          ))}
+          <Nav.Link className="text-white px-3" onClick={() => navigate('/admin/categories')}>
+            카테고리 관리
+          </Nav.Link>
+          <Nav.Link className="text-white px-3" onClick={() => navigate('/admin/storage-methods')}>
+            보관 방법 관리
+          </Nav.Link>
+          <Nav.Link className="text-white px-3" onClick={() => navigate('/admin/ingredients')}>
+            식재료 관리
+          </Nav.Link>
+          <Nav.Link className="text-white px-3" onClick={() => navigate('/admin/users')}>
+            유저 관리
+          </Nav.Link>
         </Nav>
-        <LogoutButton className="btn-sm" />
+        <div className="ms-auto">
+          <LogoutButton className="btn-sm" />
+        </div>
       </Container>
     </Navbar>
   );

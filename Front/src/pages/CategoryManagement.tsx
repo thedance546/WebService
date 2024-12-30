@@ -6,7 +6,7 @@ import { Container, Form, Button, Table } from 'react-bootstrap';
 import AdminNavBar from '../features/Admin/AdminNavBar';
 
 const CategoryManagement: React.FC = () => {
-  const { categories, handleAddCategory, handleDeleteCategory } = useAdminContext();
+  const { categories, addCategory, deleteCategory, loading, error } = useAdminContext();
   const [newCategoryName, setNewCategoryName] = useState<string>("");
 
   const handleAdd = (event: React.FormEvent) => {
@@ -15,15 +15,17 @@ const CategoryManagement: React.FC = () => {
       alert("카테고리 이름을 입력해 주세요.");
       return;
     }
-    handleAddCategory(newCategoryName);
+    addCategory(newCategoryName);
     setNewCategoryName("");
   };
 
   return (
     <>
       <AdminNavBar />
-      <Container className="mt-4">
+      <Container className="admin-content">
         <h3>카테고리 관리</h3>
+        {loading && <p>로딩 중...</p>}
+        {error && <p className="text-danger">{error}</p>}
         <Form onSubmit={handleAdd} className="mb-3">
           <Form.Group>
             <Form.Label>카테고리 이름</Form.Label>
@@ -50,12 +52,9 @@ const CategoryManagement: React.FC = () => {
             {categories.map((category) => (
               <tr key={category.id}>
                 <td>{category.id}</td>
-                <td>{category.name}</td> {/* name으로 변경 */}
+                <td>{category.name}</td>
                 <td>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleDeleteCategory(category.id)}
-                  >
+                  <Button variant="danger" onClick={() => deleteCategory(category.id)}>
                     삭제
                   </Button>
                 </td>
