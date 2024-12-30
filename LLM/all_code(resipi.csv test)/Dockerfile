@@ -9,8 +9,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Flask 애플리케이션 복사
-COPY LLM_model.py .
+COPY rearr.py .
 COPY pj.env .
 
 # Flask 실행
-CMD ["python", "LLM_model.py"]
+CMD ["python", "rearr.py"]
