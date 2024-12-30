@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/chat")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -14,28 +17,38 @@ public class ChatbotController {
     private final ChatbotService chatbotService;
     private final RestTemplate restTemplate;
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image) {
-        if (image.isEmpty()) {
-            return ResponseEntity.badRequest().body("Image file is required");
-        }
-        // 이미지 파일을 처리 로직 (추후)
+    private static final String FLASK_SERVER_URL = "http://localhost:5002/ask";
 
-        return ResponseEntity.ok("okokok");
-    }
-
-    // 레시피 질의
     @PostMapping("/ask")
-    public ResponseEntity<ChatResponse> askFlask(@RequestBody ChatRequest requestBody) {
+    public Map<String, String> askQuestion(@RequestBody Map<String, String> payload) {
+        String question = payload.get("question");
+        if (question == null || question.trim().isEmpty()) {
+            return Map.of("error", "질문이 제공되지 않았습니다.");
+        }
 
-        // Flask API로 보낼 데이터를 준비
-        String question = requestBody.getQuestion();
-        String searchResults = requestBody.getSearchResults();
+        RestTemplate restTemplate = new RestTemplate();
 
-        // 서비스 호출
-        ChatResponse response = chatbotService.askFlask(question, searchResults);
+        // 요청 데이터 생성
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("question", question);
 
-        // 응답 데이터 반환
-        return ResponseEntity.ok(response);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+
+        try {
+            // Flask 서버로 요청 전송
+            ResponseEntity<Map> response = restTemplate.postForEntity(FLASK_SERVER_URL, request, Map.class);
+
+            // 응답 처리
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return Map.of("response", response.getBody().get("response").toString());
+            } else {
+                return Map.of("error", "Flask 서버로부터 유효하지 않은 응답이 반환되었습니다.");
+            }
+        } catch (Exception e) {
+            return Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
+        }
     }
 }
