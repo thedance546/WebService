@@ -14,8 +14,6 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class ChatbotController {
-    private final ChatbotService chatbotService;
-    private final RestTemplate restTemplate;
 
     private static final String FLASK_SERVER_URL = "http://localhost:5002/ask";
 
