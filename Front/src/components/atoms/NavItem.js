@@ -1,18 +1,16 @@
 // src/components/atoms/NavItem.js
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const NavItem = ({ path, label }) => {
-  const location = useLocation();
-  const isActive = location.pathname === path;
-
   return (
-    <Link
+    <NavLink
       to={path}
-      className={`btn ${isActive ? 'btn-primary' : 'btn-dark'} text-white`}
+      className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
     >
       {label}
-    </Link>
+    </NavLink>
   );
 };
 

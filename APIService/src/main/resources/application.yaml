@@ -3,13 +3,17 @@ security:
     key: "25ea99c20638c1fbdcaaa55f30d2a5222d60307de871d6c8d03395f785a31cdf"
 
 spring:
-  profiles:
-    active: test
+  sql:
+    init:
+      mode: always
+
+#  profiles:
+#    active: test
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-#    url: jdbc:mariadb://mariadb-container:3306/service?characterEncoding=UTF-8&serverTimezone=UTC
-    url: jdbc:mariadb://localhost:3306/service?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mariadb://mariadb-container:3306/service?characterEncoding=UTF-8&serverTimezone=UTC
+#    url: jdbc:mariadb://localhost:3306/service?characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: 1234
 
@@ -24,6 +28,7 @@ spring:
 
   servlet:
     multipart:
+      #최대 파일 크기
       max-file-size: 10MB
       max-request-size: 10MB
 

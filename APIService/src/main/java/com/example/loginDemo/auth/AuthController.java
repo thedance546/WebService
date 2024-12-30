@@ -1,12 +1,14 @@
 package com.example.loginDemo.auth;
 
 import com.example.loginDemo.dto.*;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -24,11 +26,17 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(request));
     }
 
-    //로그인
+    // 로그인 요청 처리
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
-        return ResponseEntity.ok(authService.authenticate(request));
+    public ResponseEntity<Void> authenticate(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
+        // 인증 처리 및 토큰 생성
+        authService.authenticate(request, response);
+
+        // 로그인 성공 후 200 OK 반환
+        return ResponseEntity.ok().build();
     }
+
+
 
     // 로그아웃
     @PostMapping("/logout")

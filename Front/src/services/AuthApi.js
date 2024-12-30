@@ -1,7 +1,9 @@
 // src/services/AuthApi.js
-import { api, getAuthHeaders, handleApiError } from './Api';
+import { api, getAuthHeaders } from './Api';
+import { setAccessToken, clearAccessToken } from './TokenManager';
+import { handleApiError } from '../utils/Utils';
 
-// 회원가입 API
+// 회원가입 API - 1220 docker complete
 export const register = async (email, username, password) => {
   try {
     const response = await api.post('/auth/register', { email, username, password });
@@ -11,42 +13,26 @@ export const register = async (email, username, password) => {
   }
 };
 
-// 로그인 API
+// 로그인 API - 1220 docker complete
 export const login = async (email, password) => {
   try {
     const response = await api.post('/auth/authenticate', { email, password });
-    const { accessToken, refreshToken } = response.data;
-
-    // 토큰 저장 (임시, 로컬스토리지)
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-
-    return { success: !!accessToken, message: "로그인 성공" };
+    const { accessToken } = response.data;
+    setAccessToken(accessToken);
+    return { success: !!accessToken, message: '로그인 성공' };
   } catch (error) {
-    throw handleApiError(error, "로그인 실패");
+    throw handleApiError(error, '로그인 실패');
   }
 };
 
 // 로그아웃 API
 export const logout = async () => {
-  const refreshToken = localStorage.getItem('refreshToken');
-
-  if (!refreshToken) {
-    return { success: false, message: "로그아웃 실패: Refresh Token이 없습니다." };
-  }
-
   try {
-    const response = await api.post(
-      `/auth/logout?refreshToken=${encodeURIComponent(refreshToken)}`,
-      {},
-      {
-        headers: getAuthHeaders(),
-      }
-    );
-
+    const response = await api.post('/auth/logout', { refreshToken: true }, { headers: getAuthHeaders() });
+    clearAccessToken();
     return { success: true, message: response.data.message };
   } catch (error) {
-    return { success: false, message: handleApiError(error, "로그아웃 요청이 실패했습니다.").message };
+    return { success: false, message: handleApiError(error, '로그아웃 요청이 실패했습니다.').message };
   }
 };
 

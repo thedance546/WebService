@@ -1,6 +1,6 @@
 // src/features/MyIngredients/RecognitionResultModal.js
 import React, { useState } from 'react';
-import Modal from '../../components/atoms/Modal';
+import Modal from '../../components/molecules/Modal';
 import Input from '../../components/atoms/Input';
 
 const RecognitionResultModal = ({ result, onConfirm, onClose }) => {

@@ -1,15 +1,14 @@
 // src/App.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import HomePage from './pages/HomePage';
 import RegisterForm from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 
-import MyIngredients from './pages/MyIngredients';
-import Notification from './pages/Notification';
-import ChatBot from './pages/ChatBot';
-import Settings from './pages/Settings';
+import MyIngredientsPage from './pages/MyIngredientsPage';
+import ChatBotPage from './pages/ChatBotPage';
+import SettingsPage from './pages/SettingsPage';
 
 import { AdminProvider } from './contexts/AdminContext';
 import AdminPage from './pages/AdminPage';
@@ -19,6 +18,11 @@ import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';
 
 function App() {
+  useEffect(() => {
+    const hideAddressBar = () => { setTimeout(() => { window.scrollTo(0, 1); }, 0); };
+    window.addEventListener("load", hideAddressBar);
+    return () => { window.removeEventListener("load", hideAddressBar); }; }, []);
+  
   return (
     <Router>
       <Routes>
@@ -28,11 +32,11 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
 
         {/* 기능 탭 경로 */}
-        <Route path="/my-ingredients" element={<MyIngredients />} />
-        <Route path="/notifications" element={<Notification />} />
-        <Route path="/chatbot" element={<ChatBot />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/my-ingredients" element={<MyIngredientsPage />} />
+        <Route path="/chatbot" element={<ChatBotPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
+      
       <AdminProvider>
         <Routes>
           {/* 관리자 페이지 관련 경로 */}
