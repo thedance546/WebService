@@ -22,8 +22,8 @@ const IngredientsManagement: React.FC = () => {
 
     addIngredient({
       name: ingredient.name,
-      category,
-      storageMethod,
+      categoryId: category.id,
+      storageMethodId: storageMethod.id,
     });
   };
 
@@ -49,10 +49,10 @@ const IngredientsManagement: React.FC = () => {
         {!loading && (
           <IngredientTable
             ingredients={ingredients.map((ingredient) => ({
-              id: ingredient.id.toString(),
+              id: ingredient.ingredientId.toString(),
               name: ingredient.name,
-              categoryName: ingredient.category?.name || "",
-              storageMethodName: ingredient.storageMethod?.name || "",
+              categoryName: ingredient.categoryId?.toString(),
+              storageMethodName: ingredient.storageMethodId?.toString(),
             }))}
             onDeleteIngredient={handleDeleteIngredient}
           />

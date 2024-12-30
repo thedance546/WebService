@@ -6,8 +6,8 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { path: '/admin/items', label: '식재료' },
+  { path: '/admin/ingredients', label: '식재료' },
   { path: '/admin/users', label: '유저' },
   { path: '/admin/categories', label: '카테고리' },
-  { path: '/admin/storage-method', label: '보관방법' },
+  { path: '/admin/storage-methods', label: '보관방법' },
 ];

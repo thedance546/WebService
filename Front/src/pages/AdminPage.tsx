@@ -31,10 +31,10 @@ const AdminPage: React.FC = () => {
                 </thead>
                 <tbody>
                   {ingredients.map((ingredient) => (
-                    <tr key={ingredient.id}>
+                    <tr key={ingredient.ingredientId}>
                       <td>{ingredient.name}</td>
-                      <td>{ingredient.category?.name}</td>
-                      <td>{ingredient.storageMethod?.name}</td>
+                      <td>{ingredient.categoryId}</td>
+                      <td>{ingredient.storageMethodId}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,17 +1,17 @@
 // src/contexts/AdminContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
-  fetchCategories,
-  createCategory,
+  fetchCategories as apiFetchCategories,
+  createCategory as apiCreateCategory,
   deleteCategory as apiDeleteCategory,
-  fetchStorageMethods,
-  createStorageMethod,
+  fetchStorageMethods as apiFetchStorageMethods,
+  createStorageMethod as apiCreateStorageMethod,
   deleteStorageMethod as apiDeleteStorageMethod,
-  fetchItems as fetchIngredients,
-  createItem as createIngredient,
-  deleteItem as apiDeleteIngredient,
+  fetchIngredients as apiFetchIngredients,
+  createIngredient as apiCreateIngredient,
+  deleteIngredient as apiDeleteIngredient,
 } from '../services/AdminApi';
-import { Category, StorageMethod, Item as Ingredient } from '../types/EntityTypes';
+import { Category, StorageMethod, Ingredient } from '../types/EntityTypes';
 
 interface AdminContextType {
   categories: Category[];
@@ -41,9 +41,9 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setLoading(true);
     try {
       const [fetchedCategories, fetchedStorageMethods, fetchedIngredients] = await Promise.all([
-        fetchCategories(),
-        fetchStorageMethods(),
-        fetchIngredients(),
+        apiFetchCategories(),
+        apiFetchStorageMethods(),
+        apiFetchIngredients(),
       ]);
       setCategories(fetchedCategories);
       setStorageMethods(fetchedStorageMethods);
@@ -59,7 +59,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addCategory = async (name: string) => {
     setLoading(true);
     try {
-      const newCategory = await createCategory(name);
+      const newCategory = await apiCreateCategory(name);
       setCategories((prev) => [...prev, newCategory]);
     } catch (err: any) {
       setError('카테고리를 추가하는 중 오류 발생');
@@ -83,7 +83,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addStorageMethod = async (name: string) => {
     setLoading(true);
     try {
-      const newStorageMethod = await createStorageMethod(name);
+      const newStorageMethod = await apiCreateStorageMethod(name);
       setStorageMethods((prev) => [...prev, newStorageMethod]);
     } catch (err: any) {
       setError('보관 방법을 추가하는 중 오류 발생');
@@ -107,7 +107,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addIngredient = async (ingredient: Partial<Ingredient>) => {
     setLoading(true);
     try {
-      const newIngredient = await createIngredient(ingredient);
+      const newIngredient = await apiCreateIngredient(ingredient);
       setIngredients((prev) => [...prev, newIngredient]);
     } catch (err: any) {
       setError('식재료를 추가하는 중 오류 발생');
@@ -120,13 +120,14 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setLoading(true);
     try {
       await apiDeleteIngredient(id);
-      setIngredients((prev) => prev.filter((ingredient) => ingredient.id !== id));
+      setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== id));
     } catch (err: any) {
       setError('식재료를 삭제하는 중 오류 발생');
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchAllData();

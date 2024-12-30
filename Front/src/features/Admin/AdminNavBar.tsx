@@ -3,6 +3,7 @@ import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import LogoutButton from '../../components/molecules/LogoutButton';
+import { navItems } from '../../constants/adminNavItems';
 
 const AdminNavBar: React.FC = () => {
   const navigate = useNavigate();
@@ -14,18 +15,15 @@ const AdminNavBar: React.FC = () => {
           관리자 대시보드
         </Navbar.Brand>
         <Nav className="d-flex flex-row">
-          <Nav.Link className="text-white px-3" onClick={() => navigate('/admin/categories')}>
-            카테고리 관리
-          </Nav.Link>
-          <Nav.Link className="text-white px-3" onClick={() => navigate('/admin/storage-methods')}>
-            보관 방법 관리
-          </Nav.Link>
-          <Nav.Link className="text-white px-3" onClick={() => navigate('/admin/ingredients')}>
-            식재료 관리
-          </Nav.Link>
-          <Nav.Link className="text-white px-3" onClick={() => navigate('/admin/users')}>
-            유저 관리
-          </Nav.Link>
+          {navItems.map((item) => (
+            <Nav.Link
+              key={item.path}
+              className="text-white px-3"
+              onClick={() => navigate(item.path)}
+            >
+              {item.label}
+            </Nav.Link>
+          ))}
         </Nav>
         <div className="ms-auto">
           <LogoutButton className="btn-sm" />
