@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useAdminContext } from '../contexts/AdminContext';
 import { Container, Form, Button, Table } from 'react-bootstrap';
-import AdminNavBar from '../components/organisms/AdminNavBar';
+import AdminNavBar from '../features/Admin/AdminNavBar';
 
 const CategoryManagement: React.FC = () => {
   const { categories, handleAddCategory, handleDeleteCategory } = useAdminContext();

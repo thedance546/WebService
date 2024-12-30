@@ -3,7 +3,7 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 import { useAdminContext } from "../contexts/AdminContext";
-import AdminNavBar from "../components/organisms/AdminNavBar";
+import AdminNavBar from "../features/Admin/AdminNavBar";
 import LoadingModal from "../components/organisms/LoadingModal";
 import IngredientForm from "../features/Admin/IngredientForm";
 import IngredientTable from "../features/Admin/IngredientTable";

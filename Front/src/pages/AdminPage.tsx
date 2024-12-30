@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Container, Row, Col, Table } from "react-bootstrap";
-import AdminNavBar from "../components/organisms/AdminNavBar";
+import AdminNavBar from "../features/Admin/AdminNavBar";
 import { useAdminContext } from "../contexts/AdminContext";
 import LoadingModal from "../components/organisms/LoadingModal";
 

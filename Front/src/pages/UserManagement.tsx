@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import UserManagementTable from '../features/Admin/UserManagementTable';
-import AdminNavBar from "../components/organisms/AdminNavBar";
+import AdminNavBar from "../features/Admin/AdminNavBar";
 import { User } from "../types/EntityTypes";
 
 const UserManagement: React.FC = () => {
