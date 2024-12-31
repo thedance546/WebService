@@ -21,27 +21,35 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <AdminProvider>
-        <Routes>
-          {/* 로그인 관련 경로 */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/register" element={<RegisterForm />} />
-          <Route path="/login" element={<LoginPage />} />
+      <Routes>
+        {/* 로그인 관련 경로 */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/login" element={<LoginPage />} />
 
-          {/* 기능 탭 경로 */}
-          <Route path="/my-ingredients" element={<MyIngredientsPage />} />
-          <Route path="/chatbot" element={<ChatBotPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+        {/* 기능 탭 경로 */}
+        <Route path="/my-ingredients" element={<MyIngredientsPage />} />
+        <Route path="/chatbot" element={<ChatBotPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
 
-          {/* 관리자 페이지 관련 경로 */}
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/ingredients" element={<IngredientsManagement />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/admin/categories" element={<CategoryManagement />} />
-          <Route path="/admin/storage-methods" element={<StorageMethodManagement />} />
-        </Routes>
-      </AdminProvider>
+        {/* 관리자 페이지 관련 경로 */}
+        <Route
+          path="/admin/*"
+          element={
+            <AdminProvider>
+              <Routes>
+                <Route path="" element={<AdminPage />} />
+                <Route path="ingredients" element={<IngredientsManagement />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="categories" element={<CategoryManagement />} />
+                <Route path="storage-methods" element={<StorageMethodManagement />} />
+              </Routes>
+            </AdminProvider>
+          }
+        />
+      </Routes>
     </Router>
+
   );
 };
 

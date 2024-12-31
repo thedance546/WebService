@@ -1,4 +1,3 @@
-// src/contexts/AdminContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   fetchCategories as apiFetchCategories,
@@ -62,7 +61,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const newCategory = await apiCreateCategory(name);
       setCategories((prev) => [...prev, newCategory]);
     } catch (err: any) {
-      setError('카테고리를 추가하는 중 오류 발생');
+      setError(`카테고리를 추가하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
@@ -74,7 +73,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await apiDeleteCategory(id);
       setCategories((prev) => prev.filter((category) => category.id !== id));
     } catch (err: any) {
-      setError('카테고리를 삭제하는 중 오류 발생');
+      setError(`카테고리를 삭제하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
@@ -86,7 +85,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const newStorageMethod = await apiCreateStorageMethod(name);
       setStorageMethods((prev) => [...prev, newStorageMethod]);
     } catch (err: any) {
-      setError('보관 방법을 추가하는 중 오류 발생');
+      setError(`보관 방법을 추가하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
@@ -98,7 +97,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await apiDeleteStorageMethod(id);
       setStorageMethods((prev) => prev.filter((method) => method.id !== id));
     } catch (err: any) {
-      setError('보관 방법을 삭제하는 중 오류 발생');
+      setError(`보관 방법을 삭제하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
@@ -110,7 +109,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const newIngredient = await apiCreateIngredient(ingredient);
       setIngredients((prev) => [...prev, newIngredient]);
     } catch (err: any) {
-      setError('식재료를 추가하는 중 오류 발생');
+      setError(`식재료를 추가하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
@@ -122,12 +121,11 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await apiDeleteIngredient(id);
       setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== id));
     } catch (err: any) {
-      setError('식재료를 삭제하는 중 오류 발생');
+      setError(`식재료를 삭제하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchAllData();

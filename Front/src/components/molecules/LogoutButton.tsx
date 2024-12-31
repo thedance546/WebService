@@ -21,7 +21,6 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ className, style }) => {
     <Button
       onClick={onClick}
       className={`btn btn-warning text-nowrap ${className}`}
-      style={{ width: '120px', height: '40px', fontSize: '14px', ...style }}
     >
       로그아웃
     </Button>

@@ -13,9 +13,9 @@ const NavItem: React.FC<NavItemProps> = ({ path, label }) => {
     <NavLink
       to={path}
       className={({ isActive }) =>
-        isActive ?
-      "text-white text-decoration-none mx-3 font-weight-bold" :
-      "text-white text-decoration-none mx-3"
+        isActive
+          ? "text-white text-decoration-none font-weight-bold"
+          : "text-white text-decoration-none"
       }
     >
       {label}

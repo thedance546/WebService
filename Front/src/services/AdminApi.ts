@@ -1,5 +1,3 @@
-// src/services/AdminApi.ts
-
 import { api, getAuthHeaders } from './Api';
 import { handleApiError } from '../utils/Utils';
 import { Category, StorageMethod, Ingredient } from '../types/EntityTypes';
@@ -21,10 +19,10 @@ export const fetchCategories = async (): Promise<Category[]> => {
 
 export const createCategory = async (categoryName: string): Promise<Category> => {
   try {
-    console.log("Authorization Header (Category):", getAuthHeaders("Bearer")); // 로그 추가
+    console.log("Authorization Header (Category):", getAuthHeaders("Bearer"));
     const response = await api.post<Category>(
       "/items/category",
-      { name: categoryName },
+      { categoryName: categoryName },
       {
         headers: getAuthHeaders("Bearer"),
       }
@@ -66,10 +64,10 @@ export const fetchStorageMethods = async (): Promise<StorageMethod[]> => {
 
 export const createStorageMethod = async (methodName: string): Promise<StorageMethod> => {
   try {
-    console.log("Authorization Header (Storage Method):", getAuthHeaders("Bearer")); // 로그 추가
+    console.log("Authorization Header (Storage Method):", getAuthHeaders("Bearer"));
     const response = await api.post<StorageMethod>(
       "/items/storage-method",
-      { name: methodName },
+      { storageMethodName: methodName }, // 수정된 부분
       {
         headers: getAuthHeaders("Bearer"),
       }
@@ -101,13 +99,12 @@ export const fetchIngredients = async (): Promise<Ingredient[]> => {
       headers: getAuthHeaders('Bearer'),
     });
 
-    // API 응답 데이터를 Ingredient 타입에 맞게 매핑
     return response.data.map((data: any): Ingredient => ({
-      ingredientId: data.id, // id → ingredientId
+      ingredientId: data.id,
       name: data.name,
-      categoryId: data.category?.id || 0, // category → categoryId
-      storageMethodId: data.storageMethod?.id || 0, // storageMethod → storageMethodId
-      quantity: data.quantity || 0, // 추가 속성 처리
+      categoryId: data.category?.id || 0,
+      storageMethodId: data.storageMethod?.id || 0,
+      quantity: data.quantity || 0,
     }));
   } catch (error: any) {
     throw handleApiError(error, '식재료 데이터를 불러오는 중 오류 발생');

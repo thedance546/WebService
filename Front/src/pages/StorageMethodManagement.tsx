@@ -4,35 +4,22 @@ import { Container, Form, Button, Table } from 'react-bootstrap';
 import AdminNavBar from '../features/Admin/AdminNavBar';
 
 const StorageMethodManagement: React.FC = () => {
-  const { storageMethods, addStorageMethod, deleteStorageMethod, loading, error } = useAdminContext();
+  const { storageMethods, addStorageMethod, deleteStorageMethod, fetchAllData, loading, error } = useAdminContext();
   const [newStorageMethodName, setNewStorageMethodName] = useState<string>("");
 
   const handleAdd = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!newStorageMethodName.trim()) {
-      alert("보관 방법 이름을 입력해 주세요.");
       return;
     }
-    try {
-      console.log("Adding storage method:", newStorageMethodName); // 디버깅 로그 추가
-      await addStorageMethod(newStorageMethodName);
-      alert("보관 방법이 성공적으로 추가되었습니다.");
-    } catch (err) {
-      console.error("Error adding storage method:", err); // 에러 로그 추가
-      alert("보관 방법 추가 중 오류가 발생했습니다. 다시 시도해주세요.");
-    }
+    await addStorageMethod(newStorageMethodName);
     setNewStorageMethodName("");
+    await fetchAllData(); // 데이터 다시 로드
   };
 
   const handleDelete = async (id: number) => {
-    try {
-      console.log("Deleting storage method with ID:", id); // 디버깅 로그 추가
-      await deleteStorageMethod(id);
-      alert("보관 방법이 성공적으로 삭제되었습니다.");
-    } catch (err) {
-      console.error("Error deleting storage method:", err); // 에러 로그 추가
-      alert("보관 방법 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
-    }
+    await deleteStorageMethod(id);
+    await fetchAllData(); // 데이터 다시 로드
   };
 
   return (
