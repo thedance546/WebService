@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.Map;
 @RequestMapping("/api/chat")
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
-public class ChatbotController {
+public class ChatBotController {
 
     private static final String FLASK_SERVER_URL = "http://localhost:5002/ask";
 

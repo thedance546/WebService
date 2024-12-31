@@ -20,9 +20,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final JwtService jwtService;
-    private final LogoutService logoutService;
-    private final UserDetailsService userDetailsService;
 
     //회원가입
     @PostMapping("/register")
@@ -33,10 +30,7 @@ public class AuthController {
     // 로그인
     @PostMapping("/authenticate")
     public ResponseEntity<Void> authenticate(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
-        // 인증 처리 및 토큰 생성
         authService.authenticate(request, response);
-
-        // 로그인 성공 후 200 OK 반환
         return ResponseEntity.ok().build();
     }
 
@@ -50,7 +44,7 @@ public class AuthController {
             accessToken = extractToken(accessToken);
 
             // 로그아웃 서비스 호출
-            logoutService.logout(accessToken, refreshToken, response);
+            authService.logout(accessToken, refreshToken, response);
 
             return ResponseEntity.ok("Successfully logged out");
 
