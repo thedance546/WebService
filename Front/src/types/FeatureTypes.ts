@@ -19,3 +19,18 @@ export interface ChatInputProps {
   toggleOptions: () => void;
   disabled: boolean;
 }
+
+export interface UserInfoFormProps {
+  formData: {
+    ageGroup: string;
+    gender: string;
+    activityLevel: string;
+    healthGoal: string;
+    allergies: string[];
+    mealTimes: string[];
+    foodCategories: string[];
+    customFoodCategory: string;
+    customAllergy: string;
+  };
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
+}
