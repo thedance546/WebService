@@ -1,3 +1,5 @@
+// src/contexts/AdminContext.tsx
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   fetchCategories as apiFetchCategories,

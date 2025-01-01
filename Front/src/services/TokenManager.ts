@@ -11,7 +11,7 @@ export const setAccessToken = (token: string): void => {
 };
 
 export const getAccessToken = (): string => {
-  console.log("현재 Access Token:", accessToken);
+  console.log("현재 Access Token:", accessToken || "없음");
   return accessToken;
 };
 

@@ -1,7 +1,7 @@
 // src/pages/RegisterPage.tsx
 
 import React, { useState } from 'react';
-import useAuth from '../hooks/useAuth';
+import { useAuthContext } from '../contexts/AuthContext';
 import GlobalBackground from '../components/templates/GlobalBackground';
 import BackButton from '../components/molecules/BackButton';
 import Button from '../components/atoms/Button';
@@ -12,14 +12,14 @@ const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const { handleRegister } = useAuth();
+  const { register } = useAuthContext();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       const email = `${emailLocal}@${emailDomain}`;
-      await handleRegister(email, username, password);
+      await register(email, username, password);
       alert('회원가입이 완료되었습니다.');
     } catch (err: any) {
       alert(err.message);

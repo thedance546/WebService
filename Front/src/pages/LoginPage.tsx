@@ -1,5 +1,7 @@
+// src/pages/LoginPage.tsx
+
 import React, { useState } from 'react';
-import useAuth from '../hooks/useAuth';
+import { useAuthContext } from '../contexts/AuthContext';
 import GlobalBackground from '../components/templates/GlobalBackground';
 import BackButton from '../components/molecules/BackButton';
 import Button from '../components/atoms/Button';
@@ -9,13 +11,13 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const { handleLogin } = useAuth();
+  const { login } = useAuthContext();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await handleLogin(email, password);
+      await login(email, password);
     } catch (err: any) {
       setError(err.message);
     } finally {
