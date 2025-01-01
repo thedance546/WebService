@@ -1,6 +1,8 @@
 // src/App.tsx
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { refreshAccessToken } from './services/TokenManager';
 
 import HomePage from './pages/HomePage';
 import RegisterForm from './pages/RegisterPage';
@@ -18,21 +20,27 @@ import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';
 
 const App: React.FC = () => {
+  useEffect(() => {
+    (async () => {
+      try {
+        await refreshAccessToken();
+        console.log("새로고침 시 토큰 갱신 성공");
+      } catch (error: any) {
+        console.error("토큰 갱신 실패:", error.message || error);
+        window.location.href = '/login';
+      }
+    })();
+  }, []);
 
   return (
     <Router>
       <Routes>
-        {/* 로그인 관련 경로 */}
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginPage />} />
-
-        {/* 기능 탭 경로 */}
         <Route path="/my-ingredients" element={<MyIngredientsPage />} />
         <Route path="/chatbot" element={<ChatBotPage />} />
         <Route path="/settings" element={<SettingsPage />} />
-
-        {/* 관리자 페이지 관련 경로 */}
         <Route
           path="/admin/*"
           element={
@@ -49,7 +57,6 @@ const App: React.FC = () => {
         />
       </Routes>
     </Router>
-
   );
 };
 
