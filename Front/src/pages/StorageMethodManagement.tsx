@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+// src/pages/StorageMethodManagement.tsx
+
+import React, { useState, useEffect } from 'react';
 import { useAdminContext } from '../contexts/AdminContext';
 import { Container, Form, Button, Table } from 'react-bootstrap';
 import AdminNavBar from '../features/Admin/AdminNavBar';
 
 const StorageMethodManagement: React.FC = () => {
-  const { storageMethods, addStorageMethod, deleteStorageMethod, fetchAllData, loading, error } = useAdminContext();
+  const { storageMethods, addStorageMethod, deleteStorageMethod, fetchStorageMethods, loading, error } = useAdminContext();
   const [newStorageMethodName, setNewStorageMethodName] = useState<string>("");
+
+  useEffect(() => {
+    fetchStorageMethods();
+  }, []);
 
   const handleAdd = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -14,12 +20,12 @@ const StorageMethodManagement: React.FC = () => {
     }
     await addStorageMethod(newStorageMethodName);
     setNewStorageMethodName("");
-    await fetchAllData();
+    await fetchStorageMethods();
   };
 
   const handleDelete = async (id: number) => {
     await deleteStorageMethod(id);
-    await fetchAllData();
+    await fetchStorageMethods();
   };
 
   return (

@@ -10,11 +10,18 @@ export interface StorageMethod {
     storageMethodName: string;
 }
 
+export interface ShelfLife {
+    id: number;
+    sellByDays: number;
+    useByDays: number;
+}
+
 export interface Item {
     id: number;
     itemName: string;
     category?: Category;
     storageMethod?: StorageMethod;
+    shelfLife?: ShelfLife;
 }
 
 export interface User {

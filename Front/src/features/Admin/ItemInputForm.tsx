@@ -1,46 +1,47 @@
+// src/features/Admin/ItemInputForm.tsx
+
 import React, { useState } from "react";
 import Input from "../../components/atoms/Input";
 import Button from "../../components/atoms/Button";
 import DropdownFilter from "../../components/atoms/DropdownFilter";
-import { Category, StorageMethod } from "../../types/EntityTypes";
+import { Category, StorageMethod, Item } from "../../types/EntityTypes";
 
 interface IngredientFormProps {
   categories: Category[];
   storageMethods: StorageMethod[];
-  onAddItem: (item: {
-    name: string;
-    categoryId: number;
-    storageMethodId: number;
-    sellByDays: number | string;
-    useByDays: number | string;
-  }) => void;
+  onAddItem: (item: Item) => void; // Item 타입으로 변경
 }
 
 const IngredientForm: React.FC<IngredientFormProps> = ({ categories, storageMethods, onAddItem }) => {
   const [name, setName] = useState("");
   const [sellByDays, setSellByDays] = useState<number | string>("");
   const [useByDays, setUseByDays] = useState<number | string>("");
-  const [categoryId, setCategoryId] = useState<number | string>("");
-  const [storageMethodId, setStorageMethodId] = useState<number | string>("");
+  const [categoryName, setCategoryName] = useState("");
+  const [storageMethodName, setStorageMethodName] = useState("");
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!name || !categoryId || !storageMethodId) {
+    if (!name || !categoryName || !storageMethodName) {
       alert("모든 필드를 입력해 주세요.");
       return;
     }
-    onAddItem({
-      name,
-      categoryId: Number(categoryId),
-      storageMethodId: Number(storageMethodId),
-      sellByDays,
-      useByDays,
-    });
+    const newItem: Item = {
+      id: 0,
+      itemName: name,
+      category: { id: 0, categoryName },
+      storageMethod: { id: 0, storageMethodName },
+      shelfLife: {
+        id: 0,
+        sellByDays: Number(sellByDays),
+        useByDays: Number(useByDays),
+      },
+    };
+    onAddItem(newItem);
     setName("");
     setSellByDays("");
     setUseByDays("");
-    setCategoryId("");
-    setStorageMethodId("");
+    setCategoryName("");
+    setStorageMethodName("");
   };
 
   return (
@@ -76,22 +77,22 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ categories, storageMeth
           <label>카테고리</label>
           <DropdownFilter
             options={categories.map((cat) => ({
-              value: String(cat.id),
+              value: cat.categoryName,
               label: cat.categoryName,
             }))}
-            value={String(categoryId)}
-            onChange={(val) => setCategoryId(Number(val))}
+            value={categoryName}
+            onChange={(val) => setCategoryName(val)}
           />
         </div>
         <div className="w-20">
           <label>보관 방법</label>
           <DropdownFilter
             options={storageMethods.map((method) => ({
-              value: String(method.id),
+              value: method.storageMethodName,
               label: method.storageMethodName,
             }))}
-            value={String(storageMethodId)}
-            onChange={(val) => setStorageMethodId(Number(val))}
+            value={storageMethodName}
+            onChange={(val) => setStorageMethodName(val)}
           />
         </div>
       </div>

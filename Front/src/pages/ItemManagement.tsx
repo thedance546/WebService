@@ -12,29 +12,15 @@ import { Item } from '../types/EntityTypes';
 const ItemManagement: React.FC = () => {
   const { categories, storageMethods, items, loading, error, addItem, deleteItem } = useAdminContext();
 
-  const handleAddItem = (item: {
-    name: string;
-    categoryId: number;
-    storageMethodId: number;
-    sellByDays: string | number;
-    useByDays: string | number;
-  }) => {
-    const category = categories.find((cat) => cat.id === item.categoryId);
-    const storageMethod = storageMethods.find((method) => method.id === item.storageMethodId);
-
-    if (!category || !storageMethod) {
-      console.error("Invalid category or storage method");
-      return;
-    }
-
+  const handleAddItem = (item: Item) => {
     addItem({
-      id: 0, // 임시 ID
-      itemName: item.name,
-      category,
-      storageMethod,
-    } as Item);
+      id: item.id || 0,
+      itemName: item.itemName,
+      category: item.category || { id: 0, categoryName: "기본 카테고리" },
+      storageMethod: item.storageMethod || { id: 0, storageMethodName: "기본 보관 방법" },
+      shelfLife: item.shelfLife || { id: 0, sellByDays: 0, useByDays: 0 },
+    });
   };
-
 
   const handleDeleteItem = (id: number) => {
     deleteItem(id);

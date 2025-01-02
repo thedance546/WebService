@@ -120,14 +120,20 @@ export const fetchItems = async (): Promise<Item[]> => {
   }
 };
 
-export const createItem = async (item: Item): Promise<Item> => {
+export const createItem = async (item: {
+  name: string;
+  categoryName: string;
+  storageMethodName: string;
+  shelfLife: { sellByDays: number; useByDays: number };
+}): Promise<Item> => {
   try {
     const response = await api.post(
       '/items/item',
       {
-        name: item.itemName,
-        categoryId: item.category?.id,
-        storageMethodId: item.storageMethod?.id,
+        name: item.name,
+        categoryName: item.categoryName,
+        storageMethodName: item.storageMethodName,
+        shelfLife: item.shelfLife,
       },
       {
         headers: getAuthHeaders('Bearer'),
@@ -137,10 +143,13 @@ export const createItem = async (item: Item): Promise<Item> => {
     return {
       id: response.data.id,
       itemName: response.data.name,
-      category: response.data.category ? { id: response.data.category.id, categoryName: response.data.category.categoryName } : undefined,
-      storageMethod: response.data.storageMethod
-        ? { id: response.data.storageMethod.id, storageMethodName: response.data.storageMethod.storageMethodName }
-        : undefined,
+      category: { id: 0, categoryName: response.data.categoryName },
+      storageMethod: { id: 0, storageMethodName: response.data.storageMethodName },
+      shelfLife: {
+        id: response.data.shelfLife?.id,
+        sellByDays: response.data.shelfLife?.sellByDays,
+        useByDays: response.data.shelfLife?.useByDays,
+      },
     };
   } catch (error: any) {
     throw handleApiError(error, '아이템 생성 중 오류 발생');
