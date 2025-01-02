@@ -3,8 +3,12 @@ package com.example.loginDemo.yolo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +19,7 @@ import java.util.Map;
 public class YoloController {
     private final YoloService yoloService;
 
+    //ingredient
     @PostMapping("/detect")
     public ResponseEntity<Map<String, String>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
         try {
@@ -25,6 +30,7 @@ public class YoloController {
         }
     }
 
+    //receipt
     @PostMapping("/process")
     public ResponseEntity<Map<String, Object>> processImage(@RequestParam("image") MultipartFile imageFile) {
         try {
