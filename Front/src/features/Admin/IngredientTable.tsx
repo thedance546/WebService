@@ -2,21 +2,14 @@
 
 import React from "react";
 import Button from "../../components/atoms/Button";
-
-interface Ingredient {
-  id: string;
-  name: string;
-  categoryName?: string;
-  storageMethodName?: string;
-  shelfLife?: { sellByDays: number; useByDays: number };
-}
+import { Item } from "../../types/EntityTypes";
 
 interface IngredientTableProps {
-  ingredients: Ingredient[];
-  onDeleteIngredient: (id: string) => void;
+  items: Item[];
+  onDeleteItem: (id: number) => void;
 }
 
-const IngredientTable: React.FC<IngredientTableProps> = ({ ingredients, onDeleteIngredient }) => {
+const IngredientTable: React.FC<IngredientTableProps> = ({ items, onDeleteItem }) => {
   return (
     <table className="table table-striped table-bordered">
       <thead>
@@ -25,24 +18,20 @@ const IngredientTable: React.FC<IngredientTableProps> = ({ ingredients, onDelete
           <th>이름</th>
           <th>카테고리</th>
           <th>보관방법</th>
-          <th>유통기한 (일)</th>
-          <th>소비기한 (일)</th>
           <th>삭제</th>
         </tr>
       </thead>
       <tbody>
-        {ingredients.map((ingredient) => (
-          <tr key={ingredient.id}>
-            <td>{ingredient.id}</td>
-            <td>{ingredient.name}</td>
-            <td>{ingredient.categoryName}</td>
-            <td>{ingredient.storageMethodName}</td>
-            <td>{ingredient.shelfLife?.sellByDays}</td>
-            <td>{ingredient.shelfLife?.useByDays}</td>
+        {items.map((item) => (
+          <tr key={item.id}>
+            <td>{item.id}</td>
+            <td>{item.name}</td>
+            <td>{item.category?.categoryName || "N/A"}</td>
+            <td>{item.storageMethod?.storageMethodName || "N/A"}</td>
             <td>
               <Button
                 className="btn btn-danger"
-                onClick={() => onDeleteIngredient(ingredient.id)}
+                onClick={() => onDeleteItem(item.id)}
               >
                 삭제
               </Button>

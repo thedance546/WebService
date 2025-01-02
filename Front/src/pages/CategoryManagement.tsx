@@ -1,3 +1,5 @@
+// src/pages/CategoryManagement.tsx
+
 import React, { useState } from 'react';
 import { useAdminContext } from '../contexts/AdminContext';
 import { Container, Form, Button, Table } from 'react-bootstrap';
@@ -55,7 +57,7 @@ const CategoryManagement: React.FC = () => {
             {categories.map((category) => (
               <tr key={category.id}>
                 <td>{category.id}</td>
-                <td>{category.name}</td>
+                <td>{category.categoryName}</td>
                 <td>
                   <Button variant="danger" onClick={() => handleDelete(category.id)}>
                     삭제

@@ -26,7 +26,7 @@ export interface User {
 
 export interface Ingredient {
     ingredientId: number;
-    itemName: string;
+    name: string;
     quantity: number;
     shelfLife?: number;
     consumeBy?: number;

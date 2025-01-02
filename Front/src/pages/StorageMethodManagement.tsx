@@ -14,12 +14,12 @@ const StorageMethodManagement: React.FC = () => {
     }
     await addStorageMethod(newStorageMethodName);
     setNewStorageMethodName("");
-    await fetchAllData(); // 데이터 다시 로드
+    await fetchAllData();
   };
 
   const handleDelete = async (id: number) => {
     await deleteStorageMethod(id);
-    await fetchAllData(); // 데이터 다시 로드
+    await fetchAllData();
   };
 
   return (
@@ -55,7 +55,7 @@ const StorageMethodManagement: React.FC = () => {
             {storageMethods.map((method) => (
               <tr key={method.id}>
                 <td>{method.id}</td>
-                <td>{method.name}</td>
+                <td>{method.storageMethodName}</td>
                 <td>
                   <Button variant="danger" onClick={() => handleDelete(method.id)}>
                     삭제

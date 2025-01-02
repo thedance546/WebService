@@ -14,7 +14,7 @@ import ChatBotPage from './pages/ChatBotPage';
 import SettingsPage from './pages/SettingsPage';
 
 import AdminPage from './pages/AdminPage';
-import IngredientsManagement from './pages/IngredientsManagement';
+import IngredientsManagement from './pages/ItemManagement';
 import UserManagement from './pages/UserManagement';
 import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';

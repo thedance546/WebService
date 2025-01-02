@@ -25,7 +25,7 @@ interface AdminContextType {
   deleteCategory: (id: number) => void;
   addStorageMethod: (name: string) => void;
   deleteStorageMethod: (id: number) => void;
-  addItem: (item: Partial<Item>) => void;
+  addItem: (item: Item) => void;
   deleteItem: (id: number) => void;
 }
 
@@ -41,14 +41,14 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [fetchedCategories, fetchedStorageMethods, fetchedIngredients] = await Promise.all([
+      const [fetchedCategories, fetchedStorageMethods, fetchedItems] = await Promise.all([
         apiFetchCategories(),
         apiFetchStorageMethods(),
         apiFetchItems(),
       ]);
       setCategories(fetchedCategories);
       setStorageMethods(fetchedStorageMethods);
-      setItems(fetchedIngredients);
+      setItems(fetchedItems);
       setError(null);
     } catch (err: any) {
       setError('데이터를 불러오는 중 오류 발생');
@@ -105,7 +105,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const addItem = async (ingredient: Partial<Item>) => {
+  const addItem = async (ingredient: Item) => {
     setLoading(true);
     try {
       const newIngredient = await apiCreateItem(ingredient);
