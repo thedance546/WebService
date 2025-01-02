@@ -7,14 +7,12 @@ import './HomeNavBar.css';
 
 const HomeNavBar: React.FC = () => (
   <div
-    className="navbar bg-dark fixed-bottom d-flex"
+    className="container navbar bg-dark fixed-bottom"
     style={{
       height: 'var(--navbar-height)',
-      justifyContent: 'space-around',
-      alignItems: 'center',
     }}
   >
-    <NavList items={navItems} />
+    <NavList items={navItems} className="navbar-nav-list-responsive" />
   </div>
 );
 

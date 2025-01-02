@@ -1,59 +1,54 @@
 // src/App.tsx
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import AuthProvider from './contexts/AuthProvider';
+import { AdminProvider } from './contexts/AdminContext';
 
 import HomePage from './pages/HomePage';
-import RegisterForm from './pages/RegisterPage';
+import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 
 import MyIngredientsPage from './pages/MyIngredientsPage';
 import ChatBotPage from './pages/ChatBotPage';
 import SettingsPage from './pages/SettingsPage';
 
-import { AdminProvider } from './contexts/AdminContext';
 import AdminPage from './pages/AdminPage';
-import ItemManagement from './pages/ItemManagement';
+import IngredientsManagement from './pages/IngredientsManagement';
 import UserManagement from './pages/UserManagement';
 import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';
 
 const App: React.FC = () => {
-  useEffect(() => {
-    const hideAddressBar = () => {
-      setTimeout(() => {
-        window.scrollTo(0, 1);
-      }, 0);
-    };
-    window.addEventListener("load", hideAddressBar);
-    return () => {
-      window.removeEventListener("load", hideAddressBar);
-    };
-  }, []);
-
   return (
     <Router>
-      <Routes>
-        {/* 로그인 관련 경로 */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/register" element={<RegisterForm />} />
-        <Route path="/login" element={<LoginPage />} />
-
-        {/* 기능 탭 경로 */}
-        <Route path="/my-ingredients" element={<MyIngredientsPage />} />
-        <Route path="/chatbot" element={<ChatBotPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-      </Routes>
-      
-      <AdminProvider>
+      <AuthProvider>
         <Routes>
-          {/* 관리자 페이지 관련 경로 */}
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/items" element={<ItemManagement />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/admin/categories" element={<CategoryManagement />} />
-          <Route path="/admin/storage-method" element={<StorageMethodManagement />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+
+          <Route path="/my-ingredients" element={<MyIngredientsPage />} />
+          <Route path="/chatbot" element={<ChatBotPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+
+          {/* 관리자 페이지 */}
+          <Route
+            path="/admin/*"
+            element={
+              <AdminProvider>
+                <Routes>
+                  <Route path="" element={<AdminPage />} />
+                  <Route path="ingredients" element={<IngredientsManagement />} />
+                  <Route path="users" element={<UserManagement />} />
+                  <Route path="categories" element={<CategoryManagement />} />
+                  <Route path="storage-methods" element={<StorageMethodManagement />} />
+                </Routes>
+              </AdminProvider>
+            }
+          />
         </Routes>
-      </AdminProvider>
+      </AuthProvider>
     </Router>
   );
 };

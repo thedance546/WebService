@@ -1,23 +1,32 @@
 // src/components/molecules/LogoutButton.tsx
 
 import React from 'react';
-import useAuth from '../../hooks/useAuth';
+import { useAuthContext } from '../../contexts/AuthContext';
 import Button from '../atoms/Button';
 
 interface LogoutButtonProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const LogoutButton: React.FC<LogoutButtonProps> = ({ className }) => {
-  const { handleLogout } = useAuth();
+const LogoutButton: React.FC<LogoutButtonProps> = ({ className, style }) => {
+  const { logout } = useAuthContext();
 
   const onClick = async () => {
-    const message = await handleLogout();
-    alert(message);
+    try {
+      await logout();
+      alert('로그아웃되었습니다.');
+    } catch (err: any) {
+      alert('로그아웃에 실패했습니다: ' + err.message);
+    }
   };
 
   return (
-    <Button onClick={onClick} className={`btn btn-warning w-100 ${className}`}>
+    <Button
+      onClick={onClick}
+      className={`btn btn-warning text-nowrap ${className}`}
+      style={style}
+    >
       로그아웃
     </Button>
   );

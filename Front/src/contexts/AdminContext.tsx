@@ -1,85 +1,153 @@
 // src/contexts/AdminContext.tsx
 
-import React, { createContext, useContext, ReactNode } from "react";
-import useCategory from "../hooks/useCategory";
-import useStorageMethod from "../hooks/useStorageMethod";
-import useItem from "../hooks/useItem";
-import { Category, StorageMethod, Item } from "../types/EntityTypes";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import {
+  fetchCategories as apiFetchCategories,
+  createCategory as apiCreateCategory,
+  deleteCategory as apiDeleteCategory,
+  fetchStorageMethods as apiFetchStorageMethods,
+  createStorageMethod as apiCreateStorageMethod,
+  deleteStorageMethod as apiDeleteStorageMethod,
+  fetchIngredients as apiFetchIngredients,
+  createIngredient as apiCreateIngredient,
+  deleteIngredient as apiDeleteIngredient,
+} from '../services/AdminApi';
+import { Category, StorageMethod, Ingredient } from '../types/EntityTypes';
 
-interface AdminContextProps {
+interface AdminContextType {
   categories: Category[];
   storageMethods: StorageMethod[];
-  items: Item[];
-  handleAddCategory: (categoryName: string) => Promise<void>;
-  handleDeleteCategory: (categoryId: number) => Promise<void>;
-  handleAddStorageMethod: (methodName: string) => Promise<void>;
-  handleDeleteStorageMethod: (methodId: number) => Promise<void>;
-  addItem: (item: Omit<Item, "id">) => Promise<void>;
-  deleteItem: (itemId: number) => Promise<void>;
+  ingredients: Ingredient[];
   loading: boolean;
-  error: string;
+  error: string | null;
+  fetchAllData: () => void;
+  addCategory: (name: string) => void;
+  deleteCategory: (id: number) => void;
+  addStorageMethod: (name: string) => void;
+  deleteStorageMethod: (id: number) => void;
+  addIngredient: (ingredient: Partial<Ingredient>) => void;
+  deleteIngredient: (id: number) => void;
 }
 
-const AdminContext = createContext<AdminContextProps | undefined>(undefined);
+const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
-export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const {
-    resources: categories,
-    addResource: addCategory,
-    removeResource: deleteCategory,
-    loading: categoryLoading,
-    error: categoryError,
-  } = useCategory();
+export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [storageMethods, setStorageMethods] = useState<StorageMethod[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const {
-    resources: storageMethods,
-    addResource: addStorageMethod,
-    removeResource: deleteStorageMethod,
-    loading: storageMethodLoading,
-    error: storageMethodError,
-  } = useStorageMethod();
-
-  const {
-    resources: items,
-    addResource: addItem,
-    removeResource: deleteItem,
-    loading: itemLoading,
-    error: itemError,
-  } = useItem();
-
-  const handleAddCategory = async (categoryName: string) => {
-    await addCategory({ name: categoryName });
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      const [fetchedCategories, fetchedStorageMethods, fetchedIngredients] = await Promise.all([
+        apiFetchCategories(),
+        apiFetchStorageMethods(),
+        apiFetchIngredients(),
+      ]);
+      setCategories(fetchedCategories);
+      setStorageMethods(fetchedStorageMethods);
+      setIngredients(fetchedIngredients);
+      setError(null);
+    } catch (err: any) {
+      setError('데이터를 불러오는 중 오류 발생');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteCategory = async (categoryId: number) => {
-    await deleteCategory(categoryId);
+  const addCategory = async (name: string) => {
+    setLoading(true);
+    try {
+      const newCategory = await apiCreateCategory(name);
+      setCategories((prev) => [...prev, newCategory]);
+    } catch (err: any) {
+      setError(`카테고리를 추가하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAddStorageMethod = async (methodName: string) => {
-    await addStorageMethod({ name: methodName });
+  const deleteCategory = async (id: number) => {
+    setLoading(true);
+    try {
+      await apiDeleteCategory(id);
+      setCategories((prev) => prev.filter((category) => category.id !== id));
+    } catch (err: any) {
+      setError(`카테고리를 삭제하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteStorageMethod = async (methodId: number) => {
-    await deleteStorageMethod(methodId);
+  const addStorageMethod = async (name: string) => {
+    setLoading(true);
+    try {
+      const newStorageMethod = await apiCreateStorageMethod(name);
+      setStorageMethods((prev) => [...prev, newStorageMethod]);
+    } catch (err: any) {
+      setError(`보관 방법을 추가하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const loading = categoryLoading || storageMethodLoading || itemLoading;
-  const error = categoryError || storageMethodError || itemError;
+  const deleteStorageMethod = async (id: number) => {
+    setLoading(true);
+    try {
+      await apiDeleteStorageMethod(id);
+      setStorageMethods((prev) => prev.filter((method) => method.id !== id));
+    } catch (err: any) {
+      setError(`보관 방법을 삭제하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addIngredient = async (ingredient: Partial<Ingredient>) => {
+    setLoading(true);
+    try {
+      const newIngredient = await apiCreateIngredient(ingredient);
+      setIngredients((prev) => [...prev, newIngredient]);
+    } catch (err: any) {
+      setError(`식재료를 추가하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteIngredient = async (id: number) => {
+    setLoading(true);
+    try {
+      await apiDeleteIngredient(id);
+      setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== id));
+    } catch (err: any) {
+      setError(`식재료를 삭제하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
 
   return (
     <AdminContext.Provider
       value={{
         categories,
         storageMethods,
-        items,
-        handleAddCategory,
-        handleDeleteCategory,
-        handleAddStorageMethod,
-        handleDeleteStorageMethod,
-        addItem,
-        deleteItem,
+        ingredients,
         loading,
         error,
+        fetchAllData,
+        addCategory,
+        deleteCategory,
+        addStorageMethod,
+        deleteStorageMethod,
+        addIngredient,
+        deleteIngredient,
       }}
     >
       {children}
@@ -90,8 +158,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 export const useAdminContext = () => {
   const context = useContext(AdminContext);
   if (!context) {
-    throw new Error("useAdminContext must be used within an AdminProvider");
+    throw new Error('useAdminContext must be used within an AdminProvider');
   }
   return context;
 };
-

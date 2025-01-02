@@ -2,18 +2,18 @@
 
 import React from "react";
 import { Container, Row, Col, Table } from "react-bootstrap";
-import AdminNavBar from "../components/organisms/AdminNavBar";
+import AdminNavBar from "../features/Admin/AdminNavBar";
 import { useAdminContext } from "../contexts/AdminContext";
 import LoadingModal from "../components/organisms/LoadingModal";
 
 const AdminPage: React.FC = () => {
-  const { categories, storageMethods, items, loading, error } = useAdminContext();
+  const { categories, storageMethods, ingredients, loading, error } = useAdminContext();
 
   return (
     <>
       <AdminNavBar />
       {loading && <LoadingModal />}
-      <Container className="mt-4">
+      <Container className="admin-content">
         <h2>Admin Dashboard</h2>
         {error ? (
           <p className="text-danger">{error}</p>
@@ -30,11 +30,11 @@ const AdminPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.name}</td>
-                      <td>{item.category?.name}</td>
-                      <td>{item.storageMethod?.name}</td>
+                  {ingredients.map((ingredient) => (
+                    <tr key={ingredient.ingredientId}>
+                      <td>{ingredient.name}</td>
+                      <td>{ingredient.categoryId}</td>
+                      <td>{ingredient.storageMethodId}</td>
                     </tr>
                   ))}
                 </tbody>

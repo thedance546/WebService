@@ -3,7 +3,7 @@
 .responsive-grid {
   display: grid;
   gap: 1rem;
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  white-space: nowrap;
 }
 
 .grid-columns-2 {
@@ -18,7 +18,6 @@
   grid-template-columns: repeat(4, 1fr);
 }
 
-/* 반응형 설정 */
 @media (min-width: 768px) {
   .grid-columns-md-2 {
     grid-template-columns: repeat(2, 1fr);
@@ -31,7 +30,6 @@
   }
 }
 
-/* 텍스트가 박스 내에서 줄바꿈되지 않도록 처리 */
 .responsive-grid label {
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  white-space: nowrap;
 }

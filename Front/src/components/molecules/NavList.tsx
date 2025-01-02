@@ -8,11 +8,12 @@ interface NavListProps {
     path: string;
     label: string;
   }[];
+  className?: string;
 }
 
-const NavList: React.FC<NavListProps> = ({ items }) => {
+const NavList: React.FC<NavListProps> = ({ items, className = '' }) => {
   return (
-    <div className="d-flex justify-content-around w-100">
+    <div className={`d-flex ${className}`}>
       {items.map(({ path, label }) => (
         <NavItem key={path} path={path} label={label} />
       ))}

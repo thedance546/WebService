@@ -1,15 +1,19 @@
 // src/components/molecules/DeleteAccountButton.tsx
 
 import React from 'react';
-import useAuth from '../../hooks/useAuth';
+import { useAuthContext } from '../../contexts/AuthContext';
 import Button from '../atoms/Button';
 
 const DeleteAccountButton: React.FC = () => {
-  const { handleDeleteAccount } = useAuth();
+  const { deleteAccount } = useAuthContext();
 
   const onClick = async () => {
-    const message = await handleDeleteAccount();
-    alert(message);
+    try {
+      await deleteAccount();
+      alert('회원탈퇴가 완료되었습니다.');
+    } catch (error: any) {
+      alert('회원탈퇴에 실패했습니다: ' + error.message);
+    }
   };
 
   return (

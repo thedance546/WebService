@@ -8,8 +8,8 @@ import DropdownFilter from "../../components/atoms/DropdownFilter";
 interface IngredientFormProps {
   categories: { categoryName: string }[];
   storageMethods: { storageMethodName: string }[];
-  onAddItem: (item: {
-    itemName: string;
+  onAddIngredient: (ingredient: {
+    name: string;
     categoryName: string;
     storageMethodName: string;
     sellByDays: number | string;
@@ -17,8 +17,8 @@ interface IngredientFormProps {
   }) => void;
 }
 
-const IngredientForm: React.FC<IngredientFormProps> = ({ categories, storageMethods, onAddItem }) => {
-  const [newItemName, setNewItemName] = useState("");
+const IngredientForm: React.FC<IngredientFormProps> = ({ categories, storageMethods, onAddIngredient }) => {
+  const [name, setName] = useState("");
   const [sellByDays, setSellByDays] = useState<number | string>("");
   const [useByDays, setUseByDays] = useState<number | string>("");
   const [categoryName, setCategoryName] = useState("");
@@ -26,18 +26,18 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ categories, storageMeth
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!newItemName || !categoryName || !storageMethodName) {
+    if (!name || !categoryName || !storageMethodName) {
       alert("모든 필드를 입력해 주세요.");
       return;
     }
-    onAddItem({
-      itemName: newItemName,
+    onAddIngredient({
+      name,
       categoryName,
       storageMethodName,
       sellByDays,
       useByDays,
     });
-    setNewItemName("");
+    setName("");
     setSellByDays("");
     setUseByDays("");
     setCategoryName("");
@@ -50,8 +50,8 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ categories, storageMeth
         <div className="w-20">
           <label>식재료 이름</label>
           <Input
-            value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             placeholder="식재료 이름"
           />
         </div>
