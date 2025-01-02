@@ -109,7 +109,7 @@ export const fetchItems = async (): Promise<Item[]> => {
 
     return response.data.map((data: any): Item => ({
       id: data.id,
-      name: data.name,
+      itemName: data.itemName,
       category: data.category ? { id: data.category.id, categoryName: data.category.categoryName } : undefined,
       storageMethod: data.storageMethod
         ? { id: data.storageMethod.id, storageMethodName: data.storageMethod.storageMethodName }
@@ -120,12 +120,12 @@ export const fetchItems = async (): Promise<Item[]> => {
   }
 };
 
-export const createItem = async (item: Partial<Item>): Promise<Item> => {
+export const createItem = async (item: Item): Promise<Item> => {
   try {
     const response = await api.post(
       '/items/item',
       {
-        name: item.name,
+        name: item.itemName,
         categoryId: item.category?.id,
         storageMethodId: item.storageMethod?.id,
       },
@@ -136,7 +136,7 @@ export const createItem = async (item: Partial<Item>): Promise<Item> => {
 
     return {
       id: response.data.id,
-      name: response.data.name,
+      itemName: response.data.name,
       category: response.data.category ? { id: response.data.category.id, categoryName: response.data.category.categoryName } : undefined,
       storageMethod: response.data.storageMethod
         ? { id: response.data.storageMethod.id, storageMethodName: response.data.storageMethod.storageMethodName }

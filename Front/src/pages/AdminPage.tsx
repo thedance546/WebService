@@ -14,7 +14,6 @@ const AdminPage: React.FC = () => {
       <AdminNavBar />
       {loading && <LoadingModal />}
       <Container className="admin-content">
-        <h2>Admin Dashboard</h2>
         {error ? (
           <p className="text-danger">{error}</p>
         ) : (
@@ -32,7 +31,7 @@ const AdminPage: React.FC = () => {
                 <tbody>
                   {items.map((item) => (
                     <tr key={item.id}>
-                      <td>{item.name}</td>
+                      <td>{item.itemName}</td>
                       <td>{item.category?.categoryName || "N/A"}</td>
                       <td>{item.storageMethod?.storageMethodName || "N/A"}</td>
                     </tr>

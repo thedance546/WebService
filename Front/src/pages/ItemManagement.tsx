@@ -1,10 +1,12 @@
+// src/pages/ItemManagement.tsx
+
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { useAdminContext } from '../contexts/AdminContext';
 import AdminNavBar from '../features/Admin/AdminNavBar';
 import LoadingModal from '../components/organisms/LoadingModal';
-import IngredientForm from '../features/Admin/IngredientForm';
-import IngredientTable from '../features/Admin/IngredientTable';
+import ItempInputForm from '../features/Admin/ItemInputForm';
+import ItemTable from '../features/Admin/ItemTable';
 import { Item } from '../types/EntityTypes';
 
 const ItemManagement: React.FC = () => {
@@ -27,7 +29,7 @@ const ItemManagement: React.FC = () => {
 
     addItem({
       id: 0, // 임시 ID
-      name: item.name,
+      itemName: item.name,
       category,
       storageMethod,
     } as Item);
@@ -44,14 +46,14 @@ const ItemManagement: React.FC = () => {
       {loading && <LoadingModal />}
       <Container className="admin-content">
         <h3>아이템 관리</h3>
-        <IngredientForm
+        <ItempInputForm
           categories={categories}
           storageMethods={storageMethods}
           onAddItem={handleAddItem} // 타입 일치
         />
         {error && <p className="text-danger">{error}</p>}
         {!loading && (
-          <IngredientTable
+          <ItemTable
             items={items.map((item) => ({
               ...item,
               categoryName: item.category?.categoryName || "N/A",

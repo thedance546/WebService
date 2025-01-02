@@ -12,7 +12,7 @@ export interface StorageMethod {
 
 export interface Item {
     id: number;
-    name: string;
+    itemName: string;
     category?: Category;
     storageMethod?: StorageMethod;
 }

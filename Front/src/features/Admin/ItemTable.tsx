@@ -25,7 +25,7 @@ const IngredientTable: React.FC<IngredientTableProps> = ({ items, onDeleteItem }
         {items.map((item) => (
           <tr key={item.id}>
             <td>{item.id}</td>
-            <td>{item.name}</td>
+            <td>{item.itemName}</td>
             <td>{item.category?.categoryName || "N/A"}</td>
             <td>{item.storageMethod?.storageMethodName || "N/A"}</td>
             <td>
