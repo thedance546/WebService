@@ -3,20 +3,21 @@
 import { api } from './Api';
 import { handleApiError } from '../utils/Utils';
 
-let accessToken: string = "";
+const TOKEN_KEY = 'accessToken'; // Local Storage 키
 
 export const setAccessToken = (token: string): void => {
-  accessToken = token;
+  localStorage.setItem(TOKEN_KEY, token);
   console.log("Access Token 설정됨:", token);
 };
 
 export const getAccessToken = (): string => {
-  // console.log("현재 Access Token:", accessToken || "없음");
-  return accessToken;
+  const token = localStorage.getItem(TOKEN_KEY);
+  // console.log("현재 Access Token:", token || "없음");
+  return token || ""; // 없을 경우 빈 문자열 반환
 };
 
 export const clearAccessToken = (): void => {
-  accessToken = "";
+  localStorage.removeItem(TOKEN_KEY);
   console.log("Access Token 초기화됨");
 };
 

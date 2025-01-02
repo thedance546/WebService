@@ -11,7 +11,7 @@ const CategoryManagement: React.FC = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [fetchCategories]);
 
   const handleAdd = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -20,12 +20,10 @@ const CategoryManagement: React.FC = () => {
     }
     await addCategory(newCategoryName);
     setNewCategoryName("");
-    await fetchCategories();
   };
 
   const handleDelete = async (id: number) => {
     await deleteCategory(id);
-    await fetchCategories();
   };
 
   return (

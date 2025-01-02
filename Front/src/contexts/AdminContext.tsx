@@ -1,6 +1,6 @@
 // src/contexts/AdminContext.tsx
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import {
   fetchCategories as apiFetchCategories,
   createCategory as apiCreateCategory,
@@ -32,7 +32,6 @@ interface AdminContextType {
   deleteItem: (id: number) => void;
 }
 
-
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -41,61 +40,76 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCategoriesFetched, setIsCategoriesFetched] = useState(false);
+  const [isStorageMethodsFetched, setIsStorageMethodsFetched] = useState(false);
+  const [isItemsFetched, setIsItemsFetched] = useState(false);
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
-      const [fetchedCategories, fetchedStorageMethods, fetchedItems] = await Promise.all([
-        apiFetchCategories(),
-        apiFetchStorageMethods(),
-        apiFetchItems(),
-      ]);
-      setCategories(fetchedCategories);
-      setStorageMethods(fetchedStorageMethods);
-      setItems(fetchedItems);
+      if (!isCategoriesFetched) {
+        const fetchedCategories = await apiFetchCategories();
+        setCategories(fetchedCategories);
+        setIsCategoriesFetched(true);
+      }
+      if (!isStorageMethodsFetched) {
+        const fetchedStorageMethods = await apiFetchStorageMethods();
+        setStorageMethods(fetchedStorageMethods);
+        setIsStorageMethodsFetched(true);
+      }
+      if (!isItemsFetched) {
+        const fetchedItems = await apiFetchItems();
+        setItems(fetchedItems);
+        setIsItemsFetched(true);
+      }
     } catch (err: any) {
-      setError("데이터를 불러오는 중 오류 발생");
+      setError('데이터를 불러오는 중 오류 발생');
     } finally {
       setLoading(false);
     }
-  };
-  
-  const fetchCategories = async () => {
+  }, [isCategoriesFetched, isStorageMethodsFetched, isItemsFetched]);
+
+  const fetchCategories = useCallback(async () => {
+    if (isCategoriesFetched) return;
     setLoading(true);
     try {
       const fetchedCategories = await apiFetchCategories();
       setCategories(fetchedCategories);
+      setIsCategoriesFetched(true);
     } catch (err: any) {
-      setError("카테고리를 불러오는 중 오류 발생");
+      setError('카테고리를 불러오는 중 오류 발생');
     } finally {
       setLoading(false);
     }
-  };
-  
-  const fetchStorageMethods = async () => {
+  }, [isCategoriesFetched]);
+
+  const fetchStorageMethods = useCallback(async () => {
+    if (isStorageMethodsFetched) return;
     setLoading(true);
     try {
       const fetchedStorageMethods = await apiFetchStorageMethods();
       setStorageMethods(fetchedStorageMethods);
+      setIsStorageMethodsFetched(true);
     } catch (err: any) {
-      setError("보관 방법을 불러오는 중 오류 발생");
+      setError('보관 방법을 불러오는 중 오류 발생');
     } finally {
       setLoading(false);
     }
-  };
-  
-  const fetchItems = async () => {
+  }, [isStorageMethodsFetched]);
+
+  const fetchItems = useCallback(async () => {
+    if (isItemsFetched) return;
     setLoading(true);
     try {
       const fetchedItems = await apiFetchItems();
       setItems(fetchedItems);
+      setIsItemsFetched(true);
     } catch (err: any) {
-      setError("아이템을 불러오는 중 오류 발생");
+      setError('아이템을 불러오는 중 오류 발생');
     } finally {
       setLoading(false);
     }
-  };
-  
+  }, [isItemsFetched]);
 
   const addCategory = async (name: string) => {
     setLoading(true);
@@ -149,18 +163,20 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setLoading(true);
     try {
       const newItem = await apiCreateItem({
-        name: item.itemName,
-        categoryName: item.category?.categoryName || "",
-        storageMethodName: item.storageMethod?.storageMethodName || "",
+        itemName: item.itemName,
+        categoryName: item.category?.categoryName || '',
+        storageMethodName: item.storageMethod?.storageMethodName || '',
         shelfLife: item.shelfLife || { sellByDays: 0, useByDays: 0 },
       });
+  
       setItems((prev) => [...prev, newItem]);
+      console.log("아이템 추가됨:", newItem);
     } catch (err: any) {
-      setError(`식재료를 추가하는 중 오류 발생: ${err.message || "알 수 없는 오류"}`);
+      setError(`식재료를 추가하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const deleteItem = async (id: number) => {
     setLoading(true);
@@ -176,7 +192,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [fetchAllData]);
 
   return (
     <AdminContext.Provider
@@ -200,7 +216,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     >
       {children}
     </AdminContext.Provider>
-  );  
+  );
 };
 
 export const useAdminContext = () => {

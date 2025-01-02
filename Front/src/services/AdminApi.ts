@@ -121,16 +121,18 @@ export const fetchItems = async (): Promise<Item[]> => {
 };
 
 export const createItem = async (item: {
-  name: string;
+  itemName: string;
   categoryName: string;
   storageMethodName: string;
   shelfLife: { sellByDays: number; useByDays: number };
 }): Promise<Item> => {
   try {
+    console.log("아이템 생성 요청 데이터:", item);
+
     const response = await api.post(
       '/items/item',
       {
-        name: item.name,
+        itemName: item.itemName,
         categoryName: item.categoryName,
         storageMethodName: item.storageMethodName,
         shelfLife: item.shelfLife,
@@ -140,18 +142,29 @@ export const createItem = async (item: {
       },
     );
 
-    return {
+    console.log("아이템 생성 응답 데이터:", response.data);
+
+    const newItem: Item = {
       id: response.data.id,
-      itemName: response.data.name,
-      category: { id: 0, categoryName: response.data.categoryName },
-      storageMethod: { id: 0, storageMethodName: response.data.storageMethodName },
-      shelfLife: {
-        id: response.data.shelfLife?.id,
-        sellByDays: response.data.shelfLife?.sellByDays,
-        useByDays: response.data.shelfLife?.useByDays,
-      },
+      itemName: response.data.itemName || "N/A",
+      category: response.data.category
+        ? { id: response.data.category.id, categoryName: response.data.category.categoryName }
+        : { id: 0, categoryName: "N/A" },
+      storageMethod: response.data.storageMethod
+        ? { id: response.data.storageMethod.id, storageMethodName: response.data.storageMethod.storageMethodName }
+        : { id: 0, storageMethodName: "N/A" },
+      shelfLife: response.data.shelfLife
+        ? {
+            id: response.data.shelfLife.id,
+            sellByDays: response.data.shelfLife.sellByDays,
+            useByDays: response.data.shelfLife.useByDays,
+          }
+        : { id: 0, sellByDays: 0, useByDays: 0 },
     };
+
+    return newItem;
   } catch (error: any) {
+    console.error("아이템 생성 중 오류 발생:", error.response?.data || error.message);
     throw handleApiError(error, '아이템 생성 중 오류 발생');
   }
 };
