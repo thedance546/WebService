@@ -11,7 +11,7 @@ export const setAccessToken = (token: string): void => {
 };
 
 export const getAccessToken = (): string => {
-  console.log("현재 Access Token:", accessToken || "없음");
+  // console.log("현재 Access Token:", accessToken || "없음");
   return accessToken;
 };
 
@@ -29,7 +29,6 @@ export const refreshAccessToken = async (): Promise<string> => {
 
     setAccessToken(newAccessToken);
     console.log("토큰 갱신 성공:", newAccessToken);
-
     return newAccessToken;
   } catch (error: any) {
     console.error("토큰 갱신 실패:", error.message || error);

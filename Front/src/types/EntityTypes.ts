@@ -2,12 +2,12 @@
 
 export interface Category {
     id: number;
-    name: string;
+    categoryName: string;
 }
 
 export interface StorageMethod {
     id: number;
-    name: string;
+    storageMethodName: string;
 }
 
 export interface Item {
@@ -26,7 +26,7 @@ export interface User {
 
 export interface Ingredient {
     ingredientId: number;
-    name: string;
+    itemName: string;
     quantity: number;
     shelfLife?: number;
     consumeBy?: number;
