@@ -19,10 +19,14 @@ import UserManagement from './pages/UserManagement';
 import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
+      <ToastContainer />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />

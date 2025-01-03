@@ -62,10 +62,14 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
 
   return (
     <Modal
-      title="레시피 추천"
+      title="레시피 추천 받기"
       onClose={onClose}
     >
-      <ImageUploadPreview onFileSelect={handleFileChange} />
+      <ImageUploadPreview
+        onFileSelect={handleFileChange}
+        previewStyle={{ minHeight: '300px', maxHeight: '300px', maxWidth: '100%' }}
+        placeholderMessage="식재료 이미지를 업로드해주세요. 탐지된 식재료를 바탕으로 레시피를 추천해 드립니다."
+      />
 
       <div className="d-flex flex-column align-items-center">
         {state.detectionResult && (
