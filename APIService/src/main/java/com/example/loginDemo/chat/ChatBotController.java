@@ -5,7 +5,9 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -16,7 +18,10 @@ public class ChatBotController {
 
     private static final String FLASK_SERVER_URL = "http://localhost:5002/ask";
 
-    @PostMapping("/ask")
+    // 대화 메시지 저장소
+    private final List<Map<String, String>> messageHistory = new ArrayList<>();
+
+    @PostMapping("/messages")
     public Map<String, String> askQuestion(@RequestBody Map<String, String> payload) {
         String question = payload.get("question");
         if (question == null || question.trim().isEmpty()) {
@@ -47,5 +52,11 @@ public class ChatBotController {
         } catch (Exception e) {
             return Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
         }
+    }
+
+    //모든 메세지 조회
+    @GetMapping("/messages")
+    public ResponseEntity<List<Map<String, String>>> getMessageHistory() {
+        return ResponseEntity.ok(messageHistory);
     }
 }

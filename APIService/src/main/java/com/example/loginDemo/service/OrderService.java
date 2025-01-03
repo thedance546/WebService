@@ -24,30 +24,6 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-//    @Transactional
-//    public Order createOrder(OrderRequest orderRequest) {
-//        // Order 생성 및 저장
-//        Order order = new Order();
-//        order.setOrderDate(orderRequest.getOrderDate());
-//        Order savedOrder = orderRepository.save(order);
-//
-//        // OrderItems 생성 및 저장
-//        for (OrderRequest.OrderItemRequest orderItemRequest : orderRequest.getOrderItems()) {
-//            // Item 조회
-//            Item item = itemRepository.findByItemName(orderItemRequest.getItemName())
-//                    .orElseThrow(() -> new IllegalArgumentException("Invalid item name: " + orderItemRequest.getItemName()));
-//
-//            OrderItem orderItem = new OrderItem();
-//            orderItem.setOrder(savedOrder);
-//            orderItem.setItem(item);
-//            orderItem.setCount(orderItemRequest.getCount());
-//
-//            orderItemRepository.save(orderItem);
-//        }
-//
-//        return savedOrder;
-//    }
-
     @Transactional
     public Order createOrder(OrderRequest orderRequest) {
         // userId를 통해 User 객체를 조회
@@ -77,4 +53,17 @@ public class OrderService {
         return savedOrder;
     }
 
+    //모든 주문 조회
+    @Transactional(readOnly = true)
+    public List<Order> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orders;
+    }
+
+    //모든 주문 아이템 조회
+    @Transactional(readOnly = true)
+    public List<OrderItem> getAllOrderItems() {
+        List<OrderItem> orderItems = orderItemRepository.findAll();
+        return orderItems;
+    }
 }
