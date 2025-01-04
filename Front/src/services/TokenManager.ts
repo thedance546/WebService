@@ -12,7 +12,7 @@ export const setAccessToken = (token: string): void => {
 
 export const getAccessToken = (): string => {
   const token = localStorage.getItem(TOKEN_KEY);
-  // console.log("현재 Access Token:", token || "없음");
+  console.log("현재 Access Token:", token || "없음");
   return token || ""; // 없을 경우 빈 문자열 반환
 };
 

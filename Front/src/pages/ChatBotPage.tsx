@@ -8,7 +8,7 @@ import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationM
 import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
-import { DetectionResult, Message, Sender } from '../types/FeatureTypes';
+import { Message, Sender } from '../types/FeatureTypes';
 import botAvatar from '../assets/bot-avatar.png';
 
 const ChatBotPage: React.FC = () => {
@@ -28,7 +28,7 @@ const ChatBotPage: React.FC = () => {
   const optionsModal = usePopupState({ isOpen: false });
   const recipeModal = usePopupState({
     selectedFile: null as File | null,
-    detectionResult: null as DetectionResult | null,
+    detectionResult: null as any,
     loading: false,
   });
   const customInfoModal = usePopupState({ isOpen: false });
