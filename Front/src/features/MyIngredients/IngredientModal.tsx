@@ -29,7 +29,11 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
     <Modal title="식재료 등록하기" onClose={onCancel}>
       <ImageUploadPreview
         onFileSelect={handleFileChange}
-        previewStyle={{ minHeight: '300px', maxHeight: '300px', maxWidth: '100%' }}
+        previewStyle={{
+          width: '100%',
+          height: '300px',
+          borderRadius: '8px'
+        }}
         placeholderMessage="영수증을 올려주세요!"
       />
       <div className="d-flex justify-content-around mt-3">

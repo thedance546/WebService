@@ -1,33 +1,44 @@
 // src/components/atoms/ImagePreview.tsx
 
-import React from 'react';
-
 interface ImagePreviewProps {
   src?: string;
   alt?: string;
   className?: string;
   style?: React.CSSProperties;
-  children?: React.ReactNode;
 }
 
-const ImagePreview: React.FC<ImagePreviewProps> = ({ src, alt = '미리보기', className = '', style, children }) => (
-  <div className="border rounded p-3 mt-3 text-center">
+const ImagePreview: React.FC<ImagePreviewProps> = ({
+  src,
+  alt = '미리보기',
+  className = '',
+  style = {},
+}) => (
+  <div
+    className={`border rounded p-3 mt-3 ${className}`}
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+      ...style,
+    }}
+  >
     {src ? (
       <img
         src={src}
         alt={alt}
-        className={`img-fluid rounded ${className}`}
         style={{
           maxWidth: '100%',
+          maxHeight: '100%',
           objectFit: 'contain',
-          ...style,
         }}
       />
     ) : (
-      children || <span>{alt}</span>
+      <span>{alt}</span>
     )}
   </div>
 );
 
 export default ImagePreview;
-

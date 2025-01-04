@@ -12,8 +12,8 @@ interface ImageUploadPreviewProps {
 
 const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   onFileSelect,
-  previewStyle,
-  placeholderMessage = '이미지를 업로드하면 여기에 미리보기가 표시됩니다.',
+  previewStyle = {},
+  placeholderMessage = '이미지를 업로드해주세요.',
 }) => {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
@@ -26,17 +26,18 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
   };
 
   return (
-    <div className="my-3">
+    <div className="my-3 d-flex flex-column align-items-center">
       <FileUploader onFileChange={handleFileChange} accept="image/*" />
       <ImagePreview
         src={previewSrc || undefined}
         alt={placeholderMessage}
-        style={previewStyle}
-      >
-        {!previewSrc && (
-          <div>{placeholderMessage}</div>
-        )}
-      </ImagePreview>
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          ...previewStyle,
+        }}
+      />
     </div>
   );
 };

@@ -67,7 +67,10 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
     >
       <ImageUploadPreview
         onFileSelect={handleFileChange}
-        previewStyle={{ minHeight: '300px', maxHeight: '300px', maxWidth: '100%' }}
+        previewStyle={{
+          width: '100%',            // 가로 최대 크기
+          height: '400px',          // 세로 크기 고정
+        }}
         placeholderMessage="식재료 이미지를 업로드해주세요. 탐지된 식재료를 바탕으로 레시피를 추천해 드립니다."
       />
 
