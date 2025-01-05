@@ -9,7 +9,7 @@ import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
 import { Message, Sender } from '../types/FeatureTypes';
-import botAvatar from '../assets/bot-avatar.png';
+import botAvatar from '../assets/matjipsa_logo.png';
 
 const ChatBotPage: React.FC = () => {
   const initialMessage: Message[] = [

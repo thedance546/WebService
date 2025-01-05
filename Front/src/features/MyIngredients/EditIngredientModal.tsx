@@ -3,19 +3,7 @@
 import React, { useState } from 'react';
 import Modal from '../../components/molecules/Modal';
 import Input from '../../components/atoms/Input';
-
-interface IngredientRow {
-  name: string;
-  quantity: number;
-  category: string;
-  storage: string;
-}
-
-interface EditIngredientModalProps {
-  row: IngredientRow;
-  onSave: (row: IngredientRow) => void;
-  onCancel: () => void;
-}
+import { EditIngredientModalProps } from '../../types/FeatureTypes';
 
 const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, onCancel }) => {
   const [editedRow, setEditedRow] = useState({ ...row });
@@ -73,6 +61,17 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
                 type="text"
                 value={editedRow.storage || ""}
                 onChange={(e) => handleChange("storage", e.target.value)}
+                className="form-control"
+              />
+            </td>
+          </tr>
+          <tr>
+            <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>구매일자</th>
+            <td style={{ width: '70%' }}>
+              <Input
+                type="date"
+                value={editedRow.purchaseDate || ""}
+                onChange={(e) => handleChange("purchaseDate", e.target.value)}
                 className="form-control"
               />
             </td>

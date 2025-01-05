@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Switch from "react-switch";
 import TableRow from "./TableRow";
 import IngredientsFilter from "./IngredientsFilter";
-import EditIngredientModal from "./EditIngredientModal";
+//import EditIngredientModal from "./EditIngredientModal";
 import "./IngredientsTable.css";
 import { Ingredient } from "../../types/EntityTypes";
 
@@ -26,7 +26,7 @@ const IngredientsTable: React.FC<IngredientsTableProps> = ({ data, onDeleteRow, 
   const [filter, setFilter] = useState<string>("전체");
   const [dateType, setDateType] = useState<"유통기한" | "소비기한">("유통기한");
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [selectedRow, setSelectedRow] = useState<IngredientRow | null>(null);
+  //const [selectedRow, setSelectedRow] = useState<IngredientRow | null>(null);
 
   const filteredData: IngredientRow[] = data.map((item, index) => ({
     name: item.name,
@@ -45,28 +45,31 @@ const IngredientsTable: React.FC<IngredientsTableProps> = ({ data, onDeleteRow, 
   };
 
   const handleRowClick = (index: number) => {
-    if (isEditMode) {
-      setSelectedRow(filteredData[index]);
-    }
   };
 
-  const handleModalSave = (updatedRow: IngredientRow) => {
-    if (updatedRow.originalIndex !== undefined) {
-      const updatedIngredient: Ingredient = {
-        ...data[updatedRow.originalIndex],
-        name: updatedRow.name,
-        quantity: updatedRow.quantity,
-        categoryId: parseInt(updatedRow.category.split(" ")[1]) || undefined,
-        storageMethodId: parseInt(updatedRow.storage.split(" ")[1]) || undefined,
-      };
-      onSaveRow(updatedRow.originalIndex, updatedIngredient);
-    }
-    setSelectedRow(null);
-  };
+  // const handleRowClick = (index: number) => {
+  //   if (isEditMode) {
+  //     setSelectedRow(filteredData[index]);
+  //   }
+  // };
 
-  const handleModalCancel = () => {
-    setSelectedRow(null);
-  };
+  // const handleModalSave = (updatedRow: IngredientRow) => {
+  //   if (updatedRow.originalIndex !== undefined) {
+  //     const updatedIngredient: Ingredient = {
+  //       ...data[updatedRow.originalIndex],
+  //       name: updatedRow.name,
+  //       quantity: updatedRow.quantity,
+  //       categoryId: parseInt(updatedRow.category.split(" ")[1]) || undefined,
+  //       storageMethodId: parseInt(updatedRow.storage.split(" ")[1]) || undefined,
+  //     };
+  //     onSaveRow(updatedRow.originalIndex, updatedIngredient);
+  //   }
+  //   setSelectedRow(null);
+  // };
+
+  // const handleModalCancel = () => {
+  //   setSelectedRow(null);
+  // };
 
   return (
     <div className="container-fluid px-0">
@@ -121,13 +124,13 @@ const IngredientsTable: React.FC<IngredientsTableProps> = ({ data, onDeleteRow, 
         </table>
       </div>
 
-      {selectedRow && (
+      {/* {selectedRow && (
         <EditIngredientModal
           row={selectedRow}
           onSave={handleModalSave}
           onCancel={handleModalCancel}
         />
-      )}
+      )} */}
     </div>
   );
 };

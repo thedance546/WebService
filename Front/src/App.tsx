@@ -15,6 +15,7 @@ import SettingsPage from './pages/SettingsPage';
 
 import AdminPage from './pages/AdminPage';
 import IngredientsManagement from './pages/ItemManagement';
+import NewIngredientsPage from './pages/NewIngredientsPage';
 import UserManagement from './pages/UserManagement';
 import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';
@@ -33,6 +34,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<LoginPage />} />
 
           <Route path="/my-ingredients" element={<MyIngredientsPage />} />
+          <Route path="/new-ingredients" element={<NewIngredientsPage />} />
           <Route path="/chatbot" element={<ChatBotPage />} />
           <Route path="/settings" element={<SettingsPage />} />
 

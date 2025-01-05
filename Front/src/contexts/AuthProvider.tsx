@@ -41,7 +41,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       if (role === 'ADMIN') {
         navigate('/admin');
       } else {
-        navigate('/my-ingredients');
+        navigate('/new-ingredients');
       }
     } catch (error) {
       console.error('로그인 실패:', error);
