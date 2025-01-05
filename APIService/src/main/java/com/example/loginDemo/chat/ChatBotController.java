@@ -54,7 +54,7 @@ public class ChatBotController {
         }
     }
 
-    //모든 메세지 조회
+    // GET: 모든 대화 기록 조회
     @GetMapping("/messages")
     public ResponseEntity<List<Map<String, String>>> getMessageHistory() {
         return ResponseEntity.ok(messageHistory);
