@@ -4,7 +4,7 @@ import React from 'react';
 import Modal from '../../components/molecules/FullScreenOverlay';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
-import { detectObjectsInImage } from '../../services/DetectionApi';
+import { detectObjectsInImage } from '../../services/YOLOApi';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
@@ -58,10 +58,6 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
       alert('탐지 중 오류가 발생했습니다.');
       setState((prevState) => ({ ...prevState, loading: false }));
     }
-
-    const blob = new Blob([state.selectedFile], { type: state.selectedFile?.type });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank'); // 이미지를 새 탭에서 확인
   };
 
   if (!isOpen) {

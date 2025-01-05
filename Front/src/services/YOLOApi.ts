@@ -1,4 +1,4 @@
-// src/services/DetectionApi.ts
+// src/services/YOLOApi.ts
 import { api, getAuthHeaders } from './Api';
 
 export const detectObjectsInImage = async (file: File): Promise<any> => {
@@ -17,7 +17,7 @@ export const detectObjectsInImage = async (file: File): Promise<any> => {
 
         const response = await api.post('/items/detection', formData, { headers });
         console.log('[Detection API] 서버 응답 성공:', response.data);
-        return response.data; // 서버 응답을 그대로 반환
+        return response.data;
     } catch (error: any) {
         console.error('[Detection API] 이미지 탐지 요청 중 오류 발생:', error.response?.status, error.response?.data || error.message);
         throw new Error('이미지 탐지 실패. 서버와 연결에 문제가 있을 수 있습니다.');
