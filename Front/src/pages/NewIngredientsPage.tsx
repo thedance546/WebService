@@ -10,7 +10,6 @@ import LoadingModal from "../components/organisms/LoadingModal";
 import { usePopupState } from "../hooks/usePopupState";
 import CategoryTabs from "../features/NewIngredients/CategoryTabs";
 import IngredientCard from "../features/NewIngredients/IngredientCard";
-import AddIngredientButton from "../features/NewIngredients/AddIngredientButton";
 
 const NewIngredientsPage: React.FC = () => {
   const ingredientModal = usePopupState<{ selectedFile: File | null }>({ selectedFile: null });
@@ -35,6 +34,11 @@ const NewIngredientsPage: React.FC = () => {
   const handleAddIngredient = (newIngredients: Ingredient[]) => {
     setIngredients((prev) => [...prev, ...newIngredients]);
     recognitionModal.close();
+  };
+
+  const handleCardClick = (ingredient: Ingredient) => {
+    editModal.setState(ingredient);
+    editModal.open();
   };
 
   const handleSave = (updatedIngredient: Ingredient) => {
@@ -72,7 +76,16 @@ const NewIngredientsPage: React.FC = () => {
   return (
     <div className="container-fluid px-0" style={{ paddingBottom: "var(--navbar-height)" }}>
       <h2 className="text-center my-4">나의 식재료</h2>
-      <CategoryTabs categories={categories} activeTab={activeTab} onTabClick={setActiveTab} />
+
+      {/* 상단 탭 메뉴 및 등록 버튼 */}
+      <CategoryTabs
+        categories={categories}
+        activeTab={activeTab}
+        onTabClick={setActiveTab}
+        onAddClick={ingredientModal.open}
+      />
+
+      {/* 식재료 카드 리스트 */}
       <div
         className="container"
         style={{
@@ -81,12 +94,19 @@ const NewIngredientsPage: React.FC = () => {
           gap: "1rem",
         }}
       >
-        <AddIngredientButton onClick={ingredientModal.open} />
-        {filteredIngredients.map((ingredient) => (
-          <IngredientCard key={ingredient.ingredientId} ingredient={ingredient} onClick={() => editModal.setState(ingredient)} />
+        {ingredients.map((ingredient) => (
+          <IngredientCard
+            key={ingredient.ingredientId}
+            ingredient={ingredient}
+            onClick={() => handleCardClick(ingredient)}
+          />
         ))}
       </div>
+
+      {/* 로딩 모달 */}
       {loading && <LoadingModal />}
+
+      {/* 식재료 추가 모달 */}
       {ingredientModal.isOpen && (
         <IngredientModal
           onConfirm={handleUploadConfirm}
@@ -97,6 +117,8 @@ const NewIngredientsPage: React.FC = () => {
           }
         />
       )}
+
+      {/* 인식 결과 모달 */}
       {recognitionModal.isOpen && (
         <RecognitionResultModal
           resultList={recognitionModal.state.resultList}
@@ -104,14 +126,16 @@ const NewIngredientsPage: React.FC = () => {
           onClose={recognitionModal.close}
         />
       )}
+
+      {/* 수정 모달 */}
       {editModal.isOpen && editModal.state && (
         <EditIngredientModal
           row={{
             name: editModal.state.name,
             quantity: editModal.state.quantity,
-            category: "카테고리 ID " + editModal.state.categoryId,
-            storage: `보관 ID: ${editModal.state.storageMethodId}`,
-            purchaseDate: editModal.state.purchaseDate || "",
+            category: `카테고리 ID: ${editModal.state.categoryId}`,
+            storage: `보관 방법 ID: ${editModal.state.storageMethodId}`,
+            purchaseDate: editModal.state.purchaseDate || "", // undefined인 경우 빈 문자열로 처리
           }}
           onSave={(updatedRow) =>
             handleSave({
@@ -124,6 +148,7 @@ const NewIngredientsPage: React.FC = () => {
           onCancel={editModal.close}
         />
       )}
+
       <HomeNavBar />
     </div>
   );

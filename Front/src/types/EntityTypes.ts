@@ -39,5 +39,5 @@ export interface Ingredient {
     consumeBy?: number;
     categoryId?: number;
     storageMethodId?: number;
-    purchaseDate?: string; // 구매일자 필드 추가
+    purchaseDate?: string;
 }
