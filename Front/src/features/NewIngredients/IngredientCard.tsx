@@ -17,6 +17,10 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
       borderRadius: "8px",
       textAlign: "center",
       cursor: "pointer",
+      width: "200px", // 고정 너비
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap", // 줄바꿈 방지
     }}
     onClick={onClick}
   >
@@ -27,6 +31,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
       <strong>D-day:</strong> {ingredient.purchaseDate}
     </p>
   </div>
+
 );
 
 export default IngredientCard;

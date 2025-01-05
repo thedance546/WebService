@@ -1,5 +1,3 @@
-// src/pages/NewIngredientsPage.tsx
-
 import React, { useState } from "react";
 import HomeNavBar from "../components/organisms/HomeNavBar";
 import { Ingredient } from "../types/EntityTypes";
@@ -26,6 +24,7 @@ const NewIngredientsPage: React.FC = () => {
   const categories = ["전체", "채소", "가공식품"];
   const [activeTab, setActiveTab] = useState<string>("전체");
 
+  // 필터링된 식재료
   const filteredIngredients =
     activeTab === "전체"
       ? ingredients
@@ -90,11 +89,11 @@ const NewIngredientsPage: React.FC = () => {
         className="container"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", // 최소 200px 크기 고정
           gap: "1rem",
         }}
       >
-        {ingredients.map((ingredient) => (
+        {filteredIngredients.map((ingredient) => (
           <IngredientCard
             key={ingredient.ingredientId}
             ingredient={ingredient}
@@ -135,7 +134,7 @@ const NewIngredientsPage: React.FC = () => {
             quantity: editModal.state.quantity,
             category: `카테고리 ID: ${editModal.state.categoryId}`,
             storage: `보관 방법 ID: ${editModal.state.storageMethodId}`,
-            purchaseDate: editModal.state.purchaseDate || "", // undefined인 경우 빈 문자열로 처리
+            purchaseDate: editModal.state.purchaseDate || "",
           }}
           onSave={(updatedRow) =>
             handleSave({
