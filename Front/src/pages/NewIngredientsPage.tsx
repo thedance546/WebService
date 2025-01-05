@@ -1,11 +1,15 @@
+// src/pages/NewIngredientsPage.tsx
+
 import React, { useState } from "react";
 import HomeNavBar from "../components/organisms/HomeNavBar";
 import { Ingredient } from "../types/EntityTypes";
 import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
+import IngredientModal from "../features/MyIngredients/IngredientModal";
+import { usePopupState } from "../hooks/usePopupState";
 
-const EnhancedIngredientsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>("전체");
-  const [editingIngredient, setEditingIngredient] = useState<Ingredient | null>(null);
+const NewIngredientsPage: React.FC = () => {
+  const ingredientModal = usePopupState<{ selectedFile: File | null }>({ selectedFile: null });
+  const editModal = usePopupState<Ingredient | null>(null);
 
   // 예시 데이터
   const [ingredients, setIngredients] = useState<Ingredient[]>([
@@ -16,21 +20,9 @@ const EnhancedIngredientsPage: React.FC = () => {
 
   const categories = ["전체", "채소", "가공식품"];
 
-  const filteredIngredients =
-    activeTab === "전체"
-      ? ingredients
-      : ingredients.filter((item) =>
-          categories.findIndex((cat) => cat === activeTab) === item.categoryId
-        );
-
-  const calculateDDay = (purchaseDate: string, shelfLife: number): string => {
-    const purchase = new Date(purchaseDate);
-    const today = new Date();
-    const expiry = new Date(purchase);
-    expiry.setDate(purchase.getDate() + shelfLife);
-
-    const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 ? `D-${diffDays}` : `D+${Math.abs(diffDays)}`;
+  const handleAddIngredient = (newIngredients: Ingredient[]) => {
+    setIngredients((prev) => [...prev, ...newIngredients]);
+    ingredientModal.close();
   };
 
   const handleSave = (updatedIngredient: Ingredient) => {
@@ -41,7 +33,7 @@ const EnhancedIngredientsPage: React.FC = () => {
           : ingredient
       )
     );
-    setEditingIngredient(null);
+    editModal.close();
   };
 
   return (
@@ -58,8 +50,8 @@ const EnhancedIngredientsPage: React.FC = () => {
         {categories.map((category) => (
           <button
             key={category}
-            className={`btn btn-${activeTab === category ? "primary" : "outline-primary"} mx-1 mb-2`}
-            onClick={() => setActiveTab(category)}
+            className={`btn btn-${category === "전체" ? "primary" : "outline-primary"} mx-1 mb-2`}
+            onClick={() => {}}
           >
             {category}
           </button>
@@ -75,7 +67,24 @@ const EnhancedIngredientsPage: React.FC = () => {
           gap: "1rem",
         }}
       >
-        {filteredIngredients.map((ingredient) => (
+        {/* 등록 버튼 */}
+        <div
+          className="card text-center"
+          style={{
+            padding: "1rem",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            borderRadius: "8px",
+            cursor: "pointer",
+            color: "green",
+            fontWeight: "bold",
+          }}
+          onClick={() => ingredientModal.open()}
+        >
+          + 식재료 등록
+        </div>
+
+        {/* 데이터 카드 */}
+        {ingredients.map((ingredient) => (
           <div
             key={ingredient.ingredientId}
             className="card"
@@ -86,44 +95,68 @@ const EnhancedIngredientsPage: React.FC = () => {
               textAlign: "center",
               cursor: "pointer",
             }}
-            onClick={() => setEditingIngredient(ingredient)}
+            onClick={() => editModal.setState(ingredient)}
           >
             <h5 className="card-title">{ingredient.name}</h5>
             <p>
               <strong>수량:</strong> {ingredient.quantity}
               <br />
-              <strong>D-day:</strong> {calculateDDay(ingredient.purchaseDate || "", ingredient.shelfLife || 0)}
+              <strong>D-day:</strong> {ingredient.purchaseDate}
             </p>
           </div>
         ))}
       </div>
 
+      {/* 등록 모달 */}
+      {ingredientModal.isOpen && (
+        <IngredientModal
+          onConfirm={(file) => {
+            handleAddIngredient([
+              {
+                ingredientId: Date.now(),
+                name: "등록된 식재료",
+                categoryId: 1,
+                storageMethodId: 1,
+                quantity: 1,
+                shelfLife: 7,
+                consumeBy: 14,
+                purchaseDate: new Date().toISOString().split("T")[0],
+              },
+            ]);
+          }}
+          onCancel={ingredientModal.close}
+          selectedFile={ingredientModal.state.selectedFile}
+          fileChangeHandler={(file) =>
+            ingredientModal.setState({ ...ingredientModal.state, selectedFile: file })
+          }
+        />
+      )}
+
       {/* 수정 모달 */}
-      {editingIngredient && (
+      {editModal.isOpen && editModal.state && (
         <EditIngredientModal
           row={{
-            name: editingIngredient.name,
-            quantity: editingIngredient.quantity,
-            category: categories[editingIngredient.categoryId || 0],
-            storage: `보관 ID: ${editingIngredient.storageMethodId}`,
-            purchaseDate: editingIngredient.purchaseDate || "",
+            name: editModal.state.name,
+            quantity: editModal.state.quantity,
+            category: categories[editModal.state.categoryId || 0],
+            storage: `보관 ID: ${editModal.state.storageMethodId}`,
+            purchaseDate: editModal.state.purchaseDate || "",
           }}
           onSave={(updatedRow) =>
             handleSave({
-              ...editingIngredient,
+              ...editModal.state!,
               name: updatedRow.name,
               quantity: updatedRow.quantity,
-              categoryId: categories.findIndex((cat) => cat === updatedRow.category),
-              storageMethodId: parseInt(updatedRow.storage.split(":")[1]) || 1,
               purchaseDate: updatedRow.purchaseDate,
             })
           }
-          onCancel={() => setEditingIngredient(null)}
+          onCancel={editModal.close}
         />
       )}
+
       <HomeNavBar />
     </div>
   );
 };
 
-export default EnhancedIngredientsPage;
+export default NewIngredientsPage;
