@@ -51,8 +51,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
-        // 예외 발생 시 JSON 형식으로 메시지 리턴
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("{\"message\": \"" + ex.getMessage() + "\"}");
+    }
+
+    // Flask 서버와의 통신 예외 처리
+    @ExceptionHandler(FlaskCommunicationException.class)
+    public ResponseEntity<Map<String, String>> handleFlaskCommunicationException(FlaskCommunicationException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", "Flask 서버와의 통신 중 오류 발생: " + ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_GATEWAY);
+    }
+
+    // 404 Not Found 예외 처리
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

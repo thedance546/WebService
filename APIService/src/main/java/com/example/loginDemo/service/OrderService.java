@@ -66,4 +66,10 @@ public class OrderService {
         List<OrderItem> orderItems = orderItemRepository.findAll();
         return orderItems;
     }
+
+    // 페이징 처리된 모든 주문 조회
+
+
+    // 페이징 처리된 모든 주문 아이템 조회
+
 }

@@ -42,31 +42,10 @@ public class YoloController {
     );
 
     //receipt
-    @PostMapping("/receipts/analysis")
+    @PostMapping("/receipts")
     public ResponseEntity<Map<String, Object>> processImage(@RequestParam("image") MultipartFile imageFile) {
         try {
-            Map<String, Object> response = yoloService.processImage(imageFile);
-
-            // 품목 리스트를 가져온다.
-            List<String> items = (List<String>) response.get("품목");
-
-            // ITEMS_TO_CHECK에 해당하는 품목을 찾는다.
-            Set<String> matchedItemsSet = new HashSet<>();
-            for (String item : items) {
-                for (String checkItem : ITEMS_TO_CHECK) {
-                    if (item.contains(checkItem)) {
-                        matchedItemsSet.add(checkItem);
-                    }
-                }
-            }
-
-            // 일치하는 품목이 있다면 matchedItemsSet에 담겨있다.
-            if (!matchedItemsSet.isEmpty()) {
-                response.put("matchedItems", new ArrayList<>(matchedItemsSet)); // Set을 List로 변환하여 추가
-            } else {
-                response.put("matchedItems", "No matched items");
-            }
-
+            Map<String, Object> response = yoloService.processReceiptImage(imageFile);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             return ResponseEntity.status(500).body(Map.of("error", "Failed to process image"));
