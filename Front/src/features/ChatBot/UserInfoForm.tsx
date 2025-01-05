@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Input from '../../components/atoms/Input';
-import PromptGenerator from './PromptGenerator';
 import { UserInfoFormProps } from '../../types/FeatureTypes';
 import UserInputLists from '../../constants/customUserInputLists';
 import CheckBoxGroupCard from '../../components/molecules/CheckBoxGroupCard';
@@ -100,7 +99,6 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ formData, setFormData }) =>
           </div>
         </div>
       </Grid>
-      <PromptGenerator formData={formData} />
     </div>
   );
 };

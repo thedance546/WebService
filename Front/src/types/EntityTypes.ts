@@ -2,19 +2,26 @@
 
 export interface Category {
     id: number;
-    name: string;
+    categoryName: string;
 }
 
 export interface StorageMethod {
     id: number;
-    name: string;
+    storageMethodName: string;
+}
+
+export interface ShelfLife {
+    id: number;
+    sellByDays: number;
+    useByDays: number;
 }
 
 export interface Item {
     id: number;
-    name: string;
+    itemName: string;
     category?: Category;
     storageMethod?: StorageMethod;
+    shelfLife?: ShelfLife;
 }
 
 export interface User {

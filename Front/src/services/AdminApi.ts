@@ -1,16 +1,20 @@
+// src/services/AdminApi.ts
+
 import { api, getAuthHeaders } from './Api';
 import { handleApiError } from '../utils/Utils';
-import { Category, StorageMethod, Ingredient } from '../types/EntityTypes';
+import { Category, StorageMethod, Item } from '../types/EntityTypes';
 
 // 카테고리 관련 API
 export const fetchCategories = async (): Promise<Category[]> => {
   try {
+    console.log("카테고리 데이터 요청 시작");
     const response = await api.get<Category[]>('/items/categories', {
       headers: getAuthHeaders('Bearer'),
     });
+    console.log("카테고리 데이터 로드 성공:", response.data);
     return response.data.map((data: any) => ({
       id: Number(data.id),
-      name: data.name,
+      categoryName: data.categoryName,
     }));
   } catch (error: any) {
     throw handleApiError(error, '카테고리 데이터를 불러오는 중 오류 발생');
@@ -29,7 +33,7 @@ export const createCategory = async (categoryName: string): Promise<Category> =>
     );
     return {
       id: Number(response.data.id),
-      name: response.data.name,
+      categoryName: response.data.categoryName,
     };
   } catch (error: any) {
     console.error("Error creating category:", error.response || error);
@@ -50,12 +54,14 @@ export const deleteCategory = async (categoryId: number): Promise<void> => {
 // 보관 방법 관련 API
 export const fetchStorageMethods = async (): Promise<StorageMethod[]> => {
   try {
+    console.log("저장방법 데이터 요청 시작");
     const response = await api.get<StorageMethod[]>('/items/storage-methods', {
       headers: getAuthHeaders('Bearer'),
     });
+    console.log("저장방법 데이터 로드 성공:", response.data);
     return response.data.map((data: any) => ({
       id: Number(data.id),
-      name: data.name,
+      storageMethodName: data.storageMethodName,
     }));
   } catch (error: any) {
     throw handleApiError(error, '보관 방법 데이터를 불러오는 중 오류 발생');
@@ -67,14 +73,14 @@ export const createStorageMethod = async (methodName: string): Promise<StorageMe
     console.log("Authorization Header (Storage Method):", getAuthHeaders("Bearer"));
     const response = await api.post<StorageMethod>(
       "/items/storage-method",
-      { storageMethodName: methodName }, // 수정된 부분
+      { storageMethodName: methodName },
       {
         headers: getAuthHeaders("Bearer"),
       }
     );
     return {
       id: Number(response.data.id),
-      name: response.data.name,
+      storageMethodName: response.data.storageMethodName,
     };
   } catch (error: any) {
     console.error("Error creating storage method:", error.response || error);
@@ -93,57 +99,82 @@ export const deleteStorageMethod = async (methodId: number): Promise<void> => {
 };
 
 // 식재료 관련 API
-export const fetchIngredients = async (): Promise<Ingredient[]> => {
+export const fetchItems = async (): Promise<Item[]> => {
   try {
+    console.log("아이템 데이터 요청 시작");
     const response = await api.get('/items', {
       headers: getAuthHeaders('Bearer'),
     });
+    console.log("아이템 데이터 로드 성공:", response.data);
 
-    return response.data.map((data: any): Ingredient => ({
-      ingredientId: data.id,
-      name: data.name,
-      categoryId: data.category?.id || 0,
-      storageMethodId: data.storageMethod?.id || 0,
-      quantity: data.quantity || 0,
+    return response.data.map((data: any): Item => ({
+      id: data.id,
+      itemName: data.itemName,
+      category: data.category ? { id: data.category.id, categoryName: data.category.categoryName } : undefined,
+      storageMethod: data.storageMethod
+        ? { id: data.storageMethod.id, storageMethodName: data.storageMethod.storageMethodName }
+        : undefined,
     }));
   } catch (error: any) {
-    throw handleApiError(error, '식재료 데이터를 불러오는 중 오류 발생');
+    throw handleApiError(error, '아이템 데이터를 불러오는 중 오류 발생');
   }
 };
 
-export const createIngredient = async (ingredient: Partial<Ingredient>): Promise<Ingredient> => {
+export const createItem = async (item: {
+  itemName: string;
+  categoryName: string;
+  storageMethodName: string;
+  shelfLife: { sellByDays: number; useByDays: number };
+}): Promise<Item> => {
   try {
+    console.log("아이템 생성 요청 데이터:", item);
+
     const response = await api.post(
       '/items/item',
       {
-        name: ingredient.name,
-        categoryId: ingredient.categoryId,
-        storageMethodId: ingredient.storageMethodId,
-        quantity: ingredient.quantity,
+        itemName: item.itemName,
+        categoryName: item.categoryName,
+        storageMethodName: item.storageMethodName,
+        shelfLife: item.shelfLife,
       },
       {
         headers: getAuthHeaders('Bearer'),
       },
     );
 
-    return {
-      ingredientId: response.data.id,
-      name: response.data.name,
-      categoryId: response.data.categoryId,
-      storageMethodId: response.data.storageMethodId,
-      quantity: response.data.quantity,
+    console.log("아이템 생성 응답 데이터:", response.data);
+
+    const newItem: Item = {
+      id: response.data.id,
+      itemName: response.data.itemName || "N/A",
+      category: response.data.category
+        ? { id: response.data.category.id, categoryName: response.data.category.categoryName }
+        : { id: 0, categoryName: "N/A" },
+      storageMethod: response.data.storageMethod
+        ? { id: response.data.storageMethod.id, storageMethodName: response.data.storageMethod.storageMethodName }
+        : { id: 0, storageMethodName: "N/A" },
+      shelfLife: response.data.shelfLife
+        ? {
+            id: response.data.shelfLife.id,
+            sellByDays: response.data.shelfLife.sellByDays,
+            useByDays: response.data.shelfLife.useByDays,
+          }
+        : { id: 0, sellByDays: 0, useByDays: 0 },
     };
+
+    return newItem;
   } catch (error: any) {
-    throw handleApiError(error, '식재료 생성 중 오류 발생');
+    console.error("아이템 생성 중 오류 발생:", error.response?.data || error.message);
+    throw handleApiError(error, '아이템 생성 중 오류 발생');
   }
 };
 
-export const deleteIngredient = async (ingredientId: number): Promise<void> => {
+export const deleteItem = async (itemId: number): Promise<void> => {
   try {
-    await api.delete(`/items/${ingredientId}`, {
+    await api.delete(`/items/${itemId}`, {
       headers: getAuthHeaders('Bearer'),
     });
   } catch (error: any) {
-    throw handleApiError(error, '식재료 삭제 중 오류 발생');
+    throw handleApiError(error, '아이템 삭제 중 오류 발생');
   }
 };

@@ -1,6 +1,6 @@
 // src/contexts/AdminContext.tsx
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import {
   fetchCategories as apiFetchCategories,
   createCategory as apiCreateCategory,
@@ -8,25 +8,28 @@ import {
   fetchStorageMethods as apiFetchStorageMethods,
   createStorageMethod as apiCreateStorageMethod,
   deleteStorageMethod as apiDeleteStorageMethod,
-  fetchIngredients as apiFetchIngredients,
-  createIngredient as apiCreateIngredient,
-  deleteIngredient as apiDeleteIngredient,
+  fetchItems as apiFetchItems,
+  createItem as apiCreateItem,
+  deleteItem as apiDeleteItem,
 } from '../services/AdminApi';
-import { Category, StorageMethod, Ingredient } from '../types/EntityTypes';
+import { Category, StorageMethod, Item } from '../types/EntityTypes';
 
 interface AdminContextType {
   categories: Category[];
   storageMethods: StorageMethod[];
-  ingredients: Ingredient[];
+  items: Item[];
   loading: boolean;
   error: string | null;
   fetchAllData: () => void;
+  fetchCategories: () => void;
+  fetchStorageMethods: () => void;
+  fetchItems: () => void;
   addCategory: (name: string) => void;
   deleteCategory: (id: number) => void;
   addStorageMethod: (name: string) => void;
   deleteStorageMethod: (id: number) => void;
-  addIngredient: (ingredient: Partial<Ingredient>) => void;
-  deleteIngredient: (id: number) => void;
+  addItem: (item: Item) => void;
+  deleteItem: (id: number) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -34,28 +37,79 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [storageMethods, setStorageMethods] = useState<StorageMethod[]>([]);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCategoriesFetched, setIsCategoriesFetched] = useState(false);
+  const [isStorageMethodsFetched, setIsStorageMethodsFetched] = useState(false);
+  const [isItemsFetched, setIsItemsFetched] = useState(false);
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
-      const [fetchedCategories, fetchedStorageMethods, fetchedIngredients] = await Promise.all([
-        apiFetchCategories(),
-        apiFetchStorageMethods(),
-        apiFetchIngredients(),
-      ]);
-      setCategories(fetchedCategories);
-      setStorageMethods(fetchedStorageMethods);
-      setIngredients(fetchedIngredients);
-      setError(null);
+      if (!isCategoriesFetched) {
+        const fetchedCategories = await apiFetchCategories();
+        setCategories(fetchedCategories);
+        setIsCategoriesFetched(true);
+      }
+      if (!isStorageMethodsFetched) {
+        const fetchedStorageMethods = await apiFetchStorageMethods();
+        setStorageMethods(fetchedStorageMethods);
+        setIsStorageMethodsFetched(true);
+      }
+      if (!isItemsFetched) {
+        const fetchedItems = await apiFetchItems();
+        setItems(fetchedItems);
+        setIsItemsFetched(true);
+      }
     } catch (err: any) {
       setError('데이터를 불러오는 중 오류 발생');
     } finally {
       setLoading(false);
     }
-  };
+  }, [isCategoriesFetched, isStorageMethodsFetched, isItemsFetched]);
+
+  const fetchCategories = useCallback(async () => {
+    if (isCategoriesFetched) return;
+    setLoading(true);
+    try {
+      const fetchedCategories = await apiFetchCategories();
+      setCategories(fetchedCategories);
+      setIsCategoriesFetched(true);
+    } catch (err: any) {
+      setError('카테고리를 불러오는 중 오류 발생');
+    } finally {
+      setLoading(false);
+    }
+  }, [isCategoriesFetched]);
+
+  const fetchStorageMethods = useCallback(async () => {
+    if (isStorageMethodsFetched) return;
+    setLoading(true);
+    try {
+      const fetchedStorageMethods = await apiFetchStorageMethods();
+      setStorageMethods(fetchedStorageMethods);
+      setIsStorageMethodsFetched(true);
+    } catch (err: any) {
+      setError('보관 방법을 불러오는 중 오류 발생');
+    } finally {
+      setLoading(false);
+    }
+  }, [isStorageMethodsFetched]);
+
+  const fetchItems = useCallback(async () => {
+    if (isItemsFetched) return;
+    setLoading(true);
+    try {
+      const fetchedItems = await apiFetchItems();
+      setItems(fetchedItems);
+      setIsItemsFetched(true);
+    } catch (err: any) {
+      setError('아이템을 불러오는 중 오류 발생');
+    } finally {
+      setLoading(false);
+    }
+  }, [isItemsFetched]);
 
   const addCategory = async (name: string) => {
     setLoading(true);
@@ -105,25 +159,32 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const addIngredient = async (ingredient: Partial<Ingredient>) => {
+  const addItem = async (item: Item) => {
     setLoading(true);
     try {
-      const newIngredient = await apiCreateIngredient(ingredient);
-      setIngredients((prev) => [...prev, newIngredient]);
+      const newItem = await apiCreateItem({
+        itemName: item.itemName,
+        categoryName: item.category?.categoryName || '',
+        storageMethodName: item.storageMethod?.storageMethodName || '',
+        shelfLife: item.shelfLife || { sellByDays: 0, useByDays: 0 },
+      });
+  
+      setItems((prev) => [...prev, newItem]);
+      console.log("아이템 추가됨:", newItem);
     } catch (err: any) {
       setError(`식재료를 추가하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
-  const deleteIngredient = async (id: number) => {
+  const deleteItem = async (id: number) => {
     setLoading(true);
     try {
-      await apiDeleteIngredient(id);
-      setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== id));
+      await apiDeleteItem(id);
+      setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (err: any) {
-      setError(`식재료를 삭제하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
+      setError(`아이템을 삭제하는 중 오류 발생: ${err.message || '알 수 없는 오류'}`);
     } finally {
       setLoading(false);
     }
@@ -131,23 +192,26 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [fetchAllData]);
 
   return (
     <AdminContext.Provider
       value={{
         categories,
         storageMethods,
-        ingredients,
+        items,
         loading,
         error,
         fetchAllData,
+        fetchCategories,
+        fetchStorageMethods,
+        fetchItems,
         addCategory,
         deleteCategory,
         addStorageMethod,
         deleteStorageMethod,
-        addIngredient,
-        deleteIngredient,
+        addItem,
+        deleteItem,
       }}
     >
       {children}

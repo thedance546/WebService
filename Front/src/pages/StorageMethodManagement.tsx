@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+// src/pages/StorageMethodManagement.tsx
+
+import React, { useState, useEffect } from 'react';
 import { useAdminContext } from '../contexts/AdminContext';
 import { Container, Form, Button, Table } from 'react-bootstrap';
 import AdminNavBar from '../features/Admin/AdminNavBar';
 
 const StorageMethodManagement: React.FC = () => {
-  const { storageMethods, addStorageMethod, deleteStorageMethod, fetchAllData, loading, error } = useAdminContext();
+  const { storageMethods, addStorageMethod, deleteStorageMethod, fetchStorageMethods, loading, error } =
+    useAdminContext();
   const [newStorageMethodName, setNewStorageMethodName] = useState<string>("");
+
+  useEffect(() => {
+    fetchStorageMethods();
+  }, [fetchStorageMethods]);
 
   const handleAdd = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -14,12 +21,10 @@ const StorageMethodManagement: React.FC = () => {
     }
     await addStorageMethod(newStorageMethodName);
     setNewStorageMethodName("");
-    await fetchAllData(); // 데이터 다시 로드
   };
 
   const handleDelete = async (id: number) => {
     await deleteStorageMethod(id);
-    await fetchAllData(); // 데이터 다시 로드
   };
 
   return (
@@ -55,7 +60,7 @@ const StorageMethodManagement: React.FC = () => {
             {storageMethods.map((method) => (
               <tr key={method.id}>
                 <td>{method.id}</td>
-                <td>{method.name}</td>
+                <td>{method.storageMethodName}</td>
                 <td>
                   <Button variant="danger" onClick={() => handleDelete(method.id)}>
                     삭제

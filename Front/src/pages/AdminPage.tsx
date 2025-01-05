@@ -7,14 +7,13 @@ import { useAdminContext } from "../contexts/AdminContext";
 import LoadingModal from "../components/organisms/LoadingModal";
 
 const AdminPage: React.FC = () => {
-  const { categories, storageMethods, ingredients, loading, error } = useAdminContext();
+  const { categories, storageMethods, items, loading, error } = useAdminContext();
 
   return (
     <>
       <AdminNavBar />
       {loading && <LoadingModal />}
       <Container className="admin-content">
-        <h2>Admin Dashboard</h2>
         {error ? (
           <p className="text-danger">{error}</p>
         ) : (
@@ -30,11 +29,11 @@ const AdminPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {ingredients.map((ingredient) => (
-                    <tr key={ingredient.ingredientId}>
-                      <td>{ingredient.name}</td>
-                      <td>{ingredient.categoryId}</td>
-                      <td>{ingredient.storageMethodId}</td>
+                  {items.map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.itemName}</td>
+                      <td>{item.category?.categoryName || "N/A"}</td>
+                      <td>{item.storageMethod?.storageMethodName || "N/A"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -51,7 +50,7 @@ const AdminPage: React.FC = () => {
                 <tbody>
                   {categories.map((category) => (
                     <tr key={category.id}>
-                      <td>{category.name}</td>
+                      <td>{category.categoryName}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -68,7 +67,7 @@ const AdminPage: React.FC = () => {
                 <tbody>
                   {storageMethods.map((method) => (
                     <tr key={method.id}>
-                      <td>{method.name}</td>
+                      <td>{method.storageMethodName}</td>
                     </tr>
                   ))}
                 </tbody>
