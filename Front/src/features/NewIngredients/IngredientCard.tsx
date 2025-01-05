@@ -1,41 +1,32 @@
 // src/features/NewIngredients/IngredientCard.tsx
 
 import React from "react";
+import { Ingredient } from "../../types/EntityTypes";
 
 interface IngredientCardProps {
-  ingredient: {
-    name: string;
-    category: string;
-    storage: string;
-    shelfLife: number;
-    consumeBy: number;
-  };
+  ingredient: Ingredient;
   onClick: () => void;
 }
 
-const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) => {
-  return (
-    <div
-      className="card m-2"
-      style={{
-        width: "18rem",
-        cursor: "pointer",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-      }}
-      onClick={onClick}
-    >
-      <div className="card-body">
-        <h5 className="card-title">{ingredient.name}</h5>
-        <p className="card-text">
-          <strong>카테고리:</strong> {ingredient.category}
-          <br />
-          <strong>보관:</strong> {ingredient.storage}
-          <br />
-          <strong>소비기한:</strong> {ingredient.consumeBy}일
-        </p>
-      </div>
-    </div>
-  );
-};
+const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) => (
+  <div
+    className="card"
+    style={{
+      padding: "1rem",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      borderRadius: "8px",
+      textAlign: "center",
+      cursor: "pointer",
+    }}
+    onClick={onClick}
+  >
+    <h5 className="card-title">{ingredient.name}</h5>
+    <p>
+      <strong>수량:</strong> {ingredient.quantity}
+      <br />
+      <strong>D-day:</strong> {ingredient.purchaseDate}
+    </p>
+  </div>
+);
 
 export default IngredientCard;
