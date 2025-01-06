@@ -19,8 +19,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatBotController {
 
-    private static final String LLM_URL = "http://llm-container:5002/ask";
-//    private static final String LLM_URL = "http://llm_test:5003/ask";
+//    private static final String LLM_URL = "http://llm-container:5002/ask";
+    private static final String LLM_URL = "http://llm_test:5003/ask";
 //    private static final String LLM_URL = "http://localhost:5002/ask";
     private final ChatBotService chatBotService;
 
