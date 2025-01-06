@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,36 +22,22 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/order")
-    public ResponseEntity<?> createOrder(@AuthenticationPrincipal User user, @RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<?> createOrder(@RequestHeader("Authorization") String accessToken,@RequestBody OrderRequest orderRequest) {
         try {
-            orderRequest.setUserId(user.getId());
-            orderService.createOrder(orderRequest);
+            // 주문 생성
+            var order = orderService.createOrder(orderRequest);
 
-            return ResponseEntity.ok("Order created successfully!");
+            // 생성된 주문을 응답으로 반환
+            return new ResponseEntity<>(order, HttpStatus.CREATED);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            // 예외 발생 시 오류 메시지 반환
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
-    // 모든 주문 조회
+    // 모든 주문 조회 API
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        try {
-            List<Order> orders = orderService.getAllOrders();
-            return ResponseEntity.ok(orders);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    // 모든 주문 아이템 조회
-    @GetMapping("/items")
-    public ResponseEntity<List<OrderItem>> getAllOrderItems() {
-        try {
-            List<OrderItem> orderItems = orderService.getAllOrderItems();
-            return ResponseEntity.ok(orderItems);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public List<Order> getAllOrders(@RequestHeader("Authorization") String accessToken) {
+        return orderService.getAllOrders();
     }
 }

@@ -9,13 +9,6 @@ import java.util.List;
 
 @Data
 public class OrderRequest {
-    private Long userId;
     private LocalDate orderDate;
     private List<OrderItemRequest> orderItems;
-
-    @Data
-    public static class OrderItemRequest {
-        private String itemName;
-        private int count;
-    }
 }

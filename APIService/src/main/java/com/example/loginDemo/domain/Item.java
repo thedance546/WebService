@@ -7,7 +7,7 @@ import lombok.*;
 @Table(name = "items")
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,4 +36,12 @@ public class Item {
         this.shelfLife = shelfLife;
     }
 
+    public String getName() {
+        return itemName;
+    }
+
+    public Item setName(String name) {
+        this.itemName = name;
+        return this;
+    }
 }
