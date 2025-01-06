@@ -19,7 +19,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatBotController {
 
-    private static final String LLM_URL = "http://localhost:5002/ask";
+    private static final String LLM_URL = "http://llm-container:5002/ask";
+//    private static final String LLM_URL = "http://gpt-container:5003/ask";
+//    private static final String LLM_URL = "http://localhost:5002/ask";
     private final ChatBotService chatBotService;
 
     @PostMapping("/messages")
@@ -43,13 +45,11 @@ public class ChatBotController {
         HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
 
         try {
-            // Flask 서버로 요청 전송
             ResponseEntity<Map> response = restTemplate.postForEntity(LLM_URL, request, Map.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 String botResponse = response.getBody().get("response").toString();
 
-                // DB에 메시지 저장
                 chatBotService.saveMessage(request, response, user);
 
                 return Map.of("response", botResponse);

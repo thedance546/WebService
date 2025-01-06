@@ -17,8 +17,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class YoloService {
     private final RestTemplate restTemplate = new RestTemplate();
-    private final String Ingredient_URL = "http://localhost:5000/object-detection/object_detection";
-    private final String Receipt_URL = "http://localhost:5001/object-detection/ocr_detection";
+//    private final String Ingredient_URL = "http://localhost:5000/object-detection/object_detection";
+//    private final String Receipt_URL = "http://localhost:5001/object-detection/ocr_detection";
+    private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
+    private final String Receipt_URL = "http://receipt-container:5001/object-detection/ocr_detection";
+
 
     // ingredient
     public Map<String, String> detectObjects(MultipartFile imageFile) throws IOException {
