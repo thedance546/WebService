@@ -16,7 +16,7 @@ public class YoloController {
 
     //ingredient
     @PostMapping("/items/detection")
-    public ResponseEntity<Map<String, String>> detectObjects(@RequestHeader("Authorization") String accessToken, @RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<Map<String, String>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
         try {
             Map<String, String> detectionResults = yoloService.detectObjects(imageFile);
             return ResponseEntity.ok(detectionResults);
@@ -43,7 +43,7 @@ public class YoloController {
 
     //receipt
     @PostMapping("/receipts")
-    public ResponseEntity<Map<String, Object>> processImage(@RequestHeader("Authorization") String accessToken, @RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<Map<String, Object>> processImage(@RequestParam("image") MultipartFile imageFile) {
         try {
             Map<String, Object> response = yoloService.processReceiptImage(imageFile);
             return ResponseEntity.ok(response);
