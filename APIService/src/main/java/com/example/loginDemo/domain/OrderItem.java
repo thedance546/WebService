@@ -23,4 +23,8 @@ public class OrderItem {
 
     @Column(nullable = true)
     private int count;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)  // 외래 키만 존재
+    private Order order;
 }

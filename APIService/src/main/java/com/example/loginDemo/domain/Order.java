@@ -25,6 +25,10 @@ public class Order {
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false) // 외래 키 설정
+    private User user;
 }
