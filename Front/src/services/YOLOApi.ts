@@ -15,7 +15,7 @@ export const detectObjectsInImage = async (file: File): Promise<any> => {
         const headers = getAuthHeaders('Bearer');
         console.log('[Ingredients API] 헤더 정보:', headers);
 
-        const response = await api.post('/items/detection', formData, { headers });
+        const response = await api.post('/items/detection', formData); //, { headers });
         console.log('[Ingredients API] 서버 응답 성공:', response.data);
         return response.data;
     } catch (error: any) {
