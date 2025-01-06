@@ -1,5 +1,6 @@
 package com.example.loginDemo.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class OrderItem {
     private int count;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)  // 외래 키만 존재
+    @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference
     private Order order;
 }

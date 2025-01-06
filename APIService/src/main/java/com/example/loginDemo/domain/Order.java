@@ -1,6 +1,7 @@
 package com.example.loginDemo.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,9 +27,10 @@ public class Order {
     private LocalDate orderDate;
 
     @OneToMany(mappedBy = "order")
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true, updatable = false)
     private User user;
 }
