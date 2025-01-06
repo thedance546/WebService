@@ -1,3 +1,5 @@
+// src/pages/NewIngredientsPage.tsx
+
 import React, { useState } from "react";
 import HomeNavBar from "../components/organisms/HomeNavBar";
 import { Ingredient } from "../types/EntityTypes";
@@ -86,11 +88,12 @@ const NewIngredientsPage: React.FC = () => {
 
       {/* 식재료 카드 리스트 */}
       <div
-        className="container"
+        className="container justify-content-center"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", // 최소 200px 크기 고정
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
           gap: "1rem",
+          justifyContent: "center",
         }}
       >
         {filteredIngredients.map((ingredient) => (

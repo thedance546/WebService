@@ -12,15 +12,15 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
   <div
     className="card"
     style={{
+      width: "180px",
       padding: "1rem",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
       borderRadius: "8px",
-      textAlign: "center",
+      textAlign: "left",
       cursor: "pointer",
-      width: "200px", // 고정 너비
       overflow: "hidden",
       textOverflow: "ellipsis",
-      whiteSpace: "nowrap", // 줄바꿈 방지
+      whiteSpace: "nowrap",
     }}
     onClick={onClick}
   >
