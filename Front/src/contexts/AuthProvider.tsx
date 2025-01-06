@@ -32,6 +32,12 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       await refreshAccessToken();
 
       const accessToken = getAccessToken();
+
+      // Access Token이 null인 경우 처리
+      if (!accessToken) {
+        throw new Error('Access Token이 없습니다.');
+      }
+
       const { id, email: userEmail, role } = jwtDecode<DecodedToken>(accessToken);
 
       setIsAuthenticated(true);

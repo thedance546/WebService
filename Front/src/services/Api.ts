@@ -23,8 +23,19 @@ api.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error) => {
     const originalRequest: AxiosRequestConfig & { _retry?: boolean } = error.config;
+
+    // 401 에러 처리 로직
     if (error.response?.status === 401 && !originalRequest._retry) {
+      const accessToken = getAccessToken();
+
+      // 토큰이 없으면 갱신 시도 중단
+      if (!accessToken) {
+        console.warn("액세스 토큰 없음. 갱신 시도 중단.");
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
+
       try {
         const newToken = await refreshAccessToken();
         originalRequest.headers = {
@@ -33,10 +44,11 @@ api.interceptors.response.use(
         };
         return api(originalRequest);
       } catch (refreshError) {
-        console.error("갱신 실패로 요청을 종료합니다.");
+        console.error("토큰 갱신 실패. 재요청 중단.");
         return Promise.reject(refreshError);
       }
     }
+
     return Promise.reject(error);
   }
 );
