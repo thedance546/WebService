@@ -1,4 +1,4 @@
-// src/App.tsx
+// App.tsx
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -9,13 +9,12 @@ import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 
-import MyIngredientsPage from './pages/MyIngredientsPage';
 import ChatBotPage from './pages/ChatBotPage';
 import SettingsPage from './pages/SettingsPage';
+import MyIngredientsPage from './pages/MyIngredientsPage';
 
 import AdminPage from './pages/AdminPage';
-import IngredientsManagement from './pages/ItemManagement';
-import NewIngredientsPage from './pages/NewIngredientsPage';
+import ItemManagement from './pages/ItemManagement';
 import UserManagement from './pages/UserManagement';
 import CategoryManagement from './pages/CategoryManagement';
 import StorageMethodManagement from './pages/StorageMethodManagement';
@@ -23,7 +22,33 @@ import StorageMethodManagement from './pages/StorageMethodManagement';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { IngredientsProvider } from "./contexts/IngredientsContext";
+import { IngredientsProvider } from './contexts/IngredientsContext';
+
+const FoodRoutes: React.FC = () => {
+  return (
+    <IngredientsProvider>
+      <Routes>
+        <Route path="/my-ingredients" element={<MyIngredientsPage />} />
+        <Route path="/chatbot" element={<ChatBotPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Routes>
+    </IngredientsProvider>
+  );
+};
+
+const AdminRoutes: React.FC = () => {
+  return (
+    <AdminProvider>
+      <Routes>
+        <Route path="" element={<AdminPage />} />
+        <Route path="ingredients" element={<ItemManagement />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="categories" element={<CategoryManagement />} />
+        <Route path="storage-methods" element={<StorageMethodManagement />} />
+      </Routes>
+    </AdminProvider>
+  );
+};
 
 const App: React.FC = () => {
   return (
@@ -35,28 +60,11 @@ const App: React.FC = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
 
-          <IngredientsProvider>
-            <Route path="/my-ingredients" element={<MyIngredientsPage />} />
-            <Route path="/new-ingredients" element={<NewIngredientsPage />} />
-            <Route path="/chatbot" element={<ChatBotPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </IngredientsProvider>
+          {/* 식재료 관련 경로 */}
+          <Route path="/food/*" element={<FoodRoutes />} />
 
-          {/* 관리자 페이지 */}
-          <Route
-            path="/admin/*"
-            element={
-              <AdminProvider>
-                <Routes>
-                  <Route path="" element={<AdminPage />} />
-                  <Route path="ingredients" element={<IngredientsManagement />} />
-                  <Route path="users" element={<UserManagement />} />
-                  <Route path="categories" element={<CategoryManagement />} />
-                  <Route path="storage-methods" element={<StorageMethodManagement />} />
-                </Routes>
-              </AdminProvider>
-            }
-          />
+          {/* 관리자 페이지 경로 */}
+          <Route path="/admin/*" element={<AdminRoutes />} />
         </Routes>
       </AuthProvider>
     </Router>

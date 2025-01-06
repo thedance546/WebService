@@ -1,4 +1,4 @@
-// src/features/NewIngredients/IngredientCardContainer.tsx
+// src/features/MyIngredients/IngredientCardContainer.tsx
 
 import React from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";

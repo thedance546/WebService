@@ -16,7 +16,7 @@ const IngredientsContext = createContext<IngredientsContextType | undefined>(und
 
 export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [categories, setCategories] = useState<string[]>(["전체", "채소", "가공식품"]);
+  const [categories] = useState<string[]>(["전체", "채소", "가공식품"]);
   const [activeTab, setActiveTab] = useState<string>("전체");
 
   const addIngredient = (newIngredients: Ingredient[]) => {

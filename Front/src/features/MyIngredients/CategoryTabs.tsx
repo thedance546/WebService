@@ -1,4 +1,4 @@
-// src/features/NewIngredients/CategoryTabs.tsx
+// src/features/MyIngredients/CategoryTabs.tsx
 
 import React from "react";
 

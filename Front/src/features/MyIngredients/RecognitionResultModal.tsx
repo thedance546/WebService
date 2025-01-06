@@ -1,4 +1,4 @@
-// src/features/ChatBot/RecipeRecommendationModal.tsx
+// src/features/MyIngredients/RecognitionResultModal.tsx
 
 import React, { useState } from 'react';
 import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';

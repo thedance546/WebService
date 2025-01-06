@@ -1,4 +1,4 @@
-// src/features/NewIngredients/IngredientCard.tsx
+// src/features/MyIngredients/IngredientCard.tsx
 
 import React from "react";
 import { Ingredient } from "../../types/EntityTypes";
