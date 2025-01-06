@@ -36,4 +36,8 @@ public class Item {
         this.shelfLife = shelfLife;
     }
 
+    public String getName() {
+        return itemName;
+    }
+
 }

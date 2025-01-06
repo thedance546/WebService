@@ -21,36 +21,16 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/order")
-    public ResponseEntity<?> createOrder(@AuthenticationPrincipal User user, @RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<Order> createOrder(@RequestBody OrderRequest orderRequest) {
         try {
-            orderRequest.setUserId(user.getId());
-            orderService.createOrder(orderRequest);
+            // OrderRequest를 사용하여 Order 생성
+            Order order = orderService.createOrder(orderRequest);
 
-            return ResponseEntity.ok("Order created successfully!");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
-
-    // 모든 주문 조회
-    @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        try {
-            List<Order> orders = orderService.getAllOrders();
-            return ResponseEntity.ok(orders);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    // 모든 주문 아이템 조회
-    @GetMapping("/items")
-    public ResponseEntity<List<OrderItem>> getAllOrderItems() {
-        try {
-            List<OrderItem> orderItems = orderService.getAllOrderItems();
-            return ResponseEntity.ok(orderItems);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            // 생성된 Order 반환 (HTTP 201 Created)
+            return new ResponseEntity<>(order, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            // 오류 처리 (예: 아이템을 찾을 수 없을 때)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

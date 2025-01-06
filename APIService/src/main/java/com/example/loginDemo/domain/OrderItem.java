@@ -18,10 +18,6 @@ public class OrderItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)  // fk
-    private Order order;
-
-    @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 

@@ -22,11 +22,9 @@ public class Order {
     @Column(name = "order_id", updatable = false)
     private Long id;
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 }
