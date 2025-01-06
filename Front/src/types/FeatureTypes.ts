@@ -35,17 +35,3 @@ export interface UserInfoFormProps {
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
-
-export interface IngredientRow {
-  name: string;
-  quantity: number;
-  category: string;
-  storage: string;
-  purchaseDate: string;
-}
-
-export interface EditIngredientModalProps {
-  row: IngredientRow;
-  onSave: (row: IngredientRow) => void;
-  onCancel: () => void;
-}

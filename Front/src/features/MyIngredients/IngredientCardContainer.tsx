@@ -4,8 +4,14 @@ import React from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
 import CategoryTabs from "./CategoryTabs";
 import IngredientCard from "./IngredientCard";
+import { Ingredient } from "../../types/EntityTypes";
 
-const IngredientCardContainer: React.FC = () => {
+interface IngredientCardContainerProps {
+  onAddClick: () => void;
+  onCardClick: (ingredient: Ingredient) => void;
+}
+
+const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({ onAddClick, onCardClick  }) => {
   const { ingredients, categories, activeTab, setActiveTab } = useIngredients();
 
   const filteredIngredients =
@@ -22,7 +28,7 @@ const IngredientCardContainer: React.FC = () => {
         categories={categories}
         activeTab={activeTab}
         onTabClick={setActiveTab}
-        onAddClick={() => console.log("카테고리 추가 버튼 클릭")}
+        onAddClick={onAddClick}
       />
 
       {/* 식재료 카드 그리드 */}
@@ -39,7 +45,7 @@ const IngredientCardContainer: React.FC = () => {
           <IngredientCard
             key={ingredient.ingredientId}
             ingredient={ingredient}
-            onClick={() => console.log("카드 클릭", ingredient)}
+            onClick={() => onCardClick(ingredient)}
           />
         ))}
       </div>

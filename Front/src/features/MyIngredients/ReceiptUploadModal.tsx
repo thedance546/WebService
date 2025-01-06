@@ -1,4 +1,4 @@
-// src/features/MyIngredients/IngredientModal.tsx
+// src/features/MyIngredients/ReceiptUploadModal.tsx
 
 import React, { useState } from 'react';
 import Button from '../../components/atoms/Button';
@@ -12,7 +12,7 @@ interface IngredientModalProps {
   fileChangeHandler: (file: File) => void;
 }
 
-const IngredientModal: React.FC<IngredientModalProps> = ({
+const ReceiptUploadModal: React.FC<IngredientModalProps> = ({
   onConfirm,
   onCancel,
   selectedFile,
@@ -44,4 +44,4 @@ const IngredientModal: React.FC<IngredientModalProps> = ({
   );
 };
 
-export default IngredientModal;
+export default ReceiptUploadModal;

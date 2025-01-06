@@ -1,4 +1,4 @@
-// src/features/MyIngredients/RecognitionResultModal.tsx
+// src/features/MyIngredients/AddIngredientModal.tsx
 
 import React, { useState } from 'react';
 import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
@@ -6,13 +6,13 @@ import Input from '../../components/atoms/Input';
 import Button from '../../components/atoms/Button';
 import { Ingredient } from '../../types/EntityTypes';
 
-interface RecognitionResultModalProps {
+interface AddIngredientModalProps {
   resultList: Ingredient[];
   onConfirm: (editedIngredients: Ingredient[]) => void;
   onClose: () => void;
 }
 
-const RecognitionResultModal: React.FC<RecognitionResultModalProps> = ({
+const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   resultList,
   onConfirm,
   onClose,
@@ -137,4 +137,4 @@ const RecognitionResultModal: React.FC<RecognitionResultModalProps> = ({
   );
 };
 
-export default RecognitionResultModal;
+export default AddIngredientModal;

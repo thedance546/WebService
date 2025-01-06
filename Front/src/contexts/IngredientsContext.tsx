@@ -10,6 +10,7 @@ interface IngredientsContextType {
   setActiveTab: (category: string) => void;
   addIngredient: (newIngredients: Ingredient[]) => void;
   updateIngredient: (updatedIngredient: Ingredient) => void;
+  deleteIngredient: (ingredientId: number) => void;
 }
 
 const IngredientsContext = createContext<IngredientsContextType | undefined>(undefined);
@@ -33,6 +34,10 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
     );
   };
 
+  const deleteIngredient = (ingredientId: number) => {
+    setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== ingredientId));
+  };
+
   return (
     <IngredientsContext.Provider
       value={{
@@ -42,6 +47,7 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
         setActiveTab,
         addIngredient,
         updateIngredient,
+        deleteIngredient,
       }}
     >
       {children}
