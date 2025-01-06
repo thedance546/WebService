@@ -3,21 +3,16 @@
 import React, { useState } from 'react';
 import Modal from '../../components/molecules/Modal';
 import Input from '../../components/atoms/Input';
+import { Ingredient } from '../../types/EntityTypes';
 
-interface IngredientRow {
-  name: string;
-  quantity: number;
-  category: string;
-  storage: string;
-}
-
-interface EditIngredientModalProps {
-  row: IngredientRow;
-  onSave: (row: IngredientRow) => void;
+export interface EditIngredientModalProps {
+  row: Ingredient;
+  onSave: (updatedIngredient: Ingredient) => void;
+  onDelete: (ingredientId: number) => void;
   onCancel: () => void;
 }
 
-const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, onCancel }) => {
+const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, onDelete, onCancel }) => {
   const [editedRow, setEditedRow] = useState({ ...row });
 
   const handleChange = (field: string, value: string | number) => {
@@ -60,8 +55,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <td style={{ width: '70%' }}>
               <Input
                 type="text"
-                value={editedRow.category || ""}
-                onChange={(e) => handleChange("category", e.target.value)}
+                value={editedRow.categoryId || ""}
+                onChange={(e) => handleChange("categoryId", e.target.value)}
                 className="form-control"
               />
             </td>
@@ -71,8 +66,19 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <td style={{ width: '70%' }}>
               <Input
                 type="text"
-                value={editedRow.storage || ""}
-                onChange={(e) => handleChange("storage", e.target.value)}
+                value={editedRow.storageMethodId || ""}
+                onChange={(e) => handleChange("storageMethodId", e.target.value)}
+                className="form-control"
+              />
+            </td>
+          </tr>
+          <tr>
+            <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>구매일자</th>
+            <td style={{ width: '70%' }}>
+              <Input
+                type="date"
+                value={editedRow.purchaseDate || ""}
+                onChange={(e) => handleChange("purchaseDate", e.target.value)}
                 className="form-control"
               />
             </td>
@@ -81,6 +87,12 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
       </table>
       <div className="d-flex justify-content-between mt-3">
         <button className="btn btn-success" onClick={handleSave}>저장</button>
+        <button
+          className="btn btn-warning"
+          onClick={() => onDelete(row.ingredientId)}
+        >
+          삭제
+        </button>
         <button className="btn btn-danger" onClick={onCancel}>취소</button>
       </div>
     </Modal>

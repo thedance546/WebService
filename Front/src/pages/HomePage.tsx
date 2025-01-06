@@ -11,7 +11,7 @@ const Home: React.FC = () => {
         <Link to="/Register" className="btn btn-success btn-lg">회원가입</Link>
         <Link to="/Login" className="btn btn-primary btn-lg">로그인</Link>
         <div></div>
-        <Link to="/my-Ingredients" className="btn btn-secondary btn-lg">로그인 없이 시작</Link>
+        <Link to="/food/my-Ingredients" className="btn btn-secondary btn-lg">로그인 없이 시작</Link>
       </nav>
     </GlobalBackground>
   );

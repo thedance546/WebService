@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
-import OptionsModal from '../features/ChatBot/OptionsModal';
+import OptionsModal from '../features/ChatBot/ChatBotOptionsModal';
 import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
 import { Message, Sender } from '../types/FeatureTypes';
-import botAvatar from '../assets/bot-avatar.png';
+import botAvatar from '../assets/matjipsa_logo.png';
 
 const ChatBotPage: React.FC = () => {
   const initialMessage: Message[] = [

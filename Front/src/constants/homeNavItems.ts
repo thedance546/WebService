@@ -6,7 +6,7 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { path: '/my-ingredients', label: '나의 식재료' },
-  { path: '/chatbot', label: '챗봇' },
-  { path: '/settings', label: '설정' },
+  { path: '/food/my-ingredients', label: '나의 식재료' },
+  { path: '/food/chatbot', label: '챗봇' },
+  { path: '/food/settings', label: '설정' },
 ];

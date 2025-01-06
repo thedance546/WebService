@@ -14,8 +14,9 @@ interface BaseHeaderProps {
 const BaseHeader: React.FC<BaseHeaderProps> = ({ title, onClose, headerStyle }) => (
   <div
     className="text-center fw-bold py-3 position-relative"
-    style={{ color: headerStyle?.color || '#1e1e1e' ,
-      backgroundColor: headerStyle?.backgroundColor || '#1E90FF'
+    style={{
+      color: headerStyle?.color || 'var(--text-color)', // 기본 텍스트 색상
+      backgroundColor: headerStyle?.backgroundColor || 'var(--primary-color)', // 기본 배경색
     }}
   >
     {title}

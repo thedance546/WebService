@@ -1,7 +1,7 @@
 // src/hooks/useChatInput.ts
 
 import { useState } from 'react';
-import botAvatar from '../assets/bot-avatar.png';
+import botAvatar from '../assets/matjipsa_logo.png';
 import { Message, Sender } from '../types/FeatureTypes';
 
 export const useChatInput = (addMessage: (message: Message) => void) => {
