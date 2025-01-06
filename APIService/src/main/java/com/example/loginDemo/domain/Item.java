@@ -35,13 +35,4 @@ public class Item {
         this.storageMethod = storageMethod;
         this.shelfLife = shelfLife;
     }
-
-    public String getName() {
-        return itemName;
-    }
-
-    public Item setName(String name) {
-        this.itemName = name;
-        return this;
-    }
 }
