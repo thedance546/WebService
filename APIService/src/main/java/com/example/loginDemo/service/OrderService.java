@@ -27,16 +27,13 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(OrderRequest orderRequest) {
-        // 새로운 Order 객체 생성
         Order order = new Order();
         order.setOrderDate(orderRequest.getOrderDate());
 
-        // OrderItemRequest 리스트를 OrderItem 객체 리스트로 변환
         List<OrderItem> orderItems = orderRequest.getOrderItems().stream()
-                .map(this::convertToOrderItem)  // convertToOrderItem 메서드를 사용하여 변환
+                .map(this::convertToOrderItem)
                 .collect(Collectors.toList());
 
-        // 각 OrderItem에 대해 Item을 이름으로 찾아 설정
         for (OrderItem orderItem : orderItems) {
             String itemName = orderItem.getItem().getName();  // orderItem에서 Item 이름 가져오기
             Optional<Item> optionalItem = itemRepository.findByItemName(itemName);  // Item 이름으로 찾기

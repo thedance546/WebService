@@ -29,6 +29,6 @@ public class Order {
     private List<OrderItem> orderItems;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false) // 외래 키 설정
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

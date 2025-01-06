@@ -23,10 +23,7 @@ public class OrderController {
     @PostMapping("/order")
     public ResponseEntity<Order> createOrder(@RequestBody OrderRequest orderRequest) {
         try {
-            // OrderRequest를 사용하여 Order 생성
             Order order = orderService.createOrder(orderRequest);
-
-            // 생성된 Order 반환 (HTTP 201 Created)
             return new ResponseEntity<>(order, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             // 오류 처리 (예: 아이템을 찾을 수 없을 때)
