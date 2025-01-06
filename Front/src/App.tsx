@@ -23,20 +23,24 @@ import StorageMethodManagement from './pages/StorageMethodManagement';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { IngredientsProvider } from "./contexts/IngredientsContext";
+
 const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
-      <ToastContainer />
+        <ToastContainer />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
 
-          <Route path="/my-ingredients" element={<MyIngredientsPage />} />
-          <Route path="/new-ingredients" element={<NewIngredientsPage />} />
-          <Route path="/chatbot" element={<ChatBotPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <IngredientsProvider>
+            <Route path="/my-ingredients" element={<MyIngredientsPage />} />
+            <Route path="/new-ingredients" element={<NewIngredientsPage />} />
+            <Route path="/chatbot" element={<ChatBotPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </IngredientsProvider>
 
           {/* 관리자 페이지 */}
           <Route
