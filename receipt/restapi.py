@@ -20,7 +20,7 @@ models = {
 }
 
 
-# EasyOCR 초기화
+# EasyOCR 초기화a
 reader = easyocr.Reader(['ko', 'en'], gpu=False)
 
 def extract_purchase_date(results):
