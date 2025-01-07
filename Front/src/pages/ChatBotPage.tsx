@@ -4,11 +4,13 @@ import React, { useState } from 'react';
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/ChatBotOptionsModal';
-import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
+import IngredientUploadModal from '../features/ChatBot/IngredientUploadModal';
 import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
+import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
 import { Message, Sender } from '../types/FeatureTypes';
+import { Ingredient } from '../types/EntityTypes';
 import botAvatar from '../assets/matjipsa_logo.png';
 
 const ChatBotPage: React.FC = () => {
@@ -31,6 +33,12 @@ const ChatBotPage: React.FC = () => {
     detectionResult: null as any,
     loading: false,
   });
+
+  const detectionModal = usePopupState({
+    isOpen: false,
+    ingredients: [] as Ingredient[],
+  });
+
   const customInfoModal = usePopupState({ isOpen: false });
 
   const clearMessages = () => {
@@ -54,7 +62,7 @@ const ChatBotPage: React.FC = () => {
         openCustomInfoModal={customInfoModal.open}
       />
       {recipeModal.isOpen && (
-        <RecipeRecommendationModal
+        <IngredientUploadModal
           isOpen={recipeModal.isOpen}
           onClose={() => {
             recipeModal.close();
@@ -62,6 +70,27 @@ const ChatBotPage: React.FC = () => {
           }}
           state={recipeModal.state}
           setState={recipeModal.setState}
+          openDetectionModal={detectionModal.open}
+          setIngredients={(ingredients) => {
+            detectionModal.setState((prevState) => ({
+              ...prevState,
+              ingredients: Array.isArray(ingredients) ? ingredients : [],
+            }));
+          }}
+        />
+      )}
+      {detectionModal.isOpen && (
+        <RecipeRecommendationModal
+          isOpen={detectionModal.isOpen}
+          onClose={detectionModal.close}
+          ingredients={detectionModal.state.ingredients}
+          setIngredients={(ingredients) => {
+            detectionModal.setState((prevState) => ({
+              ...prevState,
+              ingredients: Array.isArray(ingredients) ? ingredients : [],
+            }));
+          }}
+          // detectedImageSrc={recipeModal.state.detectionResult?.imageUrl} // 탐지된 이미지 URL 전달
         />
       )}
       <CustomInfoInputModal
