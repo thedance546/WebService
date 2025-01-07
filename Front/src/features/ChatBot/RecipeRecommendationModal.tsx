@@ -50,13 +50,13 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
       const parsedIngredients = Object.entries(detectionResult).map(([name, quantity]) => ({
         ingredientId: Date.now() + Math.random(),
         name,
-        quantity: Number(quantity),
+        quantity: parseInt(quantity as string, 10),
       }));
       setIngredients(parsedIngredients);
-      setState((prevState) => ({ ...prevState, loading: false }));
     } catch (error) {
       console.error(error);
       alert('탐지 중 오류가 발생했습니다.');
+    } finally {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
   };

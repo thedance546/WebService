@@ -18,7 +18,12 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   onConfirm,
   onClose,
 }) => {
-  const [ingredients, setIngredients] = useState<Ingredient[]>(resultList);
+  const [ingredients, setIngredients] = useState<Ingredient[]>(
+    resultList.map((item) => ({
+      ...item,
+      quantity: item.quantity || 0,
+    }))
+  );
   const [purchaseDate, setPurchaseDate] = useState<string>('');
 
   const handleConfirm = () => {

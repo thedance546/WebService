@@ -14,9 +14,9 @@ const EditIngredientForm: React.FC<EditIngredientFormProps> = ({
   ingredients,
   onIngredientsChange,
 }) => {
-  const handleEdit = (index: number, field: keyof Ingredient, value: string | number) => {
+  const handleEdit = (index: number, field: keyof Ingredient, value: string) => {
     const updated = [...ingredients];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], [field]: field === 'quantity' ? Number(value) : value };
     onIngredientsChange(updated);
   };
 
@@ -53,8 +53,8 @@ const EditIngredientForm: React.FC<EditIngredientFormProps> = ({
               <td>
                 <Input
                   type="number"
-                  value={item.quantity ?? 0} // 기본값을 0으로 설정
-                  onChange={(e) => handleEdit(index, 'quantity', Number(e.target.value) || 0)}
+                  value={item.quantity.toString()} // 숫자를 문자열로 변환하여 Input에 전달
+                  onChange={(e) => handleEdit(index, 'quantity', e.target.value)}
                   className="form-control"
                 />
               </td>
