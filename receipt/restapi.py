@@ -28,6 +28,9 @@ def crop_and_scale(img, box, scale=2.0):
     height, width = cropped.shape[:2]
     return cv2.resize(cropped, (int(width * scale), int(height * scale)), interpolation=cv2.INTER_LINEAR)
 
+# EasyOCR 초기화a
+reader = easyocr.Reader(['ko', 'en'], gpu=False)
+
 def detect_text_with_yolo(image, confidence_threshold=0.3):
     """YOLO를 사용하여 텍스트 영역 감지."""
     results = model(image)
