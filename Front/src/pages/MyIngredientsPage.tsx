@@ -1,7 +1,5 @@
 // src/pages/MyIngredientsPage.tsx
 
-// src/pages/MyIngredientsPage.tsx
-
 import React from "react";
 import IngredientCardContainer from "../features/MyIngredients/IngredientCardContainer";
 import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
@@ -33,12 +31,8 @@ const MyIngredientsPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await recognizeReceipt(selectedFile);
-      const items = response.품목.map((item, index) => ({
-        ingredientId: Date.now() + index,
-        name: item,
-        quantity: 1,
-      }));
-      addIngredientModal.setState({ resultList: items });
+      console.log("영수증 인식 응답:", response);
+      //addIngredientModal.setState({ resultList: items });
       receiptUploadModal.close();
       addIngredientModal.open();
     } catch (error) {

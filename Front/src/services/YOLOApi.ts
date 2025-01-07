@@ -24,7 +24,7 @@ export const detectObjectsInImage = async (file: File): Promise<any> => {
     }
 };
 
-export const recognizeReceipt = async (file: File): Promise<{ 구매일자: string; 품목: string[] }> => {
+export const recognizeReceipt = async (file: File): Promise<any> => {
     if (!file.type.startsWith('image/')) {
         throw new Error('유효하지 않은 파일 형식입니다. 이미지를 업로드하세요.');
     }
