@@ -1,11 +1,16 @@
 package com.example.loginDemo.yolo;
 
+import com.example.loginDemo.dto.MultipartFileRequest;
+import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
@@ -13,6 +18,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class YoloController {
     private final YoloService yoloService;
+    private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
 
     //ingredient
     @PostMapping("/items/detection")
@@ -22,6 +28,23 @@ public class YoloController {
             return ResponseEntity.ok(detectionResults);
         } catch (IOException e) {
             return ResponseEntity.status(500).body(null); // 내부 서버 오류
+        }
+    }
+
+    @PostMapping("/process-image")
+    public ResponseEntity<byte[]> image(@RequestParam("image") MultipartFile image) {
+        return yoloService.getProcessedImage(image);
+    }
+
+    // 처리된 이미지 요청
+    @GetMapping("/processed-image/{imageName}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) {
+        try {
+            // 컨테이너 내에서 처리된 이미지 반환
+            return yoloService.getProcessedImageFromContainer(imageName);
+        } catch (Exception e) {
+            // 오류 처리
+            return ResponseEntity.status(404).body(null);
         }
     }
 
@@ -41,14 +64,19 @@ public class YoloController {
             "아몬드", "호두", "땅콩", "캐슈넛", "아보카도", "레몬", "라임"
     );
 
-    //receipt
+    // receipt
     @PostMapping("/receipts")
-    public ResponseEntity<Map<String, Object>> processImage(@RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<ReceiptResponse> processImage(@RequestParam("image") MultipartFile imageFile) {
         try {
-            Map<String, Object> response = yoloService.processReceiptImage(imageFile);
-            return ResponseEntity.ok(response);
+            // 이미지를 처리하고 ReceiptResponse 객체를 받음
+            ReceiptResponse receiptResponse = yoloService.processReceiptImage(imageFile);
+
+            // 처리된 결과를 ReceiptResponse로 반환
+            return ResponseEntity.ok(receiptResponse);
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Failed to process image"));
+            // 오류 발생 시, 오류 메시지를 포함한 ReceiptResponse 반환
+            return ResponseEntity.status(500).body(new ReceiptResponse(null, List.of("Failed to process image")));
         }
     }
+
 }
