@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
-import CategoryTabs from "./CategoryTabs";
+import TopTabMenu from "./TopTabMenu"; // 이름 변경
 import IngredientCard from "./IngredientCard";
 import { Ingredient } from "../../types/EntityTypes";
 
@@ -15,18 +15,15 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   onAddClick,
   onCardClick,
 }) => {
-  const { ingredients, categories, activeTab, setActiveTab } = useIngredients();
+  const { ingredients, activeTab, setActiveTab } = useIngredients();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12; // 한 페이지에 표시할 카드 수
+  const itemsPerPage = 12;
 
   const filteredIngredients =
-    activeTab === "전체"
-      ? ingredients
-      : ingredients.filter(
-          (item) => item.categoryId === categories.indexOf(activeTab)
-        );
+  activeTab === "전체"
+    ? ingredients
+    : ingredients.filter((item) => String(item.storageMethodId) === activeTab);
 
-  // 현재 페이지에 해당하는 카드 데이터 계산
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredIngredients.slice(indexOfFirstItem, indexOfLastItem);
@@ -39,9 +36,8 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
 
   return (
     <div>
-      {/* 카테고리 필터 */}
-      <CategoryTabs
-        categories={categories}
+      {/* 상단 탭 메뉴 */}
+      <TopTabMenu
         activeTab={activeTab}
         onTabClick={setActiveTab}
         onAddClick={onAddClick}
