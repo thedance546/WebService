@@ -8,6 +8,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
@@ -29,36 +31,11 @@ public class YoloController {
     }
 
     //ingredient-image
-    @PostMapping("/process")
-    public ResponseEntity<byte[]> processIngredientImage(@RequestParam("image") MultipartFile image) throws IOException {
-        // Flask 서버에 보낼 이미지 준비
-        byte[] imageBytes = image.getBytes();
-
-        // RestTemplate을 사용하여 Flask 서버로 이미지 전송
-        RestTemplate restTemplate = new RestTemplate();
-
-        // 헤더 설정 (이미지 파일을 보내는 경우)
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        // 이미지 파일을 포함한 요청 본문 설정
-        MultipartFileRequest request = new MultipartFileRequest(imageBytes);
-
-        // Flask 서버에 이미지 전송
-        ResponseEntity<byte[]> response = restTemplate.exchange(
-                Ingredient_URL + "/object-detection/object_detection",
-                HttpMethod.POST,
-                request,
-                byte[].class
-        );
-
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(response.getBody());
-        } else {
-            return ResponseEntity.status(response.getStatusCode()).body(null);
-        }
+    // 2. 이미지 처리 후 결과 이미지 반환
+    @PostMapping("/process-image")
+    public ResponseEntity<byte[]> processImageAndReturnResult(@RequestParam("image") MultipartFile file) {
+        ResponseEntity<byte[]> processedImage = yoloService.getProcessedImage(file);
+        return processedImage;
     }
 
     // 확인할 품목 리스트

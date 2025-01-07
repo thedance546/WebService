@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,12 +22,42 @@ public class YoloService {
 //    private final String Ingredient_URL = "http://localhost:5000/object-detection/object_detection";
 //    private final String Receipt_URL = "http://localhost:5001/object-detection/ocr_detection";
     private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
+    private final String flaskServerUrl = "http://yolo-container:5000";
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
 
     // ingredient
     public Map<String, String> detectObjects(MultipartFile imageFile) throws IOException {
         return sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+    }
+
+    //이미지 리턴
+    // 2. 처리된 이미지 리턴
+    public ResponseEntity<byte[]> getProcessedImage(MultipartFile file) {
+        try {
+            // 파일을 multipart로 전송
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("image", file.getResource());
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // Flask API 호출하여 처리된 이미지 반환
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    flaskServerUrl + "/object-detection/object_detection",
+                    HttpMethod.POST,
+                    requestEntity,
+                    byte[].class
+            );
+
+            return response;
+        } catch (HttpServerErrorException e) {
+            throw new RuntimeException("Server error while processing image: " + e.getMessage(), e);
+        } catch (ResourceAccessException e) {
+            throw new RuntimeException("Error accessing Flask server: " + e.getMessage(), e);
+        }
     }
 
     // ocr
