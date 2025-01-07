@@ -67,6 +67,9 @@ public class YoloService {
             // 컨테이너 내 이미지 저장 디렉토리 경로
             Path imagePath = Paths.get(IMAGE_DIRECTORY + "processed_image.jpg");
 
+            // 디버깅: 이미지 저장 경로 출력
+            System.out.println("Saving processed image to path: " + imagePath.toString());
+
             // 디렉토리 존재 여부 확인 후, 없으면 생성
             File directory = new File(IMAGE_DIRECTORY);
             if (!directory.exists()) {
