@@ -9,8 +9,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Flask 애플리케이션 복사
-COPY rearr.py .
+COPY real_run.py .
 COPY pj.env .
 
 # Flask 실행
-CMD ["python", "rearr.py"]
+CMD ["python", "real_run.py"]
