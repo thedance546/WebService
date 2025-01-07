@@ -1,23 +1,25 @@
 // src/features/ChatBot/RecipeRecommendationModal.tsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from '../../components/molecules/FullScreenOverlay';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
-import { DetectionResult } from '../../types/FeatureTypes';
+import EditIngredientForm from '../../components/organisms/EditIngredientForm';
+import { detectObjectsInImage } from '../../services/YOLOApi';
+import { Ingredient } from '../../types/EntityTypes';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
   onClose: () => void;
   state: {
     selectedFile: File | null;
-    detectionResult: DetectionResult | null;
+    detectionResult: any;
     loading: boolean;
   };
   setState: React.Dispatch<
     React.SetStateAction<{
       selectedFile: File | null;
-      detectionResult: DetectionResult | null;
+      detectionResult: any;
       loading: boolean;
     }>
   >;
@@ -29,6 +31,8 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   state,
   setState,
 }) => {
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+
   const handleFileChange = (file: File) => {
     setState((prevState) => ({ ...prevState, selectedFile: file }));
   };
@@ -41,48 +45,42 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
 
     setState((prevState) => ({ ...prevState, loading: true }));
 
-    // 테스트용 코드: 실제 API 호출 대신 가짜 결과를 반환
-    setTimeout(() => {
-      setState({
-        selectedFile: state.selectedFile,
-        detectionResult: {
-          objects: [
-            { name: 'Tomato', confidence: 0.95 },
-            { name: 'Carrot', confidence: 0.89 },
-          ],
-        },
-        loading: false,
-      });
-    }, 2000);
+    try {
+      const detectionResult = await detectObjectsInImage(state.selectedFile);
+      const parsedIngredients = Object.entries(detectionResult).map(([name, quantity]) => ({
+        ingredientId: Date.now() + Math.random(),
+        name,
+        quantity: parseInt(quantity as string, 10),
+      }));
+      setIngredients(parsedIngredients);
+    } catch (error) {
+      console.error(error);
+      alert('탐지 중 오류가 발생했습니다.');
+    } finally {
+      setState((prevState) => ({ ...prevState, loading: false }));
+    }
   };
 
-  if (!isOpen) {
-    return null; // isOpen이 false인 경우 null 반환
-  }
-
   return (
-    <Modal
-      title="레시피 추천"
-      onClose={onClose}
-    >
-      <ImageUploadPreview onFileSelect={handleFileChange} />
-
-      <div className="d-flex flex-column align-items-center">
-        {state.detectionResult && (
-          <div className="mb-3">
-            <h6>탐지된 객체</h6>
-            <pre>{JSON.stringify(state.detectionResult.objects, null, 2)}</pre>
-          </div>
-        )}
-      </div>
-
-      <Button
-        onClick={handleDetection}
-        className="btn btn-primary mb-3"
-        disabled={state.loading}
-      >
-        {state.loading ? '처리 중...' : '객체 탐지 시작'}
+    <Modal title="레시피 추천 받기" onClose={onClose}>
+      <ImageUploadPreview
+        onFileSelect={handleFileChange}
+        previewStyle={{
+          width: '100%',
+          height: '400px',
+        }}
+        placeholderMessage="식재료 이미지를 업로드해주세요. 확인한 식재료를 바탕으로 레시피를 추천해 드립니다."
+      />
+      <Button onClick={handleDetection} disabled={state.loading}>
+        {state.loading ? '분석 중...' : '재료 확인 하기'}
       </Button>
+
+      {ingredients.length > 0 && (
+        <EditIngredientForm
+          ingredients={ingredients}
+          onIngredientsChange={setIngredients}
+        />
+      )}
     </Modal>
   );
 };

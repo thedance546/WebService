@@ -6,9 +6,15 @@ import ImagePreview from '../atoms/ImagePreview';
 
 interface ImageUploadPreviewProps {
   onFileSelect: (file: File) => void;
+  previewStyle?: React.CSSProperties;
+  placeholderMessage?: string;
 }
 
-const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({ onFileSelect }) => {
+const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({
+  onFileSelect,
+  previewStyle = {},
+  placeholderMessage = '이미지를 업로드해주세요.',
+}) => {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,9 +26,18 @@ const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = ({ onFileSelect })
   };
 
   return (
-    <div className="my-3">
+    <div className="my-3 d-flex flex-column align-items-center">
       <FileUploader onFileChange={handleFileChange} accept="image/*" />
-      {previewSrc && <ImagePreview src={previewSrc} />}
+      <ImagePreview
+        src={previewSrc || undefined}
+        alt={placeholderMessage}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          ...previewStyle,
+        }}
+      />
     </div>
   );
 };

@@ -11,14 +11,16 @@ export interface PopupState<T> {
   reset: () => void;
 }
 
-export const usePopupState = <T extends object>(initialState: T): PopupState<T> => {
+export const usePopupState = <T extends object | null>(
+  initialState: T
+): PopupState<T> => {
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState(initialState);
-  const initialCopy = { ...initialState };
+  const initialCopy = initialState !== null ? { ...initialState } : ({} as T);
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
-  const reset = () => setState({ ...initialCopy });
+  const reset = () => setState(initialCopy);
 
   return {
     isOpen,

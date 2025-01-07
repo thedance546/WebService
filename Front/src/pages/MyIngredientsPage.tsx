@@ -1,146 +1,132 @@
 // src/pages/MyIngredientsPage.tsx
 
-import React, { useState } from "react";
-import IngredientModal from "../features/MyIngredients/IngredientModal";
-import RecognitionResultModal from "../features/MyIngredients/RecognitionResultModal";
-import LoadingModal from "../components/organisms/LoadingModal";
-import IngredientsTable from "../features/MyIngredients/IngredientsTable";
-import { usePopupState } from "../hooks/usePopupState";
-import { Plus } from "react-bootstrap-icons";
-import HomeNavBar from "../components/organisms/HomeNavBar";
-import { Ingredient } from "../types/EntityTypes";
+// src/pages/MyIngredientsPage.tsx
 
-const getRandomIngredients = (ingredients: string[], count: number): Ingredient[] => {
-  const shuffled = [...ingredients].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count).map((item, index) => ({
-    ingredientId: Date.now() + index, // ingredientId를 number로 생성
-    name: item,
-    quantity: 1,
-  }));
-};
+import React from "react";
+import IngredientCardContainer from "../features/MyIngredients/IngredientCardContainer";
+import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
+import ReceiptUploadModal from "../features/MyIngredients/ReceiptUploadModal";
+import AddIngredientModal from "../features/MyIngredients/AddIngredientModal";
+import IngredientOptionsModal from "../features/MyIngredients/IngredientOptionModal";
+import LoadingModal from "../components/organisms/LoadingModal";
+import HomeNavBar from '../components/organisms/HomeNavBar';
+import { usePopupState } from "../hooks/usePopupState";
+import { useIngredients } from "../contexts/IngredientsContext";
+import { recognizeReceipt } from "../services/YOLOApi";
 
 const MyIngredientsPage: React.FC = () => {
-  const ingredientModal = usePopupState<{ selectedFile: File | null }>({ selectedFile: null });
-  const recognitionModal = usePopupState<{ resultList: Ingredient[] }>({
-    resultList: [],
-  });
-  const [loading, setLoading] = useState<boolean>(false);
-  const [dataFrame, setDataFrame] = useState<Ingredient[]>([]);
+  const optionsModal = usePopupState(null);
+  const receiptUploadModal = usePopupState<{ selectedFile: File | null }>({ selectedFile: null });
+  const addIngredientModal = usePopupState<{ resultList: any[] }>({ resultList: [] });
+  const editModal = usePopupState<any | null>(null);
+  const { addIngredient, updateIngredient, deleteIngredient } = useIngredients(); // deleteIngredient 가져오기
+  const [loading, setLoading] = React.useState<boolean>(false);
 
-  const ingredientList: string[] = [
-    "당근", "계란", "마늘", "감자", "생닭고기", "생 소고기", "밥", "고구마", "두부", "토마토",
-    "대파", "고등어", "김치", "돼지고기", "양배추", "버섯", "콩나물", "애호박", "고추", "깻잎",
-    "시리얼", "김", "라면", "참치캔", "냉동 만두", "베이컨", "시금치", "오이", "게맛살", "삼겹살"
-  ];
-
-  const categories = [
-    { id: 1, name: "채소" },
-    { id: 2, name: "육류" },
-    { id: 3, name: "가공식품" },
-    { id: 4, name: "발효식품" },
-    { id: 5, name: "과일" },
-  ];
-
-  const storageMethods = [
-    { id: 1, name: "냉장" },
-    { id: 2, name: "냉동" },
-    { id: 3, name: "상온" },
-  ];
-
-  const handleUploadConfirm = () => {
-    const { selectedFile } = ingredientModal.state;
+  const handleReceiptUploadConfirm = async () => {
+    const { selectedFile } = receiptUploadModal.state;
 
     if (!selectedFile) {
-      alert("사진을 선택해주세요.");
+      alert("영수증 이미지를 업로드하세요.");
       return;
     }
 
     setLoading(true);
-
-    setTimeout(() => {
+    try {
+      const response = await recognizeReceipt(selectedFile);
+      const items = response.품목.map((item, index) => ({
+        ingredientId: Date.now() + index,
+        name: item,
+        quantity: 1,
+      }));
+      addIngredientModal.setState({ resultList: items });
+      receiptUploadModal.close();
+      addIngredientModal.open();
+    } catch (error) {
+      console.error("영수증 인식 실패:", error);
+      alert("영수증 인식에 실패했습니다.");
+    } finally {
       setLoading(false);
-
-      const randomCount = Math.floor(Math.random() * 5) + 4;
-      const randomIngredients = getRandomIngredients(ingredientList, randomCount);
-
-      recognitionModal.setState({
-        resultList: randomIngredients,
-      });
-
-      ingredientModal.close();
-      recognitionModal.open();
-    }, 3000);
+    }
   };
 
-  const handleRecognitionConfirm = (editedIngredients: Ingredient[]) => {
-    const combinedData = editedIngredients.map((item) => ({
-      ...item,
-      ingredientId: Date.now() + Math.random(),
-      shelfLife: Math.floor(Math.random() * 10) + 1,
-      consumeBy: Math.floor(Math.random() * 15) + 5,
-      categoryId: categories[Math.floor(Math.random() * categories.length)].id,
-      storageMethodId: storageMethods[Math.floor(Math.random() * storageMethods.length)].id,
-    }));
+  const handleAddIngredientConfirm = (ingredients: any[]) => {
+    addIngredient(ingredients);
+    addIngredientModal.close();
+  };
 
-    setDataFrame((prev) => [...prev, ...combinedData]);
-    recognitionModal.close();
-    recognitionModal.reset();
-};
+  const handleDirectInput = () => {
+    addIngredientModal.setState({ resultList: [{ ingredientId: Date.now(), name: "", quantity: 1 }] });
+    addIngredientModal.open();
+    optionsModal.close();
+  };
 
   return (
-    <div className="container text-center my-ingredients">
-      <h2 className="my-3">나의 식재료</h2>
+    <div className="container-fluid px-0" style={{ paddingBottom: "var(--navbar-height)" }}>
+      <h2 className="text-center my-4">나의 식재료</h2>
 
-      {ingredientModal.isOpen && (
-        <IngredientModal
-          onConfirm={handleUploadConfirm}
-          onCancel={ingredientModal.close}
-          selectedFile={ingredientModal.state.selectedFile}
-          fileChangeHandler={(file) =>
-            ingredientModal.setState({ ...ingredientModal.state, selectedFile: file })
-          }
-        />
-      )}
-
-      {recognitionModal.isOpen && (
-        <RecognitionResultModal
-          resultList={recognitionModal.state.resultList}
-          onConfirm={handleRecognitionConfirm}
-          onClose={recognitionModal.close}
-        />
-      )}
-
-      {loading && <LoadingModal />}
-
-      <IngredientsTable
-        data={dataFrame}
-        onSaveRow={(index, updatedRow) =>
-          setDataFrame((prevData) =>
-            prevData.map((item, i) => (i === index ? updatedRow : item))
-          )
-        }
-        onDeleteRow={(index) =>
-          setDataFrame((prevData) => prevData.filter((_, i) => i !== index))
-        }
+      {/* 식재료 카드 리스트 */}
+      <IngredientCardContainer
+        onAddClick={optionsModal.open}
+        onCardClick={(ingredient) => {
+          editModal.setState(ingredient);
+          editModal.open();
+        }}
       />
 
-      <button
-        className="btn btn-success position-fixed"
-        style={{
-          bottom: "80px",
-          right: "20px",
-          width: "56px",
-          height: "56px",
-          borderRadius: "50%",
-        }}
-        onClick={() => {
-          ingredientModal.reset();
-          ingredientModal.open();
-        }}
-      >
-        <Plus size={32} />
-      </button>
+      {/* 식재료 추가 방법 모달 */}
+      {optionsModal.isOpen && (
+        <IngredientOptionsModal
+          isOpen={optionsModal.isOpen}
+          onClose={optionsModal.close}
+          openReceiptInputModal={receiptUploadModal.open}
+          openManualInputModal={handleDirectInput}
+        />
+      )}
 
+      {/* 영수증 업로드 모달 */}
+      {receiptUploadModal.isOpen && (
+        <ReceiptUploadModal
+          onConfirm={handleReceiptUploadConfirm}
+          onCancel={receiptUploadModal.close}
+          selectedFile={receiptUploadModal.state.selectedFile}
+          fileChangeHandler={(file) => receiptUploadModal.setState({ selectedFile: file })}
+        />
+      )}
+
+      {/* 식재료 추가 모달 */}
+      {addIngredientModal.isOpen && (
+        <AddIngredientModal
+          resultList={addIngredientModal.state.resultList}
+          onConfirm={handleAddIngredientConfirm}
+          onClose={addIngredientModal.close}
+        />
+      )}
+
+      {/* 수정 모달 */}
+      {editModal.isOpen && editModal.state && (
+        <EditIngredientModal
+          row={editModal.state}
+          onSave={(updatedIngredientRow) => {
+            const updatedIngredient = {
+              ...updatedIngredientRow,
+              ingredientId: editModal.state.ingredientId,
+            };
+            updateIngredient(updatedIngredient);
+            editModal.close();
+          }}
+          onDelete={(ingredientId: number) => {
+            const confirmed = window.confirm("정말로 삭제하시겠습니까?");
+            if (confirmed) {
+              deleteIngredient(ingredientId); // deleteIngredient 호출
+              editModal.close();
+            }
+          }}
+          onCancel={editModal.close}
+        />
+      )}
+
+      {/* 로딩 모달 */}
+      {loading && <LoadingModal />}
       <HomeNavBar />
     </div>
   );

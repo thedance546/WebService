@@ -40,10 +40,8 @@ public class AuthController {
                                     @CookieValue(name = "refreshToken", defaultValue = "") String refreshToken,
                                     HttpServletResponse response) {
         try {
-            // Authorization 헤더에서 Access Token 추출 (Bearer <accessToken> 형식)
             accessToken = extractToken(accessToken);
 
-            // 로그아웃 서비스 호출
             authService.logout(accessToken, refreshToken, response);
 
             return ResponseEntity.ok("Successfully logged out");

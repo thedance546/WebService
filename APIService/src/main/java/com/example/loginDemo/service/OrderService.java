@@ -3,18 +3,17 @@ package com.example.loginDemo.service;
 import com.example.loginDemo.domain.Item;
 import com.example.loginDemo.domain.Order;
 import com.example.loginDemo.domain.OrderItem;
-import com.example.loginDemo.domain.User;
-import com.example.loginDemo.dto.OrderRequest;
-import com.example.loginDemo.repository.ItemRepository;
-import com.example.loginDemo.repository.OrderItemRepository;
-import com.example.loginDemo.repository.OrderRepository;
-import com.example.loginDemo.repository.UserRepository;
+import com.example.loginDemo.dto.*;
+import com.example.loginDemo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,59 +21,52 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
-
-//    @Transactional
-//    public Order createOrder(OrderRequest orderRequest) {
-//        // Order 생성 및 저장
-//        Order order = new Order();
-//        order.setOrderDate(orderRequest.getOrderDate());
-//        Order savedOrder = orderRepository.save(order);
-//
-//        // OrderItems 생성 및 저장
-//        for (OrderRequest.OrderItemRequest orderItemRequest : orderRequest.getOrderItems()) {
-//            // Item 조회
-//            Item item = itemRepository.findByItemName(orderItemRequest.getItemName())
-//                    .orElseThrow(() -> new IllegalArgumentException("Invalid item name: " + orderItemRequest.getItemName()));
-//
-//            OrderItem orderItem = new OrderItem();
-//            orderItem.setOrder(savedOrder);
-//            orderItem.setItem(item);
-//            orderItem.setCount(orderItemRequest.getCount());
-//
-//            orderItemRepository.save(orderItem);
-//        }
-//
-//        return savedOrder;
-//    }
 
     @Transactional
-    public Order createOrder(OrderRequest orderRequest) {
-        // userId를 통해 User 객체를 조회
-        User user = userRepository.findById(orderRequest.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        // Order 생성 및 저장
+    public Map<String, String> createOrder(OrderRequest orderRequest) {
+        // 주문을 생성
         Order order = new Order();
         order.setOrderDate(orderRequest.getOrderDate());
-        order.setUser(user); // User 설정
-        Order savedOrder = orderRepository.save(order);
 
-        // OrderItems 생성 및 저장
-        for (OrderRequest.OrderItemRequest orderItemRequest : orderRequest.getOrderItems()) {
-            // Item 조회
-            Item item = itemRepository.findByItemName(orderItemRequest.getItemName())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid item name: " + orderItemRequest.getItemName()));
+        // OrderItems 생성
+        List<OrderItem> orderItems = orderRequest.getOrderItems().stream()
+                .map(this::convertToOrderItem)  // OrderItem 생성
+                .collect(Collectors.toList());
 
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(savedOrder);
-            orderItem.setItem(item);
-            orderItem.setCount(orderItemRequest.getCount());
+        // OrderItem들과 연결
+        order.setOrderItems(orderItems);
 
-            orderItemRepository.save(orderItem);
+        // 주문을 저장하고, 그 후 order_id가 자동으로 설정됨
+        order = orderRepository.save(order);
+
+        for (OrderItem orderItem : orderItems) {
+            orderItem.setOrder(order);  // Order와 연결
         }
 
-        return savedOrder;
+        orderItemRepository.saveAll(orderItems);
+
+        return createResponse("Order created successfully!");
     }
 
+    private Map<String, String> createResponse(String message) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", message);
+        return response;
+    }
+
+    private OrderItem convertToOrderItem(OrderItemRequest orderItemRequest) {
+        Optional<Item> optionalItem = itemRepository.findByItemName(orderItemRequest.getItemName());
+        Item item = optionalItem.orElseThrow(() -> new RuntimeException("Item with name " + orderItemRequest.getItemName() + " not found"));
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setItem(item);
+        orderItem.setCount(orderItemRequest.getCount());
+
+        return orderItem;
+    }
+
+    // 모든 주문 조회
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
 }

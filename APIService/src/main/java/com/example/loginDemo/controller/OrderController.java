@@ -1,12 +1,18 @@
 package com.example.loginDemo.controller;
 
+import com.example.loginDemo.domain.Order;
+import com.example.loginDemo.domain.OrderItem;
 import com.example.loginDemo.domain.User;
 import com.example.loginDemo.service.OrderService;
-import com.example.loginDemo.dto.OrderRequest;
+import com.example.loginDemo.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -15,23 +21,23 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/order")
-    public ResponseEntity<?> createOrder(
-            @AuthenticationPrincipal User user, // 로그인된 사용자
-            @RequestBody OrderRequest orderRequest) {
-
+    @PostMapping
+    public ResponseEntity<?> createOrder(@RequestHeader("Authorization") String accessToken,@RequestBody OrderRequest orderRequest) {
         try {
-            // 로그인된 사용자의 userId를 orderRequest에 자동 설정
-            orderRequest.setUserId(user.getId());
+            // 주문 생성
+            var order = orderService.createOrder(orderRequest);
 
-            // 주문 생성 서비스 호출
-            orderService.createOrder(orderRequest);
-
-            return ResponseEntity.ok("Order created successfully!");
+            // 생성된 주문을 응답으로 반환
+            return new ResponseEntity<>(order, HttpStatus.CREATED);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            // 예외 발생 시 오류 메시지 반환
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
-
+    // 모든 주문 조회 API
+    @GetMapping
+    public List<Order> getAllOrders(@RequestHeader("Authorization") String accessToken) {
+        return orderService.getAllOrders();
+    }
 }

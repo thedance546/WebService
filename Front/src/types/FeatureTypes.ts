@@ -1,9 +1,5 @@
 // src/types/FeatureTypes.ts
 
-export interface DetectionResult {
-  objects: { name: string; confidence: number }[];
-}
-
 export enum Sender {
   User = 'user',
   Bot = 'bot',
@@ -29,12 +25,11 @@ export interface UserInfoFormProps {
   formData: {
     ageGroup: string;
     gender: string;
-    activityLevel: string;
     healthGoal: string;
-    allergies: string[];
     mealTimes: string[];
     foodCategories: string[];
     customFoodCategory: string;
+    allergies: string[];
     customAllergy: string;
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;

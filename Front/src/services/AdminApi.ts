@@ -25,7 +25,7 @@ export const createCategory = async (categoryName: string): Promise<Category> =>
   try {
     console.log("Authorization Header (Category):", getAuthHeaders("Bearer"));
     const response = await api.post<Category>(
-      "/items/category",
+      "/items/categories",
       { categoryName: categoryName },
       {
         headers: getAuthHeaders("Bearer"),
@@ -43,7 +43,7 @@ export const createCategory = async (categoryName: string): Promise<Category> =>
 
 export const deleteCategory = async (categoryId: number): Promise<void> => {
   try {
-    await api.delete(`/items/category/${categoryId}`, {
+    await api.delete(`/items/categories/${categoryId}`, {
       headers: getAuthHeaders('Bearer'),
     });
   } catch (error: any) {
@@ -72,7 +72,7 @@ export const createStorageMethod = async (methodName: string): Promise<StorageMe
   try {
     console.log("Authorization Header (Storage Method):", getAuthHeaders("Bearer"));
     const response = await api.post<StorageMethod>(
-      "/items/storage-method",
+      "/items/storage-methods",
       { storageMethodName: methodName },
       {
         headers: getAuthHeaders("Bearer"),
@@ -90,7 +90,7 @@ export const createStorageMethod = async (methodName: string): Promise<StorageMe
 
 export const deleteStorageMethod = async (methodId: number): Promise<void> => {
   try {
-    await api.delete(`/items/storage-method/${methodId}`, {
+    await api.delete(`/items/storage-methods/${methodId}`, {
       headers: getAuthHeaders('Bearer'),
     });
   } catch (error: any) {
@@ -130,7 +130,7 @@ export const createItem = async (item: {
     console.log("아이템 생성 요청 데이터:", item);
 
     const response = await api.post(
-      '/items/item',
+      '/items',
       {
         itemName: item.itemName,
         categoryName: item.categoryName,

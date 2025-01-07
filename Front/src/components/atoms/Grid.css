@@ -3,7 +3,8 @@
 .responsive-grid {
   display: grid;
   gap: 1rem;
-  white-space: nowrap;
+  overflow-x: hidden; /* 가로 스크롤 제거 */
+  overflow-y: auto; /* 세로 스크롤 허용 */
 }
 
 .grid-columns-2 {
