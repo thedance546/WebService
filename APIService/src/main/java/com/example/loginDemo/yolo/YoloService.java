@@ -64,7 +64,10 @@ public class YoloService {
 
             // 이미지 바이트 배열을 로컬에 저장
             byte[] imageBytesFromResponse = response.getBody();
-            String filePath = "C:/WorkSpace/processed_image.jpg";  // 이미지 저장 경로 설정
+
+            // 고유한 파일 이름 생성 (타임스탬프 또는 UUID 사용)
+            String uniqueFileName = "processed_image_" + UUID.randomUUID().toString() + ".jpg";  // UUID를 이용해 고유한 파일 이름 생성
+            String filePath = "C:/WorkSpace/" + uniqueFileName;  // 이미지 저장 경로 설정
 
             File imageFile = new File(filePath);
             try (FileOutputStream fos = new FileOutputStream(imageFile)) {
@@ -82,8 +85,6 @@ public class YoloService {
             throw new RuntimeException("Error reading image file: " + e.getMessage(), e);
         }
     }
-
-
 
     // ocr
     public Map<String, Object> processReceiptImage(MultipartFile imageFile) throws IOException {
