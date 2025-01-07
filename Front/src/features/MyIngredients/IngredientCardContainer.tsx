@@ -1,6 +1,6 @@
 // src/features/MyIngredients/IngredientCardContainer.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
 import CategoryTabs from "./CategoryTabs";
 import IngredientCard from "./IngredientCard";
@@ -17,35 +17,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
 }) => {
   const { ingredients, categories, activeTab, setActiveTab } = useIngredients();
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12); // 초기값
-  const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
-
-  // 화면 크기 변경 감지
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-
-      // 카드 크기와 간격 기준으로 한 페이지 카드 수 계산
-      const cardWidth = 180; // 카드 가로 크기 (px)
-      const cardHeight = 200; // 카드 세로 크기 (px)
-      const gap = 20; // 카드 간격 (px)
-
-      const cardsPerRow = Math.floor((window.innerWidth - 40) / (cardWidth + gap)); // 가로 카드 수
-      const rowsPerPage = Math.floor((window.innerHeight - 160) / (cardHeight + gap)); // 세로 카드 수
-      setItemsPerPage(cardsPerRow * rowsPerPage);
-    };
-
-    handleResize(); // 초기 크기 계산
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize); // 이벤트 정리
-  }, []);
+  const itemsPerPage = 12; // 한 페이지에 표시할 카드 수
 
   const filteredIngredients =
     activeTab === "전체"
@@ -80,8 +52,8 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
         className="ingredient-card-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(auto-fill, minmax(180px, 1fr))`,
-          gap: "20px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          gap: "1rem",
           padding: "1rem",
         }}
       >
