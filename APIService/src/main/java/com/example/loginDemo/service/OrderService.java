@@ -3,12 +3,8 @@ package com.example.loginDemo.service;
 import com.example.loginDemo.domain.Item;
 import com.example.loginDemo.domain.Order;
 import com.example.loginDemo.domain.OrderItem;
-import com.example.loginDemo.dto.OrderItemRequest;
-import com.example.loginDemo.dto.OrderRequest;
-import com.example.loginDemo.repository.ItemRepository;
-import com.example.loginDemo.repository.OrderItemRepository;
-import com.example.loginDemo.repository.OrderRepository;
-import com.example.loginDemo.repository.UserRepository;
+import com.example.loginDemo.dto.*;
+import com.example.loginDemo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +21,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     public Map<String, String> createOrder(OrderRequest orderRequest) {
@@ -44,12 +39,10 @@ public class OrderService {
         // 주문을 저장하고, 그 후 order_id가 자동으로 설정됨
         order = orderRepository.save(order);
 
-        // Order와 OrderItem들을 연결 (이제 order의 ID가 존재)
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);  // Order와 연결
         }
 
-        // 연결된 OrderItems 다시 저장
         orderItemRepository.saveAll(orderItems);
 
         return createResponse("Order created successfully!");
