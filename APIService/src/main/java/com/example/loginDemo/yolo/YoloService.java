@@ -12,6 +12,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -35,16 +37,24 @@ public class YoloService {
     // 2. 처리된 이미지 리턴
     public ResponseEntity<byte[]> getProcessedImage(MultipartFile file) {
         try {
-            // 파일을 multipart로 전송
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("image", file.getResource());
+            // 이미지 바이트 배열로 변환
+            byte[] imageBytes = file.getBytes();
 
+            // 이미지 파일을 포함한 HttpEntity 생성
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("image", new ByteArrayResource(imageBytes) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();  // 파일 이름 설정
+                }
+            });
+
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // Flask API 호출하여 처리된 이미지 반환
+            // 처리된 이미지 반환
             ResponseEntity<byte[]> response = restTemplate.exchange(
                     flaskServerUrl + "/object-detection/object_detection",
                     HttpMethod.POST,
@@ -52,13 +62,28 @@ public class YoloService {
                     byte[].class
             );
 
+            // 이미지 바이트 배열을 로컬에 저장
+            byte[] imageBytesFromResponse = response.getBody();
+            String filePath = "C:/WorkSpace/processed_image.jpg";  // 이미지 저장 경로 설정
+
+            File imageFile = new File(filePath);
+            try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+                fos.write(imageBytesFromResponse);  // 이미지 바이트 데이터를 파일로 저장
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return response;
         } catch (HttpServerErrorException e) {
             throw new RuntimeException("Server error while processing image: " + e.getMessage(), e);
         } catch (ResourceAccessException e) {
             throw new RuntimeException("Error accessing Flask server: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading image file: " + e.getMessage(), e);
         }
     }
+
+
 
     // ocr
     public Map<String, Object> processReceiptImage(MultipartFile imageFile) throws IOException {
