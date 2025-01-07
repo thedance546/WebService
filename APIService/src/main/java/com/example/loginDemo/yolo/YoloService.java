@@ -12,6 +12,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.logging.Logger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -77,6 +79,9 @@ public class YoloService {
             } catch (IOException e) {
                 throw new RuntimeException("Error saving processed image to container directory", e);
             }
+
+            // 로그로 이미지 이름 출력
+            System.out.println("Processed image saved as: " + imagePath.getFileName());
 
             // 이미지 바이트 배열로 ResponseEntity를 래핑하여 반환
             return ResponseEntity.ok()
