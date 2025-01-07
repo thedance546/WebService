@@ -1,30 +1,36 @@
 // src/features/MyIngredients/AddIngredientModal.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
-import Input from '../../components/atoms/Input';
 import Button from '../../components/atoms/Button';
 import EditIngredientForm from '../../components/organisms/EditIngredientForm';
+import Input from '../../components/atoms/Input';
 import { Ingredient } from '../../types/EntityTypes';
 
 interface AddIngredientModalProps {
-  resultList: Ingredient[];
+  matchedItems: string[];
+  purchaseDate: string;
   onConfirm: (editedIngredients: Ingredient[]) => void;
   onClose: () => void;
 }
 
 const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
-  resultList,
+  matchedItems,
+  purchaseDate: initialPurchaseDate,
   onConfirm,
   onClose,
 }) => {
-  const [ingredients, setIngredients] = useState<Ingredient[]>(
-    resultList.map((item) => ({
-      ...item,
-      quantity: item.quantity || 0,
-    }))
-  );
-  const [purchaseDate, setPurchaseDate] = useState<string>('');
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [purchaseDate, setPurchaseDate] = useState<string>(initialPurchaseDate);
+
+  useEffect(() => {
+    const initialIngredients = matchedItems.map((item) => ({
+      ingredientId: Date.now() + Math.random(),
+      name: item,
+      quantity: 1,
+    }));
+    setIngredients(initialIngredients);
+  }, [matchedItems]);
 
   const handleConfirm = () => {
     if (!purchaseDate) {
@@ -47,7 +53,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   };
 
   return (
-    <FullScreenOverlay title="인식 결과" onClose={onClose}>
+    <FullScreenOverlay title="인식된 식재료" onClose={onClose}>
       <div className="mb-3">
         <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
         <Input
@@ -65,12 +71,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
       />
 
       <div className="d-flex justify-content-end mt-3">
-        <Button
-          variant="success"
-          onClick={handleConfirm}
-          disabled={!purchaseDate || ingredients.length === 0}
-          className="me-2"
-        >
+        <Button variant="success" onClick={handleConfirm}>
           확인
         </Button>
         <Button variant="danger" onClick={onClose}>

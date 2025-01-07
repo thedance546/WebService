@@ -10,7 +10,7 @@ import HomeNavBar from "../components/organisms/HomeNavBar";
 
 const SettingsPage: React.FC = () => {
   return (
-    <div className="settings-container">
+    <div className="container settings-container">
       <div style={{ height: 'var(--top-margin)' }}></div>
 
       <div className="card p-4 shadow-sm">
