@@ -11,25 +11,10 @@ import re
 import pathlib
 if os.name == 'nt':  # Windows
     pathlib.PosixPath = pathlib.WindowsPath
-
 app = Flask(__name__)
 
 # YOLO 모델 로드
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='best_ocr.pt', trust_repo=True, force_reload=True)
-
-def resize_image(img, target_width=1024, target_height=768):
-    """이미지 크기를 조정."""
-    return cv2.resize(img, (target_width, target_height), interpolation=cv2.INTER_AREA)
-
-def crop_and_scale(img, box, scale=2.0):
-    """박스 영역을 잘라내고 스케일 조정."""
-    x1, y1, x2, y2 = box
-    cropped = img[y1:y2, x1:x2]
-    height, width = cropped.shape[:2]
-    return cv2.resize(cropped, (int(width * scale), int(height * scale)), interpolation=cv2.INTER_LINEAR)
-
-# EasyOCR 초기화a
-reader = easyocr.Reader(['ko', 'en'], gpu=False)
 
 def detect_text_with_yolo(image, confidence_threshold=0.3):
     """YOLO를 사용하여 텍스트 영역 감지."""
@@ -104,21 +89,18 @@ def ocr_detection():
     image = np.array(Image.open(BytesIO(image_file.read())).convert('RGB'))
 
     try:
-        # 이미지 크기 조정
-        resized_image = resize_image(image)
-
         # YOLO로 텍스트 영역 감지
-        boxes = detect_text_with_yolo(resized_image)
+        boxes = detect_text_with_yolo(image)
 
         recognized_texts = []
         for (x1, y1, x2, y2) in boxes:
-            cropped = crop_and_scale(resized_image, (x1, y1, x2, y2), scale=1.5)
+            cropped = image[y1:y2, x1:x2]
             processed = preprocess(cropped)
             text = extract_text_with_tesseract(processed, lang="kor")
             recognized_texts.extend(clean_text(text))
 
         # 전체 이미지 텍스트와 구매일자 추출
-        full_text = extract_text_with_tesseract(resized_image, lang="kor")
+        full_text = extract_text_with_tesseract(image, lang="kor")
         purchase_date = extract_purchase_date(full_text)
 
         return jsonify({
