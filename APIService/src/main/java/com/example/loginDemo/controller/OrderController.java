@@ -4,7 +4,7 @@ import com.example.loginDemo.domain.Order;
 import com.example.loginDemo.domain.OrderItem;
 import com.example.loginDemo.domain.User;
 import com.example.loginDemo.service.OrderService;
-import com.example.loginDemo.dto.OrderRequest;
+import com.example.loginDemo.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/order")
+    @PostMapping
     public ResponseEntity<?> createOrder(@RequestHeader("Authorization") String accessToken,@RequestBody OrderRequest orderRequest) {
         try {
             // 주문 생성

@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/items")
+@RequestMapping("/api/items/storage-methods")
 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class StorageMethodController {
     private final StorageMethodService storageMethodService;
 
-    @PostMapping("/storage-method")
+    @PostMapping
     public ResponseEntity<?> createStorageMethod(@RequestHeader("Authorization") String accessToken,
                                                  @RequestBody StorageMethod storageMethod) {
         try {
@@ -28,12 +28,12 @@ public class StorageMethodController {
         }
     }
 
-    @GetMapping("/storage-methods")
+    @GetMapping
     public List<StorageMethod> getAllStorageMethods(@RequestHeader("Authorization") String accessToken) {
         return storageMethodService.getAllStorageMethods();
     }
 
-    @DeleteMapping("/storage-method/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStorageMethod(@RequestHeader("Authorization") String accessToken, @PathVariable Long id) {
         storageMethodService.deleteStorageMethod(id);
         return ResponseEntity.noContent().build();

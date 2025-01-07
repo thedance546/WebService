@@ -1,7 +1,7 @@
 package com.example.loginDemo.repository;
 
-import com.example.loginDemo.domain.Message;
 import com.example.loginDemo.domain.User;
+import com.example.loginDemo.domain.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
