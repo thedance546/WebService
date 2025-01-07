@@ -6,6 +6,7 @@ import Button from '../../components/atoms/Button';
 import EditIngredientForm from '../../components/organisms/EditIngredientForm';
 import Input from '../../components/atoms/Input';
 import { Ingredient } from '../../types/EntityTypes';
+import useDateInput from '../../hooks/useDateInput';
 
 interface AddIngredientModalProps {
   matchedItems: string[];
@@ -21,7 +22,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   onClose,
 }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [purchaseDate, setPurchaseDate] = useState<string>(initialPurchaseDate);
+  const purchaseDateInput = useDateInput(initialPurchaseDate); // Hook 사용
 
   useEffect(() => {
     const initialIngredients = matchedItems.map((item) => ({
@@ -33,7 +34,9 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   }, [matchedItems]);
 
   const handleConfirm = () => {
-    if (!purchaseDate) {
+    const parsedPurchaseDate = purchaseDateInput.getParsedValue(); // 최종 변환된 날짜 가져오기
+
+    if (!parsedPurchaseDate) {
       alert('구매일자를 입력해주세요.');
       return;
     }
@@ -46,7 +49,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
 
     const resultWithDate = validItems.map((item) => ({
       ...item,
-      purchaseDate,
+      purchaseDate: parsedPurchaseDate,
     }));
 
     onConfirm(resultWithDate);
@@ -57,10 +60,9 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
       <div className="mb-3">
         <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
         <Input
-          type="date"
+          type="text"
           id="purchaseDate"
-          value={purchaseDate}
-          onChange={(e) => setPurchaseDate(e.target.value)}
+          {...purchaseDateInput} // Hook 사용
           className="form-control"
         />
       </div>
