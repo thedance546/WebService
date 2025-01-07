@@ -1,6 +1,7 @@
 package com.example.loginDemo.yolo;
 
 import com.example.loginDemo.dto.MultipartFileRequest;
+import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -63,14 +64,19 @@ public class YoloController {
             "아몬드", "호두", "땅콩", "캐슈넛", "아보카도", "레몬", "라임"
     );
 
-    //receipt
+    // receipt
     @PostMapping("/receipts")
-    public ResponseEntity<Map<String, Object>> processImage(@RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<ReceiptResponse> processImage(@RequestParam("image") MultipartFile imageFile) {
         try {
-            Map<String, Object> response = yoloService.processReceiptImage(imageFile);
-            return ResponseEntity.ok(response);
+            // 이미지를 처리하고 ReceiptResponse 객체를 받음
+            ReceiptResponse receiptResponse = yoloService.processReceiptImage(imageFile);
+
+            // 처리된 결과를 ReceiptResponse로 반환
+            return ResponseEntity.ok(receiptResponse);
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Failed to process image"));
+            // 오류 발생 시, 오류 메시지를 포함한 ReceiptResponse 반환
+            return ResponseEntity.status(500).body(new ReceiptResponse(null, List.of("Failed to process image")));
         }
     }
+
 }

@@ -1,5 +1,6 @@
 package com.example.loginDemo.yolo;
 
+import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
@@ -12,6 +13,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
 import java.io.File;
@@ -31,7 +34,7 @@ public class YoloService {
 
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
-    private static final String IMAGE_DIRECTORY = "/app/images/";  // 컨테이너 내 이미지 저장 디렉토리
+    private static final String IMAGE_DIRECTORY = "/app/images/";
 
     // 이미지 리턴
     public ResponseEntity<byte[]> getProcessedImage(MultipartFile file) {
@@ -129,19 +132,26 @@ public class YoloService {
     }
 
     // ocr
-    public Map<String, Object> processReceiptImage(MultipartFile imageFile) throws IOException {
+    public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
         Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
+        // '품목' 추출
         List<String> items = (List<String>) response.get("품목");
+
+        // 아이템 매칭
         Set<String> matchedItemsSet = matchItems(items);
 
-        if (!matchedItemsSet.isEmpty()) {
-            response.put("matchedItems", new ArrayList<>(matchedItemsSet)); // Convert Set to List
-        } else {
-            response.put("matchedItems", "No matched items");
+        // 매칭된 아이템이 없으면 "No matched items"로 처리
+        List<String> matchedItems = new ArrayList<>(matchedItemsSet);
+        if (matchedItems.isEmpty()) {
+            matchedItems.add("No matched items");
         }
 
-        return response;
+        String purchaseDateString = (String) response.get("구매일자");
+        LocalDate purchaseDate = LocalDate.parse(purchaseDateString, DateTimeFormatter.ofPattern("yy-MM-dd"));
+
+        // ReceiptResponse 객체 생성하여 리턴
+        return new ReceiptResponse(purchaseDate, matchedItems);
     }
 
     private Set<String> matchItems(List<String> items) {
