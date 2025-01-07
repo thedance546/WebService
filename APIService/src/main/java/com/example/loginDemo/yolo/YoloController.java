@@ -30,12 +30,21 @@ public class YoloController {
         }
     }
 
-    //ingredient-image
-    // 2. 이미지 처리 후 결과 이미지 반환
     @PostMapping("/process-image")
-    public ResponseEntity<byte[]> processImageAndReturnResult(@RequestParam("image") MultipartFile file) {
-        ResponseEntity<byte[]> processedImage = yoloService.getProcessedImage(file);
-        return processedImage;
+    public ResponseEntity<byte[]> image(@RequestParam("image") MultipartFile image) {
+        return yoloService.getProcessedImage(image);
+    }
+
+    // 처리된 이미지 요청
+    @GetMapping("/processed-image/{imageName}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) {
+        try {
+            // 컨테이너 내에서 처리된 이미지 반환
+            return yoloService.getProcessedImageFromContainer(imageName);
+        } catch (Exception e) {
+            // 오류 처리
+            return ResponseEntity.status(404).body(null);
+        }
     }
 
     // 확인할 품목 리스트

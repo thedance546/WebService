@@ -15,26 +15,23 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class YoloService {
     private final RestTemplate restTemplate = new RestTemplate();
-//    private final String Ingredient_URL = "http://localhost:5000/object-detection/object_detection";
-//    private final String Receipt_URL = "http://localhost:5001/object-detection/ocr_detection";
     private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
     private final String flaskServerUrl = "http://yolo-container:5000";
+
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
+    private static final String IMAGE_DIRECTORY = "/app/images/";  // 컨테이너 내 이미지 저장 디렉토리
 
-    // ingredient
-    public Map<String, String> detectObjects(MultipartFile imageFile) throws IOException {
-        return sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-    }
-
-    //이미지 리턴
-    // 2. 처리된 이미지 리턴
+    // 이미지 리턴
     public ResponseEntity<byte[]> getProcessedImage(MultipartFile file) {
         try {
             // 이미지 바이트 배열로 변환
@@ -55,28 +52,31 @@ public class YoloService {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             // 처리된 이미지 반환
-            ResponseEntity<byte[]> response = restTemplate.exchange(
+            ResponseEntity<ByteArrayResource> response = restTemplate.exchange(
                     flaskServerUrl + "/object-detection/object_detection",
                     HttpMethod.POST,
                     requestEntity,
-                    byte[].class
+                    ByteArrayResource.class
             );
 
-            // 이미지 바이트 배열을 로컬에 저장
-            byte[] imageBytesFromResponse = response.getBody();
+            // ByteArrayResource에서 byte[] 추출
+            byte[] imageBytesFromResponse = response.getBody().getByteArray();
 
-            // 고유한 파일 이름 생성 (타임스탬프 또는 UUID 사용)
-            String uniqueFileName = "processed_image_" + UUID.randomUUID().toString() + ".jpg";  // UUID를 이용해 고유한 파일 이름 생성
-            String filePath = "C:/WorkSpace/" + uniqueFileName;  // 이미지 저장 경로 설정
+            // 컨테이너 내 이미지 저장 디렉토리 경로
+            Path imagePath = Paths.get(IMAGE_DIRECTORY + "processed_image.jpg");
 
-            File imageFile = new File(filePath);
-            try (FileOutputStream fos = new FileOutputStream(imageFile)) {
-                fos.write(imageBytesFromResponse);  // 이미지 바이트 데이터를 파일로 저장
+            // 이미지 파일을 디렉토리에 저장
+            try (FileOutputStream fos = new FileOutputStream(imagePath.toFile())) {
+                fos.write(imageBytesFromResponse);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Error saving processed image to container directory", e);
             }
 
-            return response;
+            // 이미지 바이트 배열로 ResponseEntity를 래핑하여 반환
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG) // Assuming JPEG image, change accordingly
+                    .body(imageBytesFromResponse);
+
         } catch (HttpServerErrorException e) {
             throw new RuntimeException("Server error while processing image: " + e.getMessage(), e);
         } catch (ResourceAccessException e) {
@@ -84,6 +84,34 @@ public class YoloService {
         } catch (IOException e) {
             throw new RuntimeException("Error reading image file: " + e.getMessage(), e);
         }
+    }
+
+    public ResponseEntity<byte[]> getProcessedImageFromContainer(String imageName) {
+        try {
+            // 이미지 파일 경로
+            Path imagePath = Paths.get(IMAGE_DIRECTORY + imageName);
+
+            // 이미지 파일이 존재하는지 확인
+            if (Files.notExists(imagePath)) {
+                throw new RuntimeException("이미지 파일이 존재하지 않습니다: " + imageName);
+            }
+
+            // 이미지 파일을 바이트 배열로 읽기
+            byte[] imageBytes = Files.readAllBytes(imagePath);
+
+            // 이미지 바이트 배열로 ResponseEntity를 래핑하여 반환
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG) // Assuming JPEG image, change accordingly
+                    .body(imageBytes);
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 파일을 읽는 중 오류가 발생했습니다: " + e.getMessage(), e);
+        }
+    }
+
+
+    // ingredient
+    public Map<String, String> detectObjects(MultipartFile imageFile) throws IOException {
+        return sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
     }
 
     // ocr
