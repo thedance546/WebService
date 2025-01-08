@@ -13,11 +13,13 @@
     "moduleResolution": "node",
 
     // 기본 Node.js 모듈 및 글로벌 타입 지원 활성화
-    "types": ["node"],
+    "types": ["node", "react"],
 
     // TypeScript가 ES 모듈 간 상호 운용성을 더 쉽게 허용
     "esModuleInterop": true,
 
+    "allowSyntheticDefaultImports": true,
+    
     // 대소문자를 강제하여 일관된 파일 이름 사용
     "forceConsistentCasingInFileNames": true,
 
