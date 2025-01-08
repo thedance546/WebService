@@ -20,6 +20,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
         isUser ? 'justify-content-end' : 'justify-content-start'
       } align-items-start mb-2`}
     >
+      {/* 프로필 이미지 */}
       {isBot && profileImage && (
         <img
           src={profileImage}
@@ -27,6 +28,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
           className="bot-avatar"
         />
       )}
+
+      {/* 메시지 버블 */}
       <div
         className={`message-bubble p-2 rounded ${
           isUser ? 'bg-primary text-white' : 'bg-secondary text-white w-100'
@@ -36,7 +39,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
           wordBreak: 'break-word',
         }}
       >
-        {text}
+        {text && <p className="message-text">{text}</p>}
+        {attachedImage && (
+          <img
+            src={attachedImage}
+            alt=''
+            className="message-attached-image"
+          />
+        )}
       </div>
     </div>
   );
