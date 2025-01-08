@@ -15,39 +15,42 @@ const TopTabMenu: React.FC<TopTabMenuProps> = ({ activeTab, onTabClick, onAddCli
     style={{
       position: "sticky",
       top: 0,
-      overflowX: "auto", // 스크롤 기능은 유지
+      overflowX: "auto",
     }}
   >
     <style>
       {`
-      /* Chrome, Edge, Safari */
-      .top-tab-menu::-webkit-scrollbar {
-        display: none; /* 스크롤바 숨기기 */
-      }
+        .top-tab-menu .tab-active {
+          background-color: var(--primary-color);
+          color: white;
+          border: none;
+        }
 
-      /* Firefox */
-      .top-tab-menu {
-        scrollbar-width: none; /* 스크롤바 숨기기 */
-      }
+        .top-tab-menu .tab-inactive {
+          background-color: transparent;
+          color: var(--primary-color);
+          border: 1px solid var(--primary-color);
+        }
 
-      /* IE 10+ */
-      .top-tab-menu {
-        -ms-overflow-style: none; /* 스크롤바 숨기기 */
-      }
-    `}
+        .top-tab-menu .tab-inactive:hover {
+          background-color: var(--primary-color);
+          color: white;
+        }
+      `}
     </style>
     <div
       className="d-flex align-items-center"
       style={{
         overflowX: "auto",
-        whiteSpace: "nowrap", // 버튼 줄 바꿈 방지
+        whiteSpace: "nowrap",
       }}
     >
       {STORAGE_METHODS.map((method) => (
         <button
           key={method.id}
-          className={`btn mx-2 ${activeTab === method.name ? "btn-primary" : "btn-outline-secondary"
-            }`}
+          className={`btn mx-2 ${
+            activeTab === method.name ? "tab-active" : "tab-inactive"
+          }`}
           style={{
             borderRadius: "20px",
             whiteSpace: "nowrap",

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
-import TopTabMenu from "./TopTabMenu"; // 이름 변경
+import TopTabMenu from "./TopTabMenu";
 import IngredientCard from "./IngredientCard";
 import { Ingredient } from "../../types/EntityTypes";
 
@@ -20,9 +20,9 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   const itemsPerPage = 12;
 
   const filteredIngredients =
-  activeTab === "전체"
-    ? ingredients
-    : ingredients.filter((item) => String(item.storageMethodId) === activeTab);
+    activeTab === "전체"
+      ? ingredients
+      : ingredients.filter((item) => String(item.storageMethodId) === activeTab);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -35,7 +35,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   };
 
   return (
-    <div>
+    <div style={{ position: "relative", paddingBottom: "5rem" }}>
       {/* 상단 탭 메뉴 */}
       <TopTabMenu
         activeTab={activeTab}
@@ -63,7 +63,16 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
       </div>
 
       {/* 페이지네이션 */}
-      <div className="pagination" style={{ textAlign: "center", marginTop: "1rem" }}>
+      <div
+        className="pagination"
+        style={{
+          position: "fixed",
+          bottom: "5rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          textAlign: "center",
+        }}
+      >
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
           <button
             key={pageNumber}
@@ -71,11 +80,12 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
             style={{
               margin: "0 0.5rem",
               padding: "0.5rem 1rem",
-              backgroundColor: pageNumber === currentPage ? "#007bff" : "#f8f9fa",
-              color: pageNumber === currentPage ? "#fff" : "#000",
-              border: "1px solid #dee2e6",
+              backgroundColor: pageNumber === currentPage ? "var(--primary-color)" : "transparent",
+              color: pageNumber === currentPage ? "#fff" : "var(--primary-color)",
+              border: `1px solid var(--primary-color)`,
               borderRadius: "4px",
               cursor: "pointer",
+              transition: "background-color 0.3s, color 0.3s",
             }}
           >
             {pageNumber}
