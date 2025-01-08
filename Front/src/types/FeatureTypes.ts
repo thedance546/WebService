@@ -10,6 +10,7 @@ export interface Message {
   text: string;
   profileImage?: string;
   attachedImage?: string;
+  formatted?: boolean;
 }
 
 export interface ChatMessagesProps {

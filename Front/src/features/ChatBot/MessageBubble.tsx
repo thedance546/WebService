@@ -1,6 +1,7 @@
 // src/features/ChatBot/MessageBubble.tsx
 
 import React from 'react';
+import { formatMessage } from '../../utils/FormatMessage';
 import './MessageBubble.css';
 
 interface MessageBubbleProps {
@@ -8,9 +9,10 @@ interface MessageBubbleProps {
   text?: string;
   profileImage?: string;
   attachedImage?: string;
+  formatted?: boolean;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImage, attachedImage }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImage, attachedImage, formatted }) => {
   const isUser = sender === 'user';
   const isBot = sender === 'bot';
 
@@ -20,7 +22,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
         isUser ? 'justify-content-end' : 'justify-content-start'
       } align-items-start mb-2`}
     >
-      {/* 프로필 이미지 */}
       {isBot && profileImage && (
         <img
           src={profileImage}
@@ -29,7 +30,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
         />
       )}
 
-      {/* 메시지 버블 */}
       <div
         className={`message-bubble p-2 rounded ${
           isUser ? 'bg-primary text-white' : 'bg-secondary text-white w-100'
@@ -39,7 +39,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
           wordBreak: 'break-word',
         }}
       >
-        {text && <p className="message-text">{text}</p>}
+        {/* 포맷팅 여부에 따라 처리 */}
+        {formatted ? formatMessage(text || '') : <p className="message-text">{text}</p>}
         {attachedImage && (
           <img
             src={attachedImage}
