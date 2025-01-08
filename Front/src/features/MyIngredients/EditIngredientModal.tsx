@@ -85,7 +85,7 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <td style={{ width: '70%' }}>
               <Input
                 type="text"
-                {...purchaseDateInput} // Hook 사용
+                {...purchaseDateInput}
                 className="form-control"
               />
             </td>

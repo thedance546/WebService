@@ -68,7 +68,7 @@ const ChatBotPage: React.FC = () => {
   };
 
   return (
-    <div className="chatbot-container container">
+    <div className="container">
       <ChatMessages messages={messages} />
       <ChatInput
         addMessage={addMessage}
