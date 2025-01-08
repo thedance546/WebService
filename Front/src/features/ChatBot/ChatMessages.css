@@ -14,7 +14,7 @@
     background-color: var(--chat-bg-color);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .chat-messages-container {
         height: calc(var(--viewport-height) - var(--navbar-height) - var(--input-height) - 50px);
     }

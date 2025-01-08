@@ -22,7 +22,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   onClose,
 }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const purchaseDateInput = useDateInput(initialPurchaseDate); // Hook 사용
+  const purchaseDateInput = useDateInput(initialPurchaseDate);
 
   useEffect(() => {
     const initialIngredients = matchedItems.map((item) => ({
@@ -34,7 +34,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   }, [matchedItems]);
 
   const handleConfirm = () => {
-    const parsedPurchaseDate = purchaseDateInput.getParsedValue(); // 최종 변환된 날짜 가져오기
+    const parsedPurchaseDate = purchaseDateInput.getParsedValue();
 
     if (!parsedPurchaseDate) {
       alert('구매일자를 입력해주세요.');
