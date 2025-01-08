@@ -62,7 +62,9 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
         <Input
           type="text"
           id="purchaseDate"
-          {...purchaseDateInput} // Hook 사용
+          value={purchaseDateInput.value}
+          onChange={purchaseDateInput.onChange}
+          onBlur={purchaseDateInput.onBlur}
           className="form-control"
         />
       </div>
