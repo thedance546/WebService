@@ -4,7 +4,7 @@ import React from 'react';
 import Modal from '../../components/molecules/Modal';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
-import { detectObjectsInImage } from '../../services/YOLOApi';
+import { detectObjectsInImage } from '../../services/ServiceApi';
 import { Ingredient } from '../../types/EntityTypes';
 
 interface IngredientUploadModalProps {
