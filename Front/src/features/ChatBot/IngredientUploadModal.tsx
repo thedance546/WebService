@@ -49,7 +49,7 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
     try {
       const detectionResult = await detectObjectsInImage(state.selectedFile);
       const parsedIngredients = Object.entries(detectionResult).map(([name, quantity]) => ({
-        ingredientId: Date.now() + Math.random(),
+        ingredientId: 0,
         name,
         quantity: parseInt(quantity as string, 10),
       }));

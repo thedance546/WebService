@@ -6,10 +6,11 @@ import './MessageBubble.css';
 interface MessageBubbleProps {
   sender: string;
   text?: string;
-  imageUrl?: string;
+  profileImage?: string;
+  attachedImage?: string;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, imageUrl }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImage, attachedImage }) => {
   const isUser = sender === 'user';
   const isBot = sender === 'bot';
 
@@ -19,12 +20,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, imageUrl })
         isUser ? 'justify-content-end' : 'justify-content-start'
       } align-items-start mb-2`}
     >
-      {isBot && imageUrl && (
+      {isBot && profileImage && (
         <img
-          src={imageUrl}
+          src={profileImage}
           alt="bot avatar"
           className="bot-avatar"
-          style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }}
         />
       )}
       <div
