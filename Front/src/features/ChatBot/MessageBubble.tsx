@@ -19,14 +19,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
     justifyContent: isUser ? 'flex-end' : 'flex-start',
   };
 
-  const avatarStyle = {
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    marginRight: '10px',
-    alignSelf: 'flex-start',
-  };
-
   const bubbleStyle = {
     padding: '10px',
     borderRadius: '10px',
@@ -36,18 +28,37 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
     wordBreak: 'break-word' as 'break-word',
   };
 
-  const imageStyle = {
-    maxWidth: '100%',
-    borderRadius: '8px',
-    marginTop: '10px',
-  };
+  const formattedText = text?.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      <br />
+    </React.Fragment>
+  ));
 
   return (
     <div style={containerStyle}>
-      {!isUser && profileImage && <img src={profileImage} alt="bot avatar" style={avatarStyle} />}
+      {!isUser && profileImage && (
+        <img
+          src={profileImage}
+          alt="bot avatar"
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            marginRight: '10px',
+            alignSelf: 'flex-start',
+          }}
+        />
+      )}
       <div style={bubbleStyle}>
-        {text && <p style={{ margin: 0 }}>{text}</p>}
-        {attachedImage && <img src={attachedImage} alt="" style={imageStyle} />}
+        {formattedText}
+        {attachedImage && (
+          <img
+            src={attachedImage}
+            alt="Attached"
+            style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '10px' }}
+          />
+        )}
       </div>
     </div>
   );
