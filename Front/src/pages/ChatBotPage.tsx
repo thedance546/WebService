@@ -11,6 +11,8 @@ import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
 import { Message, Sender } from '../types/FeatureTypes';
 import { Ingredient } from '../types/EntityTypes';
+import Modal from '../components/molecules/Modal';
+import Button from '../components/atoms/Button';
 import botAvatar from '../assets/matjipsa_logo.png';
 
 const ChatBotPage: React.FC = () => {
@@ -33,17 +35,36 @@ const ChatBotPage: React.FC = () => {
     detectionResult: null as any,
     loading: false,
   });
-
   const detectionModal = usePopupState({
     isOpen: false,
     ingredients: [] as Ingredient[],
   });
-
   const customInfoModal = usePopupState({ isOpen: false });
+
+  const imageUploadModal = usePopupState({
+    selectedFile: null as File | null,
+    previewUrl: null as string | null,
+  });
 
   const clearMessages = () => {
     setMessages(initialMessage);
     localStorage.removeItem('chatMessages');
+  };
+
+  const handleImageUpload = (file: File) => {
+    const previewUrl = URL.createObjectURL(file);
+    imageUploadModal.setState({ selectedFile: file, previewUrl });
+  };
+
+  const addImageMessage = () => {
+    if (imageUploadModal.state.previewUrl) {
+      addMessage({
+        sender: Sender.User,
+        text: '',
+        imageUrl: imageUploadModal.state.previewUrl,
+      });
+      imageUploadModal.reset();
+    }
   };
 
   return (
@@ -60,6 +81,7 @@ const ChatBotPage: React.FC = () => {
         clearMessages={clearMessages}
         openRecipeModal={recipeModal.open}
         openCustomInfoModal={customInfoModal.open}
+        onImagePreviewTest={imageUploadModal.open}
       />
       {recipeModal.isOpen && (
         <IngredientUploadModal
@@ -90,8 +112,26 @@ const ChatBotPage: React.FC = () => {
               ingredients: Array.isArray(ingredients) ? ingredients : [],
             }));
           }}
-          // detectedImageSrc={recipeModal.state.detectionResult?.imageUrl} // 탐지된 이미지 URL 전달
         />
+      )}
+      {imageUploadModal.isOpen && (
+        <Modal title="이미지 업로드 테스트" onClose={imageUploadModal.close}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => e.target.files && handleImageUpload(e.target.files[0])}
+          />
+          {imageUploadModal.state.previewUrl && (
+            <img
+              src={imageUploadModal.state.previewUrl}
+              alt="Preview"
+              style={{ width: '100%', height: 'auto', marginTop: '1rem' }}
+            />
+          )}
+          <Button onClick={addImageMessage} disabled={!imageUploadModal.state.previewUrl}>
+            전송
+          </Button>
+        </Modal>
       )}
       <CustomInfoInputModal
         isOpen={customInfoModal.isOpen}
