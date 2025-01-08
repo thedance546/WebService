@@ -50,16 +50,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
           }}
         />
       )}
-      <div style={bubbleStyle}>
-        {formattedText}
-        {attachedImage && (
-          <img
-            src={attachedImage}
-            alt="Attached"
-            style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '10px' }}
-          />
-        )}
-      </div>
+      {text && (
+        <div style={bubbleStyle}>
+          {formattedText}
+        </div>
+      )}
+      {/* 이미지가 있는 경우에만 렌더링 */}
+      {attachedImage && (
+        <img
+          src={attachedImage}
+          alt="Attached"
+          style={{ maxWidth: '60%', borderRadius: '8px', marginTop: '10px' }}
+        />
+      )}
     </div>
   );
 };
