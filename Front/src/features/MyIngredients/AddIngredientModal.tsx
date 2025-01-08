@@ -7,6 +7,8 @@ import EditIngredientForm from '../../components/organisms/EditIngredientForm';
 import Input from '../../components/atoms/Input';
 import { Ingredient } from '../../types/EntityTypes';
 import useDateInput from '../../hooks/useDateInput';
+import { createOrder } from '../../services/ServiceApi';
+import LoadingModal from '../../components/organisms/LoadingModal';
 
 interface AddIngredientModalProps {
   matchedItems: string[];
@@ -22,6 +24,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   onClose,
 }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const purchaseDateInput = useDateInput(initialPurchaseDate);
 
   useEffect(() => {
@@ -33,7 +36,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
     setIngredients(initialIngredients);
   }, [matchedItems]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const parsedPurchaseDate = purchaseDateInput.getParsedValue();
 
     if (!parsedPurchaseDate) {
@@ -47,42 +50,65 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
       return;
     }
 
-    const resultWithDate = validItems.map((item) => ({
-      ...item,
-      purchaseDate: parsedPurchaseDate,
-    }));
+    const orderData = {
+      orderDate: parsedPurchaseDate,
+      orderItems: validItems.map((item) => ({
+        itemName: item.name,
+        count: item.quantity,
+      })),
+    };
 
-    onConfirm(resultWithDate);
+    setIsLoading(true); // 로딩 시작
+
+    try {
+      await createOrder(orderData); // 주문 등록 API 호출
+      onConfirm(validItems.map((item) => ({ ...item, purchaseDate: parsedPurchaseDate }))); // 부모 컴포넌트로 데이터 전달
+      onClose(); // 모달 닫기
+    } catch (error) {
+      // error를 안전하게 처리
+      if (error instanceof Error) {
+        console.error('식재료 등록 실패:', error.message);
+        alert(`${error.message}`);
+      } else {
+        console.error('식재료 등록 실패: 알 수 없는 오류');
+        alert('식재료 등록에 실패했습니다. 알 수 없는 오류입니다.');
+      }
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
   };
 
   return (
-    <FullScreenOverlay title="인식된 식재료" onClose={onClose}>
-      <div className="mb-3">
-        <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
-        <Input
-          type="text"
-          id="purchaseDate"
-          value={purchaseDateInput.value}
-          onChange={purchaseDateInput.onChange}
-          onBlur={purchaseDateInput.onBlur}
-          className="form-control"
+    <>
+      {isLoading && <LoadingModal />} {/* 로딩 모달 */}
+      <FullScreenOverlay title="인식된 식재료" onClose={onClose}>
+        <div className="mb-3">
+          <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
+          <Input
+            type="text"
+            id="purchaseDate"
+            value={purchaseDateInput.value}
+            onChange={purchaseDateInput.onChange}
+            onBlur={purchaseDateInput.onBlur}
+            className="form-control"
+          />
+        </div>
+
+        <EditIngredientForm
+          ingredients={ingredients}
+          onIngredientsChange={setIngredients}
         />
-      </div>
 
-      <EditIngredientForm
-        ingredients={ingredients}
-        onIngredientsChange={setIngredients}
-      />
-
-      <div className="d-flex justify-content-end mt-3">
-        <Button variant="success" onClick={handleConfirm}>
-          확인
-        </Button>
-        <Button variant="danger" onClick={onClose}>
-          취소
-        </Button>
-      </div>
-    </FullScreenOverlay>
+        <div className="d-flex justify-content-end mt-3">
+          <Button variant="success" onClick={handleConfirm}>
+            확인
+          </Button>
+          <Button variant="danger" onClick={onClose}>
+            취소
+          </Button>
+        </div>
+      </FullScreenOverlay>
+    </>
   );
 };
 
