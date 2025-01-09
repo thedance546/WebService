@@ -40,6 +40,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>이름</th>
             <td style={{ width: '70%' }}>
               <Input
+                id="ingredient-name"
+                name="ingredient-name"
                 type="text"
                 value={editedRow.name || ""}
                 onChange={(e) => handleChange("name", e.target.value)}
@@ -52,6 +54,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <td style={{ width: '70%' }}>
               <Input
                 type="number"
+                id="ingredient-quantity"
+                name="ingredient-quantity"
                 value={editedRow.quantity || ""}
                 onChange={(e) => handleChange("quantity", parseInt(e.target.value, 10) || "")}
                 className="form-control"
@@ -62,6 +66,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>카테고리</th>
             <td style={{ width: '70%' }}>
               <Input
+                id="ingredient-category"
+                name="ingredient-category"
                 type="text"
                 value={editedRow.categoryId || ""}
                 onChange={(e) => handleChange("categoryId", e.target.value)}
@@ -73,6 +79,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>보관방법</th>
             <td style={{ width: '70%' }}>
               <Input
+                id="ingredient-storagemethod"
+                name="ingredient-storagemethod"
                 type="text"
                 value={editedRow.storageMethodId || ""}
                 onChange={(e) => handleChange("storageMethodId", e.target.value)}
@@ -84,6 +92,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>구매일자</th>
             <td style={{ width: '70%' }}>
               <Input
+                id="ingredient-purchasedate"
+                name="ingredient-purchasedate"
                 type="text"
                 {...purchaseDateInput}
                 className="form-control"

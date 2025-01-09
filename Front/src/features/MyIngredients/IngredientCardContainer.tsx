@@ -15,7 +15,8 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   onAddClick,
   onCardClick,
 }) => {
-  const { ingredients, activeTab, setActiveTab } = useIngredients();
+  const { ingredients } = useIngredients();
+  const [activeTab, setActiveTab] = useState<string>("전체"); // 로컬 상태로 관리
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
@@ -36,14 +37,8 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
 
   return (
     <div style={{ position: "relative", paddingBottom: "5rem" }}>
-      {/* 상단 탭 메뉴 */}
-      <TopTabMenu
-        activeTab={activeTab}
-        onTabClick={setActiveTab}
-        onAddClick={onAddClick}
-      />
+      <TopTabMenu activeTab={activeTab} onTabClick={setActiveTab} onAddClick={onAddClick} />
 
-      {/* 식재료 카드 그리드 */}
       <div
         className="ingredient-card-grid"
         style={{
@@ -62,7 +57,6 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
         ))}
       </div>
 
-      {/* 페이지네이션 */}
       <div
         className="pagination"
         style={{

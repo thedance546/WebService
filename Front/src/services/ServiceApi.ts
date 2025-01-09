@@ -57,6 +57,7 @@ export const sendChatMessage = async (message: string): Promise<string> => {
 export const createOrder = async (orderData: { orderDate: string; orderItems: { itemName: string; count: number }[] }): Promise<void> => {
     try {
         const headers = getAuthHeaders('Bearer');
+        console.log('주문 등록 요청:', orderData);
         await api.post('/orders', orderData, { headers });
         console.log('주문 등록 성공:', orderData);
     } catch (error) {

@@ -1,14 +1,15 @@
 // src/features/MyIngredients/AddIngredientModal.tsx
 
 import React, { useState, useEffect } from 'react';
-import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
 import Button from '../../components/atoms/Button';
-import EditIngredientForm from '../../components/organisms/EditIngredientForm';
 import Input from '../../components/atoms/Input';
-import { Ingredient } from '../../types/EntityTypes';
-import useDateInput from '../../hooks/useDateInput';
-import { createOrder } from '../../services/ServiceApi';
+import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
+import EditIngredientForm from '../../components/organisms/EditIngredientForm';
 import LoadingModal from '../../components/organisms/LoadingModal';
+import useDateInput from '../../hooks/useDateInput';
+import { Ingredient } from '../../types/EntityTypes';
+import { createOrder } from '../../services/ServiceApi';
+import { useIngredients } from "../../contexts/IngredientsContext";
 
 interface AddIngredientModalProps {
   matchedItems: string[];
@@ -23,6 +24,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   onConfirm,
   onClose,
 }) => {
+  const { refreshIngredients } = useIngredients();
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const purchaseDateInput = useDateInput(initialPurchaseDate);
@@ -58,29 +60,29 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
       })),
     };
 
-    setIsLoading(true); // 로딩 시작
+    setIsLoading(true);
 
     try {
-      await createOrder(orderData); // 주문 등록 API 호출
-      onConfirm(validItems.map((item) => ({ ...item, purchaseDate: parsedPurchaseDate }))); // 부모 컴포넌트로 데이터 전달
-      onClose(); // 모달 닫기
+      await createOrder(orderData);
+      await refreshIngredients();
+      onConfirm(validItems);
+      onClose();
     } catch (error) {
-      // error를 안전하게 처리
       if (error instanceof Error) {
         console.error('식재료 등록 실패:', error.message);
-        alert(`${error.message}`);
+        alert(`식재료 등록에 실패했습니다. 오류: ${error.message}`);
       } else {
         console.error('식재료 등록 실패: 알 수 없는 오류');
         alert('식재료 등록에 실패했습니다. 알 수 없는 오류입니다.');
       }
     } finally {
-      setIsLoading(false); // 로딩 종료
+      setIsLoading(false);
     }
   };
 
   return (
     <>
-      {isLoading && <LoadingModal />} {/* 로딩 모달 */}
+      {isLoading && <LoadingModal />}
       <FullScreenOverlay title="인식된 식재료" onClose={onClose}>
         <div className="mb-3">
           <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
