@@ -14,7 +14,7 @@ import { Message, Sender } from '../types/FeatureTypes';
 import { Ingredient } from '../types/EntityTypes';
 import Modal from '../components/molecules/Modal';
 import Button from '../components/atoms/Button';
-import botAvatar from '../assets/matjipsa_logo.png';
+import botAvatar from '../assets/matjipsa_logo.webp';
 
 const ChatBotPage: React.FC = () => {
   const initialMessage: Message[] = [

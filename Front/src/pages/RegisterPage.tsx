@@ -5,6 +5,8 @@ import { useAuthContext } from '../contexts/AuthContext';
 import GlobalBackground from '../components/templates/GlobalBackground';
 import BackButton from '../components/molecules/BackButton';
 import Button from '../components/atoms/Button';
+import logo from '../assets/matjipsa_logo.webp';
+import title from '../assets/matjipsa_title.webp';
 
 const RegisterPage: React.FC = () => {
   const [emailLocal, setEmailLocal] = useState<string>('');
@@ -29,7 +31,33 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <GlobalBackground title="맛집사">
+    <GlobalBackground>
+      {/* 로고와 타이틀 구역 */}
+      <div
+        className="d-flex align-items-center justify-content-center mb-4"
+        style={{
+          marginTop: '5rem', // 상단 여백
+        }}
+      >
+        <img
+          src={logo}
+          alt="맛집사 로고"
+          style={{
+            width: '100px',
+            height: '100px',
+            marginRight: '1rem',
+          }}
+        />
+        <img
+          src={title}
+          alt="맛집사 타이틀"
+          style={{
+            width: '200px',
+            height: 'auto',
+          }}
+        />
+      </div>
+
       <form onSubmit={onSubmit}>
         <div className="mb-3">
           <label className="form-label">이메일</label>

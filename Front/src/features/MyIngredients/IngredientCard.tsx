@@ -15,6 +15,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
 
   let status = "";
   let backgroundColor = "";
+  let icon = null;
 
   const isShelfLifeNear = (date: string | undefined) => {
     if (!date) return false;
@@ -45,16 +46,19 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
     // 소비기한 만료
     status = "소비기한 만료";
     backgroundColor = STATUS_COLORS.expired;
+    icon = "❗"; // 경고 아이콘
   }
 
   if (isShelfLifeNear(ingredient.shelfLife)) {
     // 유통기한 임박
     status = "유통기한 임박";
     backgroundColor = STATUS_COLORS.nearShelfLife;
+    icon = "⚠️"; // 주의 아이콘
   } else if (isConsumeByNear(ingredient.consumeBy)) {
     // 소비기한 임박
     status = "소비기한 임박";
     backgroundColor = STATUS_COLORS.nearConsume;
+    icon = "⚠️"; // 주의 아이콘
   }
 
   return (
@@ -72,9 +76,24 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
         backgroundColor, // 상태에 따라 동적 색상 적용
+        position: "relative", // 아이콘 배치를 위한 상대 위치
       }}
       onClick={onClick}
     >
+      {/* 경고 및 주의 아이콘 */}
+      {icon && (
+        <div
+          style={{
+            position: "absolute",
+            top: "8px",
+            right: "8px",
+            fontSize: "1.5rem",
+          }}
+        >
+          {icon}
+        </div>
+      )}
+
       <h5 className="card-title">{ingredient.name}</h5>
       <p>
         <strong>수량:</strong> {ingredient.quantity}
