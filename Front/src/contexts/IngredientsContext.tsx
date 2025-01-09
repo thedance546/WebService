@@ -17,19 +17,17 @@ const IngredientsContext = createContext<IngredientsContextType | undefined>(und
 export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
-  // 서버에서 데이터를 가져와 상태를 갱신하는 함수
   const refreshIngredients = async () => {
     try {
-      const orders = await fetchOrders(); // 주문 데이터 가져오기
-      const formattedIngredients = mapOrderToIngredients(orders); // 데이터 변환
-      setIngredients(formattedIngredients); // 상태 갱신
+      const orders = await fetchOrders();
+      const formattedIngredients = mapOrderToIngredients(orders);
+      setIngredients(formattedIngredients);
     } catch (error) {
       console.error("식재료 데이터 가져오기 실패:", error);
     }
   };
 
   useEffect(() => {
-    // 페이지 처음 진입 시 데이터 로드
     refreshIngredients();
   }, []);
 
@@ -41,14 +39,12 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
         updateIngredient: (updatedIngredient) =>
           setIngredients((prev) =>
             prev.map((ingredient) =>
-              ingredient.ingredientId === updatedIngredient.ingredientId
-                ? updatedIngredient
-                : ingredient
+              ingredient.ingredientId === updatedIngredient.ingredientId ? updatedIngredient : ingredient
             )
           ),
         deleteIngredient: (ingredientId) =>
           setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== ingredientId)),
-        refreshIngredients, // 갱신 함수 추가
+        refreshIngredients,
       }}
     >
       {children}
@@ -70,22 +66,24 @@ export const mapOrderToIngredients = (orders: any[]): Ingredient[] => {
       ingredientId: orderItem.item.id,
       name: orderItem.item.itemName,
       quantity: orderItem.count,
+      category: {
+        id: orderItem.item.category.id,
+        categoryName: orderItem.item.category.categoryName,
+      },
+      storageMethod: {
+        id: orderItem.item.storageMethod.id,
+        storageMethodName: orderItem.item.storageMethod.storageMethodName,
+      },
+      shelfLife: calculateDate(order.orderDate, orderItem.item.shelfLife?.sellByDays),
+      consumeBy: calculateDate(order.orderDate, orderItem.item.shelfLife?.useByDays),
       purchaseDate: order.orderDate,
-      categoryId: orderItem.item.category?.id,
-      storageMethodId: orderItem.item.storageMethod?.id,
-      shelfLife: orderItem.item.shelfLife
-        ? calculateDate(order.orderDate, orderItem.item.shelfLife.sellByDays)
-        : undefined,
-      consumeBy: orderItem.item.shelfLife
-        ? calculateDate(order.orderDate, orderItem.item.shelfLife.useByDays)
-        : undefined,
     }))
   );
 };
 
-// 날짜 계산 함수
-const calculateDate = (baseDate: string, daysToAdd: number): string => {
+const calculateDate = (baseDate: string, daysToAdd: number | undefined): string | undefined => {
+  if (!daysToAdd) return undefined;
   const date = new Date(baseDate);
   date.setDate(date.getDate() + daysToAdd);
-  return date.toISOString().split("T")[0]; // YYYY-MM-DD 포맷
+  return date.toISOString().split("T")[0];
 };

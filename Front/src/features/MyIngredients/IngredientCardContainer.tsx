@@ -23,7 +23,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   const filteredIngredients =
     activeTab === "전체"
       ? ingredients
-      : ingredients.filter((item) => String(item.storageMethodId) === activeTab);
+      : ingredients.filter((item) => String(item.storageMethod?.storageMethodName) === activeTab);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -52,6 +52,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
           <IngredientCard
             key={ingredient.ingredientId}
             ingredient={ingredient}
+            
             onClick={() => onCardClick(ingredient)}
           />
         ))}

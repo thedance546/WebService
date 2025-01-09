@@ -1,8 +1,8 @@
 // src/components/organisms/CommonHeader.tsx
 
 import React from "react";
-import logo from "../../assets/matjipsa_logo.png";
-import title from "../../assets/matjipsa_title.png";
+import logo from "../../assets/matjipsa_logo_128.webp";
+import title from "../../assets/matjipsa_title_small.webp";
 
 interface CommonHeaderProps {
   pageTitle: string;
