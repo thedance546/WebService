@@ -157,7 +157,7 @@ public class YoloService {
     private Set<String> matchItems(List<String> items) {
         Set<String> matchedItemsSet = new HashSet<>();
         List<String> ITEMS_TO_CHECK = Arrays.asList(
-                "김치", "토마토", "방울토마토", "가지", "오이", "애호박", "팽이버섯", "새송이버섯",
+                "김치", "토마토", "방울토마토", "가지", "오이", "애호박", "팽이버섯", "새송이 버섯",
                 "돼지고기", "닭고기", "소고기", "두부", "콩나물", "대파", "양파", "마늘", "시금치",
                 "고추", "깻잎", "당근", "감자", "고구마", "계란", "무", "파프리카", "게맛살", "쌀",
                 "어묵", "사과", "비엔나 소세지",
