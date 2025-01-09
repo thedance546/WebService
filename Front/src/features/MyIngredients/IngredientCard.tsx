@@ -66,7 +66,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
       className="card"
       style={{
         width: "180px",
-        height: "150px",
+        height: "135px",
         padding: "0.75rem",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         borderRadius: "12px",
