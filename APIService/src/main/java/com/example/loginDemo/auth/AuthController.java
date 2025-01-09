@@ -53,7 +53,7 @@ public class AuthController {
     }
 
     //회원 탈퇴
-    @DeleteMapping("/delete-account")
+    @DeleteMapping("/account")
     public ResponseEntity<Map<String, String>> deleteAccount(@RequestHeader("Authorization") String accessToken,
                                                              @CookieValue(name = "refreshToken", defaultValue = "") String refreshToken) {
         try {
