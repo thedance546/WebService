@@ -21,7 +21,7 @@ const FullScreenOverlay: React.FC<FullScreenOverlayProps> = ({
     style={{ zIndex: 1050 }}
   >
     <BaseHeader title={title} onClose={onClose} headerStyle={headerStyle} />
-    <div className="flex-grow-1 overflow-auto bg-white p-3">{children}</div>
+    <div className="container flex-grow-1 overflow-auto bg-white p-3">{children}</div>
   </div>
 );
 

@@ -25,12 +25,11 @@ export interface UserInfoFormProps {
   formData: {
     ageGroup: string;
     gender: string;
-    activityLevel: string;
     healthGoal: string;
-    allergies: string[];
     mealTimes: string[];
     foodCategories: string[];
     customFoodCategory: string;
+    allergies: string[];
     customAllergy: string;
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;

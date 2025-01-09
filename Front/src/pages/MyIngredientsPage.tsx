@@ -1,7 +1,5 @@
 // src/pages/MyIngredientsPage.tsx
 
-// src/pages/MyIngredientsPage.tsx
-
 import React from "react";
 import IngredientCardContainer from "../features/MyIngredients/IngredientCardContainer";
 import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
@@ -17,7 +15,13 @@ import { recognizeReceipt } from "../services/YOLOApi";
 const MyIngredientsPage: React.FC = () => {
   const optionsModal = usePopupState(null);
   const receiptUploadModal = usePopupState<{ selectedFile: File | null }>({ selectedFile: null });
-  const addIngredientModal = usePopupState<{ resultList: any[] }>({ resultList: [] });
+  const addIngredientModal = usePopupState<{
+    purchaseDate: string;
+    matchedItems: string[];
+  }>({
+    purchaseDate: '',
+    matchedItems: [],
+  });
   const editModal = usePopupState<any | null>(null);
   const { addIngredient, updateIngredient, deleteIngredient } = useIngredients(); // deleteIngredient 가져오기
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -33,12 +37,13 @@ const MyIngredientsPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await recognizeReceipt(selectedFile);
-      const items = response.품목.map((item, index) => ({
-        ingredientId: Date.now() + index,
-        name: item,
-        quantity: 1,
-      }));
-      addIngredientModal.setState({ resultList: items });
+      console.log("영수증 인식 응답:", response);
+
+      addIngredientModal.setState({
+        purchaseDate: response.구매일자 || "알 수 없음",
+        matchedItems: response.matchedItems || [],
+      });
+
       receiptUploadModal.close();
       addIngredientModal.open();
     } catch (error) {
@@ -55,13 +60,13 @@ const MyIngredientsPage: React.FC = () => {
   };
 
   const handleDirectInput = () => {
-    addIngredientModal.setState({ resultList: [{ ingredientId: Date.now(), name: "", quantity: 1 }] });
+    addIngredientModal.setState({ purchaseDate: '', matchedItems: [""] });
     addIngredientModal.open();
     optionsModal.close();
   };
 
   return (
-    <div className="container-fluid px-0" style={{ paddingBottom: "var(--navbar-height)" }}>
+    <div className="container container-fluid px-0" style={{ paddingBottom: "var(--navbar-height)" }}>
       <h2 className="text-center my-4">나의 식재료</h2>
 
       {/* 식재료 카드 리스트 */}
@@ -96,7 +101,8 @@ const MyIngredientsPage: React.FC = () => {
       {/* 식재료 추가 모달 */}
       {addIngredientModal.isOpen && (
         <AddIngredientModal
-          resultList={addIngredientModal.state.resultList}
+          purchaseDate={addIngredientModal.state.purchaseDate}
+          matchedItems={addIngredientModal.state.matchedItems}
           onConfirm={handleAddIngredientConfirm}
           onClose={addIngredientModal.close}
         />

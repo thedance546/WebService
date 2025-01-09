@@ -1,20 +1,16 @@
-# Python 3.9 slim 버전 사용
+# Use Python 3.9 slim image
 FROM python:3.9-slim
 
-# 작업 디렉토리 설정
+# Set the working directory
 WORKDIR /app
 
-# 필요한 파일 복사
+# Copy necessary files
 COPY requirements.txt requirements.txt
 COPY restapi.py restapi.py
 COPY ./best_ocr.pt /app/best_ocr.pt
 COPY ./test.py /app/test.py
 
-# pip 업그레이드 및 의존성 설치
-RUN pip install --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
-
-# 필요한 시스템 패키지 설치 및 정리
+# Update and install necessary system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
     libglib2.0-0 \
@@ -24,11 +20,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsm6 \
     libxext6 \
     libxrender1 \
+    tesseract-ocr \
+    tesseract-ocr-kor \
+    wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Flask 실행 포트 설정
+# Download Tesseract Korean language data
+RUN mkdir -p /usr/share/tesseract-ocr/4.00/tessdata && \
+    wget -O /usr/share/tesseract-ocr/4.00/tessdata/kor.traineddata https://github.com/tesseract-ocr/tessdata_best/raw/main/kor.traineddata
+
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Set Tesseract environment variable
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+
+# Expose Flask application port
 EXPOSE 5001
 
-# Flask 서버 실행
+# Run the Flask app
 CMD ["python", "restapi.py"]

@@ -1,100 +1,129 @@
 // src/features/ChatBot/RecipeRecommendationModal.tsx
 
-import React from 'react';
-import Modal from '../../components/molecules/FullScreenOverlay';
-import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
+import React, { useEffect, useState } from 'react';
+import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
+import EditIngredientForm from '../../components/organisms/EditIngredientForm';
+import StoredIngredientsList from '../../features/ChatBot/StoredIngredientsList';
+import UserPreferencesCard from '../../features/ChatBot/UserPreferencesCard';
+import ImagePreview from '../../components/atoms/ImagePreview';
+import { useIngredients } from '../../contexts/IngredientsContext';
+import { Ingredient } from '../../types/EntityTypes';
+import { StorageKeys } from '../../constants/StorageKeys';
 import Button from '../../components/atoms/Button';
-import { detectObjectsInImage } from '../../services/YOLOApi';
+import Input from '../../components/atoms/Input';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  state: {
-    selectedFile: File | null;
-    detectionResult: any; // 서버 응답 데이터 그대로 사용
-    loading: boolean;
-  };
-  setState: React.Dispatch<
-    React.SetStateAction<{
-      selectedFile: File | null;
-      detectionResult: any;
-      loading: boolean;
-    }>
-  >;
+  ingredients: Ingredient[];
+  setIngredients: React.Dispatch<React.SetStateAction<Ingredient[]>>;
+  detectedImageSrc?: string;
 }
 
 const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   isOpen,
   onClose,
-  state,
-  setState,
+  ingredients,
+  setIngredients,
+  detectedImageSrc,
 }) => {
-  const handleFileChange = (file: File) => {
-    setState((prevState) => ({ ...prevState, selectedFile: file }));
+  const { ingredients: storedIngredients } = useIngredients();
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
+  const [additionalRequest, setAdditionalRequest] = useState<string>('');
+
+  useEffect(() => {
+    const savedData = localStorage.getItem(StorageKeys.USER_INFO);
+    if (savedData) {
+      setUserInfo(JSON.parse(savedData));
+    }
+  }, []);
+
+  const handleSubmit = () => {
+    if (!userInfo) return;
+
+    const mergedFoodCategories = [
+      ...userInfo.foodCategories,
+      ...(userInfo.customFoodCategory ? [userInfo.customFoodCategory] : []),
+    ];
+
+    const mergedAllergies = [
+      ...userInfo.allergies,
+      ...(userInfo.customAllergy ? [userInfo.customAllergy] : []),
+    ];
+
+    const sanitizedDetectedIngredients = ingredients.map(({ name, quantity }) => ({
+      name,
+      quantity,
+    }));
+
+    const sanitizedStoredIngredients = selectedIngredients.map(({ name, quantity, purchaseDate }) => ({
+      name,
+      quantity,
+      purchaseDate,
+    }));
+
+    const payload = {
+      detectedIngredients: sanitizedDetectedIngredients,
+      selectedStoredIngredients: sanitizedStoredIngredients,
+      userPreferences: {
+        ...userInfo,
+        foodCategories: mergedFoodCategories,
+        allergies: mergedAllergies,
+      },
+      additionalRequest,
+    };
+
+    delete payload.userPreferences.customFoodCategory;
+    delete payload.userPreferences.customAllergy;
+
+    console.log(JSON.stringify(payload, null, 2));
   };
 
-  const handleDetection = async () => {
-    if (!state.selectedFile) {
-      alert('이미지를 업로드해주세요.');
-      return;
-    }
 
-    console.log('[RecipeRecommendationModal] 탐지 요청 시작: 선택된 파일 -', state.selectedFile.name);
 
-    setState((prevState) => ({ ...prevState, loading: true }));
-
-    try {
-      const detectionResult = await detectObjectsInImage(state.selectedFile);
-
-      console.log('[RecipeRecommendationModal] 탐지 결과:', detectionResult);
-
-      setState({
-        selectedFile: state.selectedFile,
-        detectionResult: detectionResult, // 서버 응답 그대로 저장
-        loading: false,
-      });
-    } catch (error) {
-      console.error('[RecipeRecommendationModal] 탐지 중 오류 발생:', (error as Error).message);
-      alert('탐지 중 오류가 발생했습니다.');
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
-  };
-
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
-    <Modal
-      title="레시피 추천 받기"
-      onClose={onClose}
-    >
-      <ImageUploadPreview
-        onFileSelect={handleFileChange}
-        previewStyle={{
-          width: '100%',
-          height: '400px',
-        }}
-        placeholderMessage="식재료 이미지를 업로드해주세요. 탐지된 식재료를 바탕으로 레시피를 추천해 드립니다."
-      />
-
-      <div className="d-flex flex-column align-items-center">
-        {state.detectionResult && (
-          <div className="mb-3">
-            <h6>탐지 결과</h6>
-            <pre>{JSON.stringify(state.detectionResult, null, 2)}</pre> {/* 서버 응답 데이터를 그대로 출력 */}
-          </div>
-        )}
+    <FullScreenOverlay title="레시피 추천 받기" onClose={onClose}>
+      {/* 이미지 미리보기 */}
+      <div className="mb-3">
+        <ImagePreview
+          src={detectedImageSrc}
+          alt="탐지된 이미지 미리보기"
+          style={{ height: '400px', width: '100%' }}
+        />
       </div>
 
-      <Button
-        onClick={handleDetection}
-        className="btn btn-primary mb-3"
-        disabled={state.loading}
-      >
-        {state.loading ? '처리 중...' : '객체 탐지 시작'}
-      </Button>
-    </Modal>
+      {/* 재료 편집 폼 */}
+      <EditIngredientForm ingredients={ingredients} onIngredientsChange={setIngredients} />
+
+      {/* 저장된 식재료 */}
+      <StoredIngredientsList
+        ingredients={storedIngredients}
+        onSelectionChange={setSelectedIngredients}
+      />
+
+      {/* 사용자 맞춤 정보 */}
+      {userInfo && <UserPreferencesCard userInfo={userInfo} />}
+
+      {/* 추가 요청사항 */}
+      <div className="mt-3">
+        <h5>추가 요청사항</h5>
+        <Input
+          value={additionalRequest}
+          onChange={(e) => setAdditionalRequest(e.target.value)}
+          placeholder="추가 요청사항을 입력하세요"
+        />
+      </div>
+
+      {/* 제출 버튼 */}
+      <div className="mt-4 d-flex justify-content-end">
+        <Button variant="primary" onClick={handleSubmit}>
+          레시피 추천 받기
+        </Button>
+      </div>
+    </FullScreenOverlay>
   );
 };
 

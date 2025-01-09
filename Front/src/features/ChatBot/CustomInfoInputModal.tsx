@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../../components/molecules/FullScreenOverlay';
 import Button from '../../components/atoms/Button';
 import UserInfoForm from './UserInfoForm';
+import { StorageKeys } from '../../constants/StorageKeys';
 
 interface CustomInfoInputModalProps {
   isOpen: boolean;
@@ -11,24 +12,21 @@ interface CustomInfoInputModalProps {
   onSubmit: (info: string) => void;
 }
 
-const LOCAL_STORAGE_KEY = 'userFormData';
-
 const CustomInfoInputModal: React.FC<CustomInfoInputModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     ageGroup: '',
     gender: '',
-    activityLevel: '',
     healthGoal: '',
-    allergies: [] as string[],
     mealTimes: [] as string[],
     foodCategories: [] as string[],
-    customAllergy: '',
     customFoodCategory: '',
+    allergies: [] as string[],
+    customAllergy: '',
   });
 
   useEffect(() => {
     if (isOpen) {
-      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const savedData = localStorage.getItem(StorageKeys.USER_INFO);
       if (savedData) {
         setFormData(JSON.parse(savedData));
       }
@@ -36,19 +34,7 @@ const CustomInfoInputModal: React.FC<CustomInfoInputModalProps> = ({ isOpen, onC
   }, [isOpen]);
 
   const handleSubmit = () => {
-    // if (!formData.ageGroup || !formData.gender || !formData.activityLevel || !formData.healthGoal) {
-    //   toast.error('모든 필드를 입력해주세요.', {
-    //     position: 'top-center',
-    //     autoClose: 2000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //   });
-    //   return;
-    // }
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
+    localStorage.setItem(StorageKeys.USER_INFO, JSON.stringify(formData));
     onSubmit(JSON.stringify(formData, null, 2));
     onClose();
   };

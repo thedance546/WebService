@@ -11,6 +11,7 @@ interface OptionsModalProps {
   clearMessages: () => void;
   openRecipeModal: () => void;
   openCustomInfoModal: () => void;
+  onImagePreviewTest: () => void; // 이미지 미리보기 추가
 }
 
 const OptionsModal: React.FC<OptionsModalProps> = ({
@@ -19,6 +20,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
   clearMessages,
   openRecipeModal,
   openCustomInfoModal,
+  onImagePreviewTest,
 }) => {
   if (!isOpen) return null;
 
@@ -40,6 +42,14 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
       },
     },
     { label: '채팅 내역 지우기', icon: '🗑️', action: clearMessages },
+    {
+      label: '이미지 미리보기 테스트',
+      icon: '🖼️',
+      action: () => {
+        onImagePreviewTest();
+        onClose();
+      },
+    },
   ];
 
   return (

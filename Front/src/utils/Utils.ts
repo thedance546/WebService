@@ -15,3 +15,25 @@ export const handleApiError = (error: any, defaultMessage: string): Error => {
   }
   return new Error(defaultMessage);
 };
+
+// 날짜 형식 문자열을 파싱하는 함수
+export const parseDate = (input: string): string | null => {
+  const patterns = [
+    /^(\d{4})[-/](\d{2})[-/](\d{2})$/, // yyyy-mm-dd 또는 yyyy/mm/dd
+    /^(\d{2})[-/](\d{2})[-/](\d{2})$/  // yy-mm-dd 또는 yy/mm/dd
+  ];
+
+  for (const pattern of patterns) {
+    const match = input.match(pattern);
+    if (match) {
+      const [, year, month, day] = match;
+      const fullYear = year.length === 2 ? `20${year}` : year;
+
+      if (parseInt(month, 10) >= 1 && parseInt(month, 10) <= 12 && parseInt(day, 10) >= 1 && parseInt(day, 10) <= 31) {
+        return `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+    }
+  }
+
+  return null;
+};
