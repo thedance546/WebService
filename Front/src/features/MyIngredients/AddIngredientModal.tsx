@@ -14,14 +14,12 @@ import { useIngredients } from "../../contexts/IngredientsContext";
 interface AddIngredientModalProps {
   matchedItems: string[];
   purchaseDate: string;
-  onConfirm: (editedIngredients: Ingredient[]) => void;
   onClose: () => void;
 }
 
 const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   matchedItems,
   purchaseDate: initialPurchaseDate,
-  onConfirm,
   onClose,
 }) => {
   const { refreshIngredients } = useIngredients();
@@ -65,7 +63,6 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
     try {
       await createOrder(orderData);
       await refreshIngredients();
-      onConfirm(validItems);
       onClose();
     } catch (error) {
       if (error instanceof Error) {

@@ -23,7 +23,7 @@ const MyIngredientsPage: React.FC = () => {
     matchedItems: [],
   });
   const editModal = usePopupState<any | null>(null);
-  const { addIngredient, updateIngredient, deleteIngredient } = useIngredients(); // deleteIngredient 가져오기
+  const { updateIngredient, deleteIngredient } = useIngredients();
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleReceiptUploadConfirm = async () => {
@@ -52,11 +52,6 @@ const MyIngredientsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleAddIngredientConfirm = (ingredients: any[]) => {
-    addIngredient(ingredients);
-    addIngredientModal.close();
   };
 
   const handleDirectInput = () => {
@@ -103,7 +98,6 @@ const MyIngredientsPage: React.FC = () => {
         <AddIngredientModal
           purchaseDate={addIngredientModal.state.purchaseDate}
           matchedItems={addIngredientModal.state.matchedItems}
-          onConfirm={handleAddIngredientConfirm}
           onClose={addIngredientModal.close}
         />
       )}
@@ -123,7 +117,7 @@ const MyIngredientsPage: React.FC = () => {
           onDelete={(ingredientId: number) => {
             const confirmed = window.confirm("정말로 삭제하시겠습니까?");
             if (confirmed) {
-              deleteIngredient(ingredientId); // deleteIngredient 호출
+              deleteIngredient(ingredientId);
               editModal.close();
             }
           }}
