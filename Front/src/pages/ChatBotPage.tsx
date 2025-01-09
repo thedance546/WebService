@@ -1,6 +1,7 @@
 // src/pages/ChatBotPage.tsx
 
 import React, { useState } from 'react';
+import CommonHeader from "../components/organisms/CommonHeader";
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
 import OptionsModal from '../features/ChatBot/ChatBotOptionsModal';
@@ -69,6 +70,7 @@ const ChatBotPage: React.FC = () => {
 
   return (
     <div className="container">
+      <CommonHeader pageTitle="챗봇"/>
       <ChatMessages messages={messages} />
       <ChatInput
         addMessage={addMessage}

@@ -1,6 +1,7 @@
 // src/pages/MyIngredientsPage.tsx
 
 import React from "react";
+import CommonHeader from "../components/organisms/CommonHeader";
 import IngredientCardContainer from "../features/MyIngredients/IngredientCardContainer";
 import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
 import ReceiptUploadModal from "../features/MyIngredients/ReceiptUploadModal";
@@ -61,9 +62,8 @@ const MyIngredientsPage: React.FC = () => {
   };
 
   return (
-    <div className="container container-fluid px-0" style={{ paddingBottom: "var(--navbar-height)" }}>
-      <h2 className="text-center my-4">나의 식재료</h2>
-
+    <div className="container container-fluid px-0">
+      <CommonHeader pageTitle="나의 식재료" />
       {/* 식재료 카드 리스트 */}
       <IngredientCardContainer
         onAddClick={optionsModal.open}
