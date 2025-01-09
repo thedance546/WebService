@@ -25,7 +25,7 @@ public class ChatBotController {
     private final ChatBotService chatBotService;
 
     //LLM
-    @PostMapping("/recipes/messages")
+    @PostMapping("/recipes/questions")
     public Map<String, String> askToLLM(@RequestBody Map<String, String> payload,
                                            @AuthenticationPrincipal User user) {
 
@@ -61,7 +61,8 @@ public class ChatBotController {
         }
     }
 
-    @GetMapping("/general/messages")
+    //메세지 조회
+    @GetMapping("/messages")
     public ResponseEntity<List<Message>> getMessageHistory(@AuthenticationPrincipal User user,
                                                            @RequestParam(required = false) String filter) {
         List<Message> messages;
@@ -76,7 +77,7 @@ public class ChatBotController {
     }
 
     //GPT
-    @PostMapping("/gpt")
+    @PostMapping("/general/questions")
     public Map<String, String> askToGPT(@RequestBody Map<String, String> payload,
                                         @AuthenticationPrincipal User user) {
         String question = payload.get("question");

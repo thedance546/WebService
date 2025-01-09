@@ -69,7 +69,7 @@ public class AuthController {
     }
 
     // access token 갱신
-    @PostMapping("/refresh")
+    @PostMapping("/token/refresh")
     public ResponseEntity<Map<String, String>> refreshAccessToken(HttpServletRequest request) {
         return authService.refreshAccessToken(request);
     }
