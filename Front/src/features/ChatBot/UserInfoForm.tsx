@@ -3,7 +3,7 @@
 import React from 'react';
 import Input from '../../components/atoms/Input';
 import { UserInfoFormProps } from '../../types/FeatureTypes';
-import UserInputLists from '../../constants/customUserInputLists';
+import UserInputLists from '../../constants/CustomUserInputLists';
 import CheckBoxGroupCard from '../../components/molecules/CheckBoxGroupCard';
 import RadioBoxCard from '../../components/molecules/RadioBoxCard';
 import Grid from '../../components/atoms/Grid';
