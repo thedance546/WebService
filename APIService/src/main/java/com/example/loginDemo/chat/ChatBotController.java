@@ -60,6 +60,8 @@ public class ChatBotController {
         }
     }
 
+    @PostMapping("/recipes/questions/json")
+
     //메세지 조회
     @GetMapping("/messages")
     public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
@@ -120,6 +122,4 @@ public class ChatBotController {
     private String extractToken(String accessToken) {
         return accessToken.replace("Bearer ", "");
     }
-
-
 }
