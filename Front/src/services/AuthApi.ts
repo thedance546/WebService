@@ -72,7 +72,7 @@ export const deleteAccount = async (): Promise<{ success: boolean; message: stri
   console.log("회원탈퇴 요청 시작...");
   try {
     const headers = getAuthHeaders('Bearer');
-    const response = await api.delete('/auth/delete-account', { headers });
+    const response = await api.delete('/auth/account', { headers });
 
     console.log("회원탈퇴 성공:", response.data.message);
     return { success: true, message: response.data.message };

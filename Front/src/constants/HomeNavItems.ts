@@ -1,4 +1,4 @@
-// src/constants/homeNavItems.ts
+// src/constants/HomeNavItems.ts
 
 export interface NavItem {
   path: string;
