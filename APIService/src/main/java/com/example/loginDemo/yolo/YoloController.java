@@ -4,9 +4,12 @@ import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.*;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
@@ -37,8 +40,14 @@ public class YoloController {
         try {
             System.out.println("Starting image processing...");  // 이미지 처리 시작 로그
 
-            // 이미지를 Flask 서버로 전송
+            // RestTemplate에 Multipart 처리용 HttpMessageConverter 추가
             RestTemplate restTemplate = new RestTemplate();
+            List<HttpMessageConverter<?>> converters = new ArrayList<>(restTemplate.getMessageConverters());
+            converters.add(new FormHttpMessageConverter());  // FormHttpMessageConverter 추가
+            converters.add(new StringHttpMessageConverter());  // 기본 String converter 추가
+            restTemplate.setMessageConverters(converters);  // RestTemplate에 converter 설정
+
+            // 이미지를 Flask 서버로 전송
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             System.out.println("Headers set: " + headers);  // 헤더 설정 로그
@@ -72,6 +81,7 @@ public class YoloController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     // 확인할 품목 리스트
     private static final List<String> ITEMS_TO_CHECK = Arrays.asList(
