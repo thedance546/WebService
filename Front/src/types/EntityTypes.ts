@@ -37,7 +37,7 @@ export interface Ingredient {
     quantity: number;
     shelfLife?: string; // 유통기한 날짜 (YYYY-MM-DD)
     consumeBy?: string; // 소비기한 날짜 (YYYY-MM-DD)
-    categoryId?: number;
-    storageMethodId?: number;
+    category?: Category; // Category 타입 사용
+    storageMethod?: StorageMethod; // StorageMethod 타입 사용
     purchaseDate?: string; // 구매일자 (YYYY-MM-DD)
 }

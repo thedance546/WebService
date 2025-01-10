@@ -8,7 +8,7 @@
 }
 
 .chat-messages-container {
-    height: calc(var(--viewport-height) - var(--navbar-height) - var(--input-height));
+    height: calc(var(--viewport-height) - var(--matjipsa-common-topbar-height) - var(--navbar-height) - var(--input-height));
     overflow-y: auto;
     padding: 10px;
     background-color: var(--chat-bg-color);
@@ -16,6 +16,6 @@
 
 @media (max-width: 600px) {
     .chat-messages-container {
-        height: calc(var(--viewport-height) - var(--navbar-height) - var(--input-height) - 50px);
+        height: calc(var(--viewport-height) - var(--matjipsa-common-topbar-height) - var(--navbar-height) - var(--input-height) - 50px);
     }
 }

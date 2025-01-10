@@ -1,4 +1,4 @@
-// src/constants/adminNavItems.ts
+// src/constants/AdminNavItems.ts
 
 export interface NavItem {
   path: string;

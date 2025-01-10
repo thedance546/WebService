@@ -22,6 +22,7 @@ code {
   --primary-color: #81C784; /* Default primary color */
   --secondary-color: #FFB74D; /* Default secondary color */
   --admin-navbar-height: 60px; /* Default NavBar height */
+  --matjipsa-common-topbar-height: 60px;
 }
 
 .container {

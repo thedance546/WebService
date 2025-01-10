@@ -5,9 +5,8 @@ from flask import Flask, request, jsonify, send_file
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 import torch
-
-
 import pathlib
+
 if os.name == 'nt':  # Windows
     pathlib.PosixPath = pathlib.WindowsPath
 
@@ -44,14 +43,14 @@ def draw_bounding_boxes(image, results):
     '양파': (220, 20, 60),             # 진한 빨강
     '마늘': (138, 43, 226),            # 보라색
     '시금치': (46, 139, 87),           # 짙은 녹색
-    '고추': (255, 99, 71),             # 산호색
+    '고추': (173, 255, 47),             # 연두색
     '깻잎': (0, 128, 0),               # 어두운 녹색
     '당근': (255, 140, 0),             # 황토색
     '감자': (160, 82, 45),             # 갈색
     '고구마': (210, 105, 30),          # 진한 갈색
     '계란': (218, 165, 32),            # 금색
     '무': (105, 105, 105),             # 진한 회색
-    '파프리카': (255, 69, 0),          # 밝은 빨강
+    '파프리카': (204, 204, 0),          # 어두운 빨강
     '게 맛살': (0, 191, 255),          # 하늘색
     '쌀': (192, 192, 192),             # 은색
     '어묵': (0, 0, 0),                 # 검정
@@ -78,14 +77,29 @@ def draw_bounding_boxes(image, results):
 
         # Add label
         label_text = f"{label} ({confidence:.2f})"
-        text_position = (start_point[0], start_point[1] - 20)  # 텍스트 위치
+
+        # 텍스트 크기 계산 (ImageFont 객체의 getbbox 메서드 사용)
+        text_bbox = font.getbbox(label_text)
+        text_width = text_bbox[2] - text_bbox[0]
+        text_height = text_bbox[3] - text_bbox[1]
+        text_position = (start_point[0], start_point[1] - text_height - 5)  # 텍스트 위치
+
+        # 텍스트 배경 박스 그리기 (클래스별 색상)
+        text_background = [
+            (text_position[0] - 2, text_position[1] - 2),
+            (text_position[0] + text_width + 2, text_position[1] + text_height + 2)
+        ]
+        draw.rectangle(text_background, fill=color)
+
+        # 텍스트 색상 결정 (배경색의 밝기에 따라 변경)
+        brightness = 0.299 * color[0] + 0.587 * color[1] + 0.114 * color[2]  # 밝기 계산 (RGB 가중치)
+        text_color = (0, 0, 0) if brightness > 128 else (255, 255, 255)  # 밝으면 검정, 어두우면 흰색
 
         # 텍스트 굵게: 여러 번 그려서 테두리 효과
         offsets = [(-1, -1), (-1, 1), (1, -1), (1, 1), (0, 0)]
         for offset in offsets:
             draw.text((text_position[0] + offset[0], text_position[1] + offset[1]),
-                      label_text, fill=color, font=font)
-
+                      label_text, fill=text_color, font=font)
 
     # Convert back to OpenCV format
     return np.array(pil_image)
@@ -104,26 +118,44 @@ def object_detection(model_name):
             results = model(image)
             detections = results.pandas().xyxy[0]
 
-            result_image = draw_bounding_boxes(image.copy(), results)
-            result_image_path = "output_yolo_results.jpg"
-            cv2.imwrite(result_image_path, cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR))
-
+            # 감지된 객체 수 계산
             name_counter = detections["name"].value_counts().to_dict()
             response = {name: f"{count}개" for name, count in name_counter.items()}
 
-            return jsonify(
-                response,
-            )
-
+            return jsonify(response)
         else:
             return jsonify({"error": f"Model {model_name} not found"}), 404
-
     except Exception as e:
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
-@app.route('/download/<filename>', methods=['GET'])
-def download_file(filename):
-    return send_file(filename, as_attachment=True)
+@app.route('/object-detection/<model_name>/image', methods=['POST'])
+def object_detection_image(model_name):
+    """객체 탐지 결과 이미지를 반환."""
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+
+    image_file = request.files['image']
+    image = np.array(Image.open(BytesIO(image_file.read())).convert('RGB'))
+
+    try:
+        if model_name == "object_detection":
+            model = models["object_detection"]
+            results = model(image)
+
+            # 바운딩 박스가 그려진 이미지 생성
+            result_image = draw_bounding_boxes(image.copy(), results)
+            result_image_pil = Image.fromarray(result_image)
+
+            # 메모리 내에서 이미지 저장 및 반환
+            img_io = BytesIO()
+            result_image_pil.save(img_io, format='JPEG')
+            img_io.seek(0)
+
+            return send_file(img_io, mimetype='image/jpeg')
+        else:
+            return jsonify({"error": f"Model {model_name} not found"}), 404
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

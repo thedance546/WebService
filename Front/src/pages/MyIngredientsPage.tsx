@@ -1,6 +1,7 @@
 // src/pages/MyIngredientsPage.tsx
 
 import React from "react";
+import CommonHeader from "../components/organisms/CommonHeader";
 import IngredientCardContainer from "../features/MyIngredients/IngredientCardContainer";
 import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
 import ReceiptUploadModal from "../features/MyIngredients/ReceiptUploadModal";
@@ -10,6 +11,7 @@ import LoadingModal from "../components/organisms/LoadingModal";
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from "../hooks/usePopupState";
 import { useIngredients } from "../contexts/IngredientsContext";
+import { Ingredient, StorageMethod } from "../types/EntityTypes";
 import { recognizeReceipt } from "../services/ServiceApi";
 
 const MyIngredientsPage: React.FC = () => {
@@ -22,8 +24,8 @@ const MyIngredientsPage: React.FC = () => {
     purchaseDate: '',
     matchedItems: [],
   });
-  const editModal = usePopupState<any | null>(null);
-  const { addIngredient, updateIngredient, deleteIngredient } = useIngredients(); // deleteIngredient 가져오기
+  const editModal = usePopupState<Ingredient | null>(null);
+  const { ingredients, updateIngredient, deleteIngredient } = useIngredients();
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleReceiptUploadConfirm = async () => {
@@ -54,20 +56,19 @@ const MyIngredientsPage: React.FC = () => {
     }
   };
 
-  const handleAddIngredientConfirm = (ingredients: any[]) => {
-    addIngredient(ingredients);
-    addIngredientModal.close();
-  };
-
   const handleDirectInput = () => {
     addIngredientModal.setState({ purchaseDate: '', matchedItems: [""] });
     addIngredientModal.open();
     optionsModal.close();
   };
 
+  const storageMethods = ingredients
+    .map((item) => item.storageMethod)
+    .filter((method): method is StorageMethod => method !== undefined);
+
   return (
-    <div className="container container-fluid px-0" style={{ paddingBottom: "var(--navbar-height)" }}>
-      <h2 className="text-center my-4">나의 식재료</h2>
+    <div className="container container-fluid px-0">
+      <CommonHeader pageTitle="나의 식재료" />
 
       {/* 식재료 카드 리스트 */}
       <IngredientCardContainer
@@ -103,7 +104,6 @@ const MyIngredientsPage: React.FC = () => {
         <AddIngredientModal
           purchaseDate={addIngredientModal.state.purchaseDate}
           matchedItems={addIngredientModal.state.matchedItems}
-          onConfirm={handleAddIngredientConfirm}
           onClose={addIngredientModal.close}
         />
       )}
@@ -112,10 +112,11 @@ const MyIngredientsPage: React.FC = () => {
       {editModal.isOpen && editModal.state && (
         <EditIngredientModal
           row={editModal.state}
+          storageMethods={storageMethods} // StorageMethod 데이터 전달
           onSave={(updatedIngredientRow) => {
             const updatedIngredient = {
               ...updatedIngredientRow,
-              ingredientId: editModal.state.ingredientId,
+              ingredientId: editModal.state!.ingredientId,
             };
             updateIngredient(updatedIngredient);
             editModal.close();
@@ -123,12 +124,13 @@ const MyIngredientsPage: React.FC = () => {
           onDelete={(ingredientId: number) => {
             const confirmed = window.confirm("정말로 삭제하시겠습니까?");
             if (confirmed) {
-              deleteIngredient(ingredientId); // deleteIngredient 호출
+              deleteIngredient(ingredientId);
               editModal.close();
             }
           }}
           onCancel={editModal.close}
         />
+
       )}
 
       {/* 로딩 모달 */}
