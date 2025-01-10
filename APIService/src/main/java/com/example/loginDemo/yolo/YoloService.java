@@ -40,27 +40,33 @@ public class YoloService {
 
     //bounding
     public byte[] getObjectDetectionImage(MultipartFile imageFile) throws IOException {
-        String url = Ingredient_URL +"/image"; // Assuming this is the Flask route for object detection image
+        String url = Ingredient_URL + "/image"; // Assuming this is the Flask route for object detection image
 
         // Prepare image file to be sent
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        byte[] imageBytes = imageFile.getBytes();
+        String filename = imageFile.getOriginalFilename();
 
-        // Prepare multipart request
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("image", imageFile.getResource());
+        // Debug: Log the image size and filename
+        System.out.println("Image size: " + imageBytes.length + " bytes");
+        System.out.println("Filename: " + filename);
 
-        // Create HttpEntity with headers and body
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        // Send POST request to Flask server with image
+        Map response = sendPostRequest(url, imageBytes, filename);
 
-        // Send POST request to Flask server
-        ResponseEntity<byte[]> responseEntity = restTemplate.postForEntity(url, requestEntity, byte[].class);
+        // Debug: Log the response from the Flask server
+        System.out.println("Response from Flask server: " + response);
 
-        // Return image byte array
-        return responseEntity.getBody();
+        // Assuming the response body contains the image in a byte array form
+        if (response != null && response.containsKey("image")) {
+            // Debug: Log the received image size
+            byte[] resultImage = (byte[]) response.get("image");
+            System.out.println("Received image size: " + resultImage.length + " bytes");
+            return resultImage;
+        } else {
+            System.out.println("Error: No 'image' field in the response");
+            throw new RuntimeException("Response did not contain an 'image' field.");
+        }
     }
-
-
 
     // ocr
     public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
