@@ -104,7 +104,7 @@ public class ChatBotController {
         try {
             // Flask 서버에 POST 요청
             ResponseEntity<Map> response = restTemplate.exchange(
-                    FLASK_URL,
+                    gpt_URL,
                     HttpMethod.POST,
                     request,
                     Map.class
