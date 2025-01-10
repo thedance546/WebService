@@ -40,7 +40,7 @@ public class YoloController {
 
     //yolo 바운딩 박스 리턴
     @PostMapping("/image")
-    public void returnImage(@RequestParam("image") MultipartFile image, HttpServletResponse response) {
+    public ResponseEntity<byte[]> returnImage(@RequestParam("image") MultipartFile image) {
         try {
             // RestTemplate 생성
             RestTemplate restTemplate = new RestTemplate();
@@ -71,25 +71,20 @@ public class YoloController {
             // Flask에서 반환된 이미지 데이터를 클라이언트로 전달
             if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
                 byte[] imageBytes = responseEntity.getBody();
-
-                response.setContentType("image/jpeg");
-                try (InputStream is = new ByteArrayInputStream(imageBytes)) {
-                    IOUtils.copy(is, response.getOutputStream());
-                    response.flushBuffer();
-                }
+                return ResponseEntity
+                        .ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(imageBytes);  // 이미지 데이터를 ResponseEntity로 반환
             } else {
-                response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to process the image.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(null);  // 오류 발생 시 500 상태 코드와 빈 본문 반환
             }
         } catch (Exception e) {
             e.printStackTrace();
-            try {
-                response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error: " + e.getMessage());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);  // 내부 서버 오류 처리
         }
     }
-
 
     // 확인할 품목 리스트
     private static final List<String> ITEMS_TO_CHECK = Arrays.asList(
