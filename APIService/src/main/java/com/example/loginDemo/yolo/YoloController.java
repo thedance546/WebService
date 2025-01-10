@@ -35,13 +35,17 @@ public class YoloController {
     @PostMapping("/image")
     public ResponseEntity<byte[]> returnImage(@RequestParam("image") MultipartFile file) {
         try {
+            System.out.println("Starting image processing...");  // 이미지 처리 시작 로그
+
             // 이미지를 Flask 서버로 전송
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            System.out.println("Headers set: " + headers);  // 헤더 설정 로그
 
             // MultipartFile을 HttpEntity로 변환하여 Flask 서버로 전송
             HttpEntity<MultipartFile> entity = new HttpEntity<>(file, headers);
+            System.out.println("Entity created with file: " + file.getOriginalFilename());  // 파일 정보 로그
 
             ResponseEntity<byte[]> response = restTemplate.exchange(
                     Ingredient_bounding_URL,
@@ -49,18 +53,22 @@ public class YoloController {
                     entity,
                     byte[].class
             );
+            System.out.println("Response status: " + response.getStatusCode());  // 응답 상태 로그
 
             // Flask 서버에서 반환된 이미지 데이터 반환
             if (response.getStatusCode() == HttpStatus.OK) {
+                System.out.println("Image received successfully from Flask server.");  // 성공 로그
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(response.getBody());
             } else {
+                System.out.println("Failed to receive image from Flask server. Status: " + response.getStatusCode());  // 오류 로그
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
 
         } catch (Exception e) {
             // RestTemplate에서 발생할 수 있는 예외 처리
+            System.out.println("Error occurred while processing image: " + e.getMessage());  // 예외 로그
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
