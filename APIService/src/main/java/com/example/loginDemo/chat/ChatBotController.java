@@ -26,6 +26,8 @@ public class ChatBotController {
     public Map<String, String> askToLLM(@RequestBody Map<String, String> payload,
                                         @RequestHeader("Authorization") String accessToken) {
 
+        String token = extractToken(accessToken);
+
         String question = payload.get("question");
         if (question == null || question.trim().isEmpty()) {
             return Map.of("error", "질문이 제공되지 않았습니다.");
@@ -47,7 +49,7 @@ public class ChatBotController {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 String botResponse = response.getBody().get("response").toString();
 
-                chatBotService.saveMessage(request, response, accessToken);
+                chatBotService.saveMessage(request, response, token);
 
                 return Map.of("response", botResponse);
             } else {
@@ -61,7 +63,8 @@ public class ChatBotController {
     //메세지 조회
     @GetMapping("/messages")
     public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
-        List<Message> messages = chatBotService.getAllMessages();
+        String token = extractToken(accessToken);
+        List<Message> messages = chatBotService.getAllMessagesByUser(token);
         return ResponseEntity.ok(messages);
     }
 
@@ -111,6 +114,11 @@ public class ChatBotController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage()));
         }
+    }
+
+    // 추출 메서드
+    private String extractToken(String accessToken) {
+        return accessToken.replace("Bearer ", "");
     }
 
 

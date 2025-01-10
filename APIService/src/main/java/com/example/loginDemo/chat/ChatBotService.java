@@ -17,10 +17,15 @@ public class ChatBotService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    // 모든 메시지 조회
-    public List<Message> getAllMessages() {
-        return messageRepository.findAll();
+    // 유저별 메시지 조회
+    // 특정 사용자의 메시지만 조회
+    public List<Message> getAllMessagesByUser(String accessToken) {
+        String email = jwtService.extractUsername(accessToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return messageRepository.findByUser(user);
     }
+
 
     // 메시지 저장
     public void saveMessage(HttpEntity<Map<String, String>> request, ResponseEntity<Map> response, String accessToken) {
