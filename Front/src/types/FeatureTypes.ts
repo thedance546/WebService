@@ -8,7 +8,9 @@ export enum Sender {
 export interface Message {
   sender: Sender;
   text: string;
-  imageUrl?: string;
+  profileImage?: string;
+  attachedImage?: string;
+  formatted?: boolean;
 }
 
 export interface ChatMessagesProps {

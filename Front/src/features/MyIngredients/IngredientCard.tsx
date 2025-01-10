@@ -13,9 +13,10 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
     className="card"
     style={{
       width: "180px",
-      padding: "1rem",
+      height: "100px",
+      padding: "0.75rem",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px",
+      borderRadius: "12px",
       textAlign: "left",
       cursor: "pointer",
       overflow: "hidden",
@@ -28,10 +29,9 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
     <p>
       <strong>수량:</strong> {ingredient.quantity}
       <br />
-      <strong>D-day:</strong> {ingredient.purchaseDate}
+      <strong>구매일자:</strong> {ingredient.purchaseDate}
     </p>
   </div>
-
 );
 
 export default IngredientCard;

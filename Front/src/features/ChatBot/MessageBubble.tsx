@@ -1,43 +1,68 @@
 // src/features/ChatBot/MessageBubble.tsx
 
 import React from 'react';
-import './MessageBubble.css';
 
 interface MessageBubbleProps {
   sender: string;
   text?: string;
-  imageUrl?: string;
+  profileImage?: string;
+  attachedImage?: string;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, imageUrl }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImage, attachedImage }) => {
   const isUser = sender === 'user';
-  const isBot = sender === 'bot';
+
+  const containerStyle = {
+    display: 'flex',
+    alignItems: 'flex-start',
+    marginBottom: '10px',
+    justifyContent: isUser ? 'flex-end' : 'flex-start',
+  };
+
+  const bubbleStyle = {
+    padding: '10px',
+    borderRadius: '10px',
+    backgroundColor: isUser ? '#007bff' : '#6c757d',
+    color: 'white',
+    maxWidth: isUser ? '60%' : '100%',
+    wordBreak: 'break-word' as 'break-word',
+  };
+
+  const formattedText = text?.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+    <React.Fragment key={index}>
+      {line}
+      <br />
+    </React.Fragment>
+  ));
 
   return (
-    <div
-      className={`message-container d-flex ${
-        isUser ? 'justify-content-end' : 'justify-content-start'
-      } align-items-start mb-2`}
-    >
-      {isBot && imageUrl && (
+    <div style={containerStyle}>
+      {!isUser && profileImage && (
         <img
-          src={imageUrl}
+          src={profileImage}
           alt="bot avatar"
-          className="bot-avatar"
-          style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }}
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            marginRight: '10px',
+            alignSelf: 'flex-start',
+          }}
         />
       )}
-      <div
-        className={`message-bubble p-2 rounded ${
-          isUser ? 'bg-primary text-white' : 'bg-secondary text-white w-100'
-        }`}
-        style={{
-          maxWidth: isUser ? '60%' : '100%',
-          wordBreak: 'break-word',
-        }}
-      >
-        {text}
-      </div>
+      {text && (
+        <div style={bubbleStyle}>
+          {formattedText}
+        </div>
+      )}
+      {/* 이미지가 있는 경우에만 렌더링 */}
+      {attachedImage && (
+        <img
+          src={attachedImage}
+          alt="Attached"
+          style={{ maxWidth: '60%', borderRadius: '8px', marginTop: '10px' }}
+        />
+      )}
     </div>
   );
 };

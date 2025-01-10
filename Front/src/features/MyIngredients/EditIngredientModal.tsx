@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Modal from '../../components/molecules/Modal';
 import Input from '../../components/atoms/Input';
 import { Ingredient } from '../../types/EntityTypes';
+import useDateInput from '../../hooks/useDateInput';
 
 export interface EditIngredientModalProps {
   row: Ingredient;
@@ -14,13 +15,20 @@ export interface EditIngredientModalProps {
 
 const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, onDelete, onCancel }) => {
   const [editedRow, setEditedRow] = useState({ ...row });
+  const purchaseDateInput = useDateInput(row.purchaseDate || ""); // Hook 사용
 
   const handleChange = (field: string, value: string | number) => {
     setEditedRow((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = () => {
-    const finalRow = { ...editedRow, quantity: editedRow.quantity <= 0 ? 1 : editedRow.quantity };
+    const parsedPurchaseDate = purchaseDateInput.getParsedValue(); // 최종 변환된 날짜 가져오기
+
+    const finalRow = {
+      ...editedRow,
+      purchaseDate: parsedPurchaseDate,
+      quantity: editedRow.quantity <= 0 ? 1 : editedRow.quantity,
+    };
     onSave(finalRow);
   };
 
@@ -32,6 +40,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>이름</th>
             <td style={{ width: '70%' }}>
               <Input
+                id="ingredient-name"
+                name="ingredient-name"
                 type="text"
                 value={editedRow.name || ""}
                 onChange={(e) => handleChange("name", e.target.value)}
@@ -44,6 +54,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <td style={{ width: '70%' }}>
               <Input
                 type="number"
+                id="ingredient-quantity"
+                name="ingredient-quantity"
                 value={editedRow.quantity || ""}
                 onChange={(e) => handleChange("quantity", parseInt(e.target.value, 10) || "")}
                 className="form-control"
@@ -54,6 +66,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>카테고리</th>
             <td style={{ width: '70%' }}>
               <Input
+                id="ingredient-category"
+                name="ingredient-category"
                 type="text"
                 value={editedRow.categoryId || ""}
                 onChange={(e) => handleChange("categoryId", e.target.value)}
@@ -65,6 +79,8 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>보관방법</th>
             <td style={{ width: '70%' }}>
               <Input
+                id="ingredient-storagemethod"
+                name="ingredient-storagemethod"
                 type="text"
                 value={editedRow.storageMethodId || ""}
                 onChange={(e) => handleChange("storageMethodId", e.target.value)}
@@ -76,9 +92,10 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({ row, onSave, 
             <th className="text-end align-middle text-nowrap" style={{ width: '30%' }}>구매일자</th>
             <td style={{ width: '70%' }}>
               <Input
-                type="date"
-                value={editedRow.purchaseDate || ""}
-                onChange={(e) => handleChange("purchaseDate", e.target.value)}
+                id="ingredient-purchasedate"
+                name="ingredient-purchasedate"
+                type="text"
+                {...purchaseDateInput}
                 className="form-control"
               />
             </td>
