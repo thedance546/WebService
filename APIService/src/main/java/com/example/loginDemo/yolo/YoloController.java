@@ -1,5 +1,6 @@
 package com.example.loginDemo.yolo;
 
+import ch.qos.logback.core.model.Model;
 import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -35,8 +36,7 @@ public class YoloController {
     }
 
     //yolo 바운딩 박스 리턴
-
-    @PostMapping("/image")
+    @PostMapping("/items/bounding-box")
     public ResponseEntity<String> detectObjectsImage(@RequestParam("image") MultipartFile imageFile) {
         try {
             // 이미지를 보내고 바운딩 박스를 그린 결과 이미지를 반환
