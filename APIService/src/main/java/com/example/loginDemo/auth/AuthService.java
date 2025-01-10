@@ -63,7 +63,7 @@ public class AuthService {
         String refreshToken = jwtService.generateRefreshToken(user, user.getRole().name());
 
         // 로그인 후 처리
-        handleLogin(response, accessToken, refreshToken);
+        return handleLogin(response, accessToken, refreshToken);
     }
 
     //회원 삭제
