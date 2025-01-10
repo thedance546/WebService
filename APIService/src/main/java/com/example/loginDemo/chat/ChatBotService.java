@@ -1,5 +1,6 @@
 package com.example.loginDemo.chat;
 
+import com.example.loginDemo.auth.JwtService;
 import com.example.loginDemo.domain.*;
 import com.example.loginDemo.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -13,16 +14,23 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatBotService {
     private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public List<Message> getAllMessages() {
-        return messageRepository.findAll();
-    }
-
-    public List<Message> getMessagesByUser(User user) {
+    // 유저별 메시지 조회
+    // 특정 사용자의 메시지만 조회
+    public List<Message> getAllMessagesByUser(String accessToken) {
+        String email = jwtService.extractUsername(accessToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return messageRepository.findByUser(user);
     }
 
-    public void saveMessage(HttpEntity<Map<String, String>> request, ResponseEntity<Map> response, User user) {
+
+    // 메시지 저장
+    public void saveMessage(HttpEntity<Map<String, String>> request, ResponseEntity<Map> response, String accessToken) {
+        User user = getCurrentUser(accessToken);
+
         String question = (String) request.getBody().get("question");
         String botResponse = response.getBody().get("response").toString();
 
@@ -32,5 +40,12 @@ public class ChatBotService {
         message.setUser(user);
 
         messageRepository.save(message);
+    }
+
+    // 현재 로그인한 유저 정보 추출
+    private User getCurrentUser(String accessToken) {
+        String email = jwtService.extractUsername(accessToken);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 }

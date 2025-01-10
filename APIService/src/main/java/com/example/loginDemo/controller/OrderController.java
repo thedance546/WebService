@@ -21,23 +21,39 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    // 주문 생성
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestHeader("Authorization") String accessToken,@RequestBody OrderRequest orderRequest) {
-        try {
-            // 주문 생성
-            var order = orderService.createOrder(orderRequest);
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, @RequestHeader("Authorization") String accessToken) {
+        String token = extractToken(accessToken);
 
-            // 생성된 주문을 응답으로 반환
-            return new ResponseEntity<>(order, HttpStatus.CREATED);
-        } catch (Exception e) {
-            // 예외 발생 시 오류 메시지 반환
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        orderService.createOrder2(orderRequest, token);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // 유저별 식재료 조회
+    @GetMapping("/user/items")
+    public ResponseEntity<List<OrderItemResponse>> getUserItems(@RequestHeader("Authorization") String accessToken) {
+        String token = extractToken(accessToken);
+        return ResponseEntity.ok(orderService.findItemsByUser(token));
+    }
+
+    // 유저가 주문 아이템 삭제
+    @DeleteMapping("/items/{orderItemId}")
+    public ResponseEntity<String> deleteOrderItemByUser(
+            @PathVariable Long orderItemId,
+            @RequestHeader("Authorization") String accessToken) {
+        try {
+            String token = extractToken(accessToken);
+            orderService.deleteOrderItemByUser(orderItemId, token);
+            return ResponseEntity.ok("Order item deleted successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // 모든 주문 조회 API
-    @GetMapping
-    public List<Order> getAllOrders(@RequestHeader("Authorization") String accessToken) {
-        return orderService.getAllOrders();
+    // 추출 메서드
+    private String extractToken(String accessToken) {
+        return accessToken.replace("Bearer ", "");
     }
 }

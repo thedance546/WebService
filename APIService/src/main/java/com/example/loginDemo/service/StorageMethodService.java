@@ -6,6 +6,7 @@ import com.example.loginDemo.repository.StorageMethodRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class StorageMethodService {
     }
 
     //삭제
+    @Transactional
     public void deleteStorageMethod(Long id) {
         itemRepository.deleteByStorageMethodId(id);
         storageMethodRepository.deleteById(id);
