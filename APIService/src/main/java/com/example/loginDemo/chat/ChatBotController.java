@@ -17,9 +17,6 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class ChatBotController {
-
-//    private static final String LLM_URL = "http://llm-container:5002/ask";
-//    private static final String LLM_URL = "http://llm_all:5002/ask";
     private static final String LLM_URL = "http://llm_run:5002/ask";
     private static final String gpt_URL = "http://gpt-container:5003/ask";
     private final ChatBotService chatBotService;
@@ -27,7 +24,7 @@ public class ChatBotController {
     //LLM
     @PostMapping("/recipes/questions")
     public Map<String, String> askToLLM(@RequestBody Map<String, String> payload,
-                                           @AuthenticationPrincipal User user) {
+                                        @RequestHeader("Authorization") String accessToken) {
 
         String question = payload.get("question");
         if (question == null || question.trim().isEmpty()) {
@@ -50,7 +47,7 @@ public class ChatBotController {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 String botResponse = response.getBody().get("response").toString();
 
-                chatBotService.saveMessage(request, response, user);
+                chatBotService.saveMessage(request, response, accessToken);
 
                 return Map.of("response", botResponse);
             } else {
@@ -63,22 +60,14 @@ public class ChatBotController {
 
     //메세지 조회
     @GetMapping("/messages")
-    public ResponseEntity<List<Message>> getMessageHistory(@AuthenticationPrincipal User user,
-                                                           @RequestParam(required = false) String filter) {
-        List<Message> messages;
-
-        if ("user".equalsIgnoreCase(filter)) {
-            messages = chatBotService.getMessagesByUser(user);
-        } else {
-            messages = chatBotService.getAllMessages();
-        }
-
+    public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
+        List<Message> messages = chatBotService.getAllMessages();
         return ResponseEntity.ok(messages);
     }
 
     //GPT
     @PostMapping("/general/questions")
-    public ResponseEntity<?> askToGPT(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> askToGPT(@RequestBody Map<String, String> payload, @RequestHeader("Authorization") String accessToken) {
         // 질문 및 검색 결과를 검증
         String question = payload.get("question");
         String searchResults = payload.getOrDefault("search_results", "");
