@@ -30,8 +30,7 @@ public class AuthController {
     // 로그인
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
-        authService.authenticate(request, response);
-        return ResponseEntity.ok().build();
+        return authService.authenticate(request, response);
     }
 
     // 로그아웃
