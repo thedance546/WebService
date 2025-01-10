@@ -2,7 +2,6 @@ import os
 import numpy as np
 from flask import Flask, request, jsonify
 from PIL import Image
-from io import BytesIO
 import cv2
 import torch
 import pytesseract
@@ -11,26 +10,29 @@ import re
 import pathlib
 if os.name == 'nt':  # Windows
     pathlib.PosixPath = pathlib.WindowsPath
+
 app = Flask(__name__)
 
 # YOLO 모델 로드
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='best_ocr.pt', trust_repo=True, force_reload=True)
 
-def detect_text_with_yolo(image, confidence_threshold=0.3):
-    """YOLO를 사용하여 텍스트 영역 감지."""
-    results = model(image)
+# Tesseract 환경 변수 설정
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+def detect_text_with_yolo(image_path, confidence_threshold=0.35):
+    img = cv2.imread(image_path)
+    if img is None:
+        raise ValueError(f"이미지를 로드할 수 없습니다: {image_path}")
+
+    results = model(img)
     yolo_boxes = results.pandas().xyxy[0]
     boxes = []
-
     for _, row in yolo_boxes.iterrows():
-        conf = row['confidence']
-        if conf >= confidence_threshold:
+        if row['confidence'] >= confidence_threshold:
             boxes.append([int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])])
-
-    return boxes
+    return img, boxes
 
 def preprocess(img):
-    """이미지를 전처리하여 OCR 성능을 향상."""
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     stretched = cv2.normalize(gray, None, 30, 150, cv2.NORM_MINMAX)
     denoised = cv2.fastNlMeansDenoising(stretched, None, 6, 8, 17)
@@ -40,7 +42,6 @@ def preprocess(img):
     return binary
 
 def extract_text_with_tesseract(img, lang="kor"):
-    """Tesseract OCR로 텍스트 추출."""
     return pytesseract.image_to_string(img, lang=lang)
 
 def extract_purchase_date(text):
@@ -50,57 +51,32 @@ def extract_purchase_date(text):
     return match.group() if match else None
 
 def clean_text(text):
-    """
-    한글, 영어, 숫자, 공백, 괄호를 포함하며, 한글/영어 사이에 있는 숫자만 유지.
-    """
     lines = text.split('\n')
     cleaned_lines = []
-
-    # 제외할 단어 목록
-    excluded_words = ["포 묘모스 로 그매스프 도"]
-
     for line in lines:
-        # 한글/영어가 포함된 텍스트만 유지
         if any(char.isalpha() for char in line):
-            # 허용된 문자(한글, 영어, 숫자, 괄호, 공백)만 유지
-            cleaned_line = re.sub(r'[^가-힣a-zA-Z0-9\s\(\)]', '', line)
-            cleaned_line = re.sub(r'\s+', ' ', cleaned_line).strip()
-
-            # 제외할 단어가 포함된 경우, 해당 단어 제거
-            for word in excluded_words:
-                cleaned_line = cleaned_line.replace(word, "")
-
-            # 한글/영어 사이에 없는 숫자는 제거
-            if any(char.isdigit() for char in cleaned_line):
-                cleaned_line = re.sub(r'(?<![가-힣a-zA-Z])\d+|\d+(?![가-힣a-zA-Z])', '', cleaned_line).strip()
-
-            if cleaned_line:  # 비어 있지 않은 경우만 추가
-                cleaned_lines.append(cleaned_line)
-
+            cleaned_lines.append(line)
     return cleaned_lines
-
 
 @app.route('/ocr-detection', methods=['POST'])
 def ocr_detection():
     if 'image' not in request.files:
         return jsonify({"error": "No image file provided"}), 400
 
-    image_file = request.files['image']
-    image = np.array(Image.open(BytesIO(image_file.read())).convert('RGB'))
-
     try:
-        # YOLO로 텍스트 영역 감지
-        boxes = detect_text_with_yolo(image)
+        image_file = request.files['image']
+        image_path = "testimage_receipt13.jpg"
+        image_file.save(image_path)
 
+        img, boxes = detect_text_with_yolo(image_path)
         recognized_texts = []
-        for (x1, y1, x2, y2) in boxes:
-            cropped = image[y1:y2, x1:x2]
+        for x1, y1, x2, y2 in boxes:
+            cropped = img[y1:y2, x1:x2]
             processed = preprocess(cropped)
             text = extract_text_with_tesseract(processed, lang="kor")
             recognized_texts.extend(clean_text(text))
 
-        # 전체 이미지 텍스트와 구매일자 추출
-        full_text = extract_text_with_tesseract(image, lang="kor")
+        full_text = extract_text_with_tesseract(img, lang="kor")
         purchase_date = extract_purchase_date(full_text)
 
         return jsonify({
@@ -111,6 +87,6 @@ def ocr_detection():
     except Exception as e:
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5001, debug=True)
+
