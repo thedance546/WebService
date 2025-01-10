@@ -1,4 +1,4 @@
-// src/constants/IngredientsNotiColors.ts
+// src/constants/IngredientsNotiColor.ts
 
 export const STATUS_COLORS = {
     safe: "#CFF5D2",            // 유통기한 이내

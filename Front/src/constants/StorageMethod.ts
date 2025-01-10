@@ -1,4 +1,4 @@
-// src/constants/StorageMethods.ts
+// src/constants/StorageMethod.ts
 
 export const STORAGE_METHODS = [
     { id: 0, name: "전체", displayName: "전체" },

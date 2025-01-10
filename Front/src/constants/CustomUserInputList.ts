@@ -1,4 +1,4 @@
-// src/constants/CustomUserInputLists.ts
+// src/constants/CustomUserInputList.ts
 
 const UserInputLists = {
     AGE_GROUPS: ["유아", "청소년", "청년", "중·노년"],

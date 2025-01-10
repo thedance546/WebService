@@ -3,7 +3,7 @@ import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import LogoutButton from '../../components/molecules/LogoutButton';
-import { navItems } from '../../constants/aaa';
+import { navItems } from '../../constants/AdminNavItem';
 
 const AdminNavBar: React.FC = () => {
   const navigate = useNavigate();

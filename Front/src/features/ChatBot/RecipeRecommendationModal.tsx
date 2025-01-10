@@ -8,7 +8,7 @@ import UserPreferencesCard from '../../features/ChatBot/UserPreferencesCard';
 import ImagePreview from '../../components/atoms/ImagePreview';
 import { useIngredients } from '../../contexts/IngredientsContext';
 import { Ingredient } from '../../types/EntityTypes';
-import { StorageKeys } from '../../constants/StorageKeys';
+import { StorageKeys } from '../../constants/StorageKey';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
 
