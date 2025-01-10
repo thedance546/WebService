@@ -25,9 +25,9 @@ public class UserController {
     }
 
     //회원 삭제
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String accessToken, @PathVariable Long userId) {
-        userService.deleteUserById(userId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String accessToken, @PathVariable Long id) {
+        userService.deleteUserById(id);
         return ResponseEntity.ok("회원이 성공적으로 삭제되었습니다.");
     }
 }

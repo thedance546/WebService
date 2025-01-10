@@ -1,16 +1,18 @@
 package com.example.loginDemo.yolo;
 
-import com.example.loginDemo.dto.MultipartFileRequest;
 import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.*;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
@@ -18,7 +20,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class YoloController {
     private final YoloService yoloService;
-    private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
+
+    private final String Ingredient_bounding_URL = "http://yolo-container:5000/object-detection/object_detection/image";
 
     //ingredient
     @PostMapping("/items/detection")
@@ -31,20 +34,14 @@ public class YoloController {
         }
     }
 
-    @PostMapping("/process-image")
-    public ResponseEntity<byte[]> image(@RequestParam("image") MultipartFile image) {
-        return yoloService.getProcessedImage(image);
-    }
-
-    // 처리된 이미지 요청
-    @GetMapping("/processed-image/{imageName}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) {
+    //yolo 바운딩 박스 리턴
+    @PostMapping("/image")
+    public ResponseEntity<byte[]> detectObjectsImage(@RequestParam("image") MultipartFile imageFile) {
         try {
-            // 컨테이너 내에서 처리된 이미지 반환
-            return yoloService.getProcessedImageFromContainer(imageName);
-        } catch (Exception e) {
-            // 오류 처리
-            return ResponseEntity.status(404).body(null);
+            byte[] image = yoloService.getObjectDetectionImage(imageFile);
+            return new ResponseEntity<>(image, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

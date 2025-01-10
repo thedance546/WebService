@@ -30,105 +30,42 @@ import java.util.*;
 public class YoloService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
-    private final String flaskServerUrl = "http://yolo-container:5000";
-
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
-
-    private static final String IMAGE_DIRECTORY = "/app/images/";
-
-    // 이미지 리턴
-    public ResponseEntity<byte[]> getProcessedImage(MultipartFile file) {
-        try {
-            // 이미지 바이트 배열로 변환
-            byte[] imageBytes = file.getBytes();
-
-            // 이미지 파일을 포함한 HttpEntity 생성
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("image", new ByteArrayResource(imageBytes) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();  // 파일 이름 설정
-                }
-            });
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            // 처리된 이미지 반환
-            ResponseEntity<ByteArrayResource> response = restTemplate.exchange(
-                    flaskServerUrl + "/object-detection/object_detection",
-                    HttpMethod.POST,
-                    requestEntity,
-                    ByteArrayResource.class
-            );
-
-            // ByteArrayResource에서 byte[] 추출
-            byte[] imageBytesFromResponse = response.getBody().getByteArray();
-
-            // 컨테이너 내 이미지 저장 디렉토리 경로
-            Path imagePath = Paths.get(IMAGE_DIRECTORY + "processed_image.jpg");
-
-            // 디버깅: 이미지 저장 경로 출력
-            System.out.println("Saving processed image to path: " + imagePath.toString());
-
-            // 디렉토리 존재 여부 확인 후, 없으면 생성
-            File directory = new File(IMAGE_DIRECTORY);
-            if (!directory.exists()) {
-                directory.mkdirs();  // 디렉토리 생성
-            }
-
-            // 이미지 파일을 디렉토리에 저장
-            try (FileOutputStream fos = new FileOutputStream(imagePath.toFile())) {
-                fos.write(imageBytesFromResponse);
-            } catch (IOException e) {
-                throw new RuntimeException("Error saving processed image to container directory", e);
-            }
-
-            // 로그로 이미지 이름 출력
-            System.out.println("Processed image saved as: " + imagePath.getFileName());
-
-            // 이미지 바이트 배열로 ResponseEntity를 래핑하여 반환
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG) // Assuming JPEG image, change accordingly
-                    .body(imageBytesFromResponse);
-
-        } catch (HttpServerErrorException e) {
-            throw new RuntimeException("Server error while processing image: " + e.getMessage(), e);
-        } catch (ResourceAccessException e) {
-            throw new RuntimeException("Error accessing Flask server: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading image file: " + e.getMessage(), e);
-        }
-    }
-
-    public ResponseEntity<byte[]> getProcessedImageFromContainer(String imageName) {
-        try {
-            // 이미지 파일 경로
-            Path imagePath = Paths.get(IMAGE_DIRECTORY + imageName);
-
-            // 이미지 파일이 존재하는지 확인
-            if (Files.notExists(imagePath)) {
-                throw new RuntimeException("이미지 파일이 존재하지 않습니다: " + imageName);
-            }
-
-            // 이미지 파일을 바이트 배열로 읽기
-            byte[] imageBytes = Files.readAllBytes(imagePath);
-
-            // 이미지 바이트 배열로 ResponseEntity를 래핑하여 반환
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG) // Assuming JPEG image, change accordingly
-                    .body(imageBytes);
-        } catch (IOException e) {
-            throw new RuntimeException("이미지 파일을 읽는 중 오류가 발생했습니다: " + e.getMessage(), e);
-        }
-    }
 
 
     // ingredient
     public Map<String, String> detectObjects(MultipartFile imageFile) throws IOException {
         return sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+    }
+
+    //bounding
+    public byte[] getObjectDetectionImage(MultipartFile imageFile) throws IOException {
+        String url = Ingredient_URL + "/image"; // Assuming this is the Flask route for object detection image
+
+        // Prepare image file to be sent
+        byte[] imageBytes = imageFile.getBytes();
+        String filename = imageFile.getOriginalFilename();
+
+        // Debug: Log the image size and filename
+        System.out.println("Image size: " + imageBytes.length + " bytes");
+        System.out.println("Filename: " + filename);
+
+        // Send POST request to Flask server with image
+        Map response = sendPostRequest(url, imageBytes, filename);
+
+        // Debug: Log the response from the Flask server
+        System.out.println("Response from Flask server: " + response);
+
+        // Assuming the response body contains the image in a byte array form
+        if (response != null && response.containsKey("image")) {
+            // Debug: Log the received image size
+            byte[] resultImage = (byte[]) response.get("image");
+            System.out.println("Received image size: " + resultImage.length + " bytes");
+            return resultImage;
+        } else {
+            System.out.println("Error: No 'image' field in the response");
+            throw new RuntimeException("Response did not contain an 'image' field.");
+        }
     }
 
     // ocr
