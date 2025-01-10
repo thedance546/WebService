@@ -16,7 +16,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ addMessage, toggleOptions, disabl
       {/* 옵션 버튼 */}
       <Button
         onClick={toggleOptions}
-        className="chat-btn ms-2 me-2"
+        className="chat-btn me-1"
         disabled={disabled}
       >
         <Plus />
@@ -30,14 +30,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ addMessage, toggleOptions, disabl
           if (e.key === 'Enter' && !disabled) handleSendMessage();
         }}
         placeholder="메시지를 입력하세요..."
-        className="form-control flex-grow-1 me-2"
+        className="form-control flex-grow-1 me-1"
         disabled={disabled}
       />
 
       {/* 전송 버튼 */}
       <Button
         onClick={handleSendMessage}
-        className="chat-btn me-2"
+        className="chat-btn"
         disabled={disabled}
       >
         <Send />

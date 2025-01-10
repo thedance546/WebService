@@ -57,12 +57,13 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
       quantity,
     }));
 
-    const sanitizedStoredIngredients = selectedIngredients.map(({ name, quantity, purchaseDate }) => ({
+    const sanitizedStoredIngredients = selectedIngredients.map(({ name, quantity, shelfLife, consumeBy }) => ({
       name,
       quantity,
-      purchaseDate,
+      shelfLife,
+      consumeBy,
     }));
-
+    
     const payload = {
       detectedIngredients: sanitizedDetectedIngredients,
       selectedStoredIngredients: sanitizedStoredIngredients,
