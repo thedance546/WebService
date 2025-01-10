@@ -38,6 +38,30 @@ public class YoloService {
         return sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
     }
 
+    //bounding
+    public byte[] getObjectDetectionImage(MultipartFile imageFile) throws IOException {
+        String url = Ingredient_URL +"/image"; // Assuming this is the Flask route for object detection image
+
+        // Prepare image file to be sent
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        // Prepare multipart request
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("image", imageFile.getResource());
+
+        // Create HttpEntity with headers and body
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        // Send POST request to Flask server
+        ResponseEntity<byte[]> responseEntity = restTemplate.postForEntity(url, requestEntity, byte[].class);
+
+        // Return image byte array
+        return responseEntity.getBody();
+    }
+
+
+
     // ocr
     public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
         Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
