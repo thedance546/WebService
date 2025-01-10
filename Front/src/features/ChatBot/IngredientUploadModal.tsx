@@ -27,7 +27,6 @@ interface IngredientUploadModalProps {
 }
 
 const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
-  isOpen,
   onClose,
   state,
   setState,
@@ -38,31 +37,34 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
     setState((prevState) => ({ ...prevState, selectedFile: file }));
   };
 
-  const handleDetection = async () => {
-    if (!state.selectedFile) {
+  // IngredientUploadModal.tsx
+const handleDetection = async () => {
+  if (!state.selectedFile) {
       alert('이미지를 업로드해주세요.');
       return;
-    }
+  }
 
-    setState((prevState) => ({ ...prevState, loading: true }));
+  setState((prevState) => ({ ...prevState, loading: true }));
 
-    try {
+  try {
+      // 1. Detect objects
       const detectionResult = await detectObjectsInImage(state.selectedFile);
-      const parsedIngredients = Object.entries(detectionResult).map(([name, quantity]) => ({
-        ingredientId: 0,
-        name,
-        quantity: parseInt(quantity as string, 10),
-      }));
-      setIngredients(parsedIngredients);
+      setIngredients(detectionResult.ingredients);
+
+      // 2. Fetch bounding box image
+      
+
+      // 4. Close modal and open recipe recommendation modal
       openDetectionModal();
       onClose();
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       alert('탐지 중 오류가 발생했습니다.');
-    } finally {
+  } finally {
       setState((prevState) => ({ ...prevState, loading: false }));
-    }
-  };
+  }
+};
+
 
   return (
     <Modal title="레시피 추천 받기" onClose={onClose}>

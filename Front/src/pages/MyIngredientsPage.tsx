@@ -25,7 +25,7 @@ const MyIngredientsPage: React.FC = () => {
     matchedItems: [],
   });
   const editModal = usePopupState<Ingredient | null>(null);
-  const { ingredients, updateIngredient, deleteIngredient } = useIngredients();
+  const { ingredients, updateIngredient } = useIngredients();
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleReceiptUploadConfirm = async () => {

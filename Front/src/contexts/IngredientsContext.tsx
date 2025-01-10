@@ -29,7 +29,7 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   const deleteIngredient = async (ingredientId: number) => {
     try {
-      await deleteUserIngredient(ingredientId); // API 호출
+      await deleteUserIngredient(ingredientId);
       setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== ingredientId));
       console.log(`식재료 삭제 성공: ID=${ingredientId}`);
     } catch (error) {
