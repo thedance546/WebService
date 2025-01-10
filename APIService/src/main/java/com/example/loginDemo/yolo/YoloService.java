@@ -39,32 +39,34 @@ public class YoloService {
     }
 
     //bounding
-    public byte[] getObjectDetectionImage(MultipartFile imageFile) throws IOException {
-        String url = Ingredient_URL + "/image"; // Assuming this is the Flask route for object detection image
+    public byte[] returnImage(MultipartFile imageFile) throws IOException {
+        return sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+    }
 
-        // Prepare image file to be sent
-        byte[] imageBytes = imageFile.getBytes();
-        String filename = imageFile.getOriginalFilename();
+    private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        // Debug: Log the image size and filename
-        System.out.println("Image size: " + imageBytes.length + " bytes");
-        System.out.println("Filename: " + filename);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("image", new ByteArrayResource(imageBytes) {
+            @Override
+            public String getFilename() {
+                return filename;
+            }
+        });
 
-        // Send POST request to Flask server with image
-        Map response = sendPostRequest(url, imageBytes, filename);
+        HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        // Debug: Log the response from the Flask server
-        System.out.println("Response from Flask server: " + response);
-
-        // Assuming the response body contains the image in a byte array form
-        if (response != null && response.containsKey("image")) {
-            // Debug: Log the received image size
-            byte[] resultImage = (byte[]) response.get("image");
-            System.out.println("Received image size: " + resultImage.length + " bytes");
-            return resultImage;
-        } else {
-            System.out.println("Error: No 'image' field in the response");
-            throw new RuntimeException("Response did not contain an 'image' field.");
+        try {
+            // 이미지 반환을 byte[]로 받기
+            ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("요청 실패: 상태 코드 " + response.getStatusCode());
+            }
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Flask 서버와의 통신에 실패했습니다.", e);
         }
     }
 

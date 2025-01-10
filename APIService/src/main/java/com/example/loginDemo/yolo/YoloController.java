@@ -38,13 +38,15 @@ public class YoloController {
     @PostMapping("/image")
     public ResponseEntity<byte[]> detectObjectsImage(@RequestParam("image") MultipartFile imageFile) {
         try {
-            byte[] image = yoloService.getObjectDetectionImage(imageFile);
-            return new ResponseEntity<>(image, HttpStatus.OK);
+            // 이미지를 보내고 바운딩 박스를 그린 결과 이미지를 반환
+            byte[] resultImage = yoloService.returnImage(imageFile);
+            return ResponseEntity.ok()
+                    .header("Content-Type", "image/jpeg")  // 이미지 형식 설정
+                    .body(resultImage);
         } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(500).body(null); // 서버 오류
         }
     }
-
     // 확인할 품목 리스트
     private static final List<String> ITEMS_TO_CHECK = Arrays.asList(
             "김치", "토마토", "방울토마토", "가지", "오이", "애호박", "팽이버섯", "새송이버섯",
