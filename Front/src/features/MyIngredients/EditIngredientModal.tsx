@@ -5,12 +5,12 @@ import Modal from "../../components/molecules/Modal";
 import Input from "../../components/atoms/Input";
 import { Ingredient, StorageMethod } from "../../types/EntityTypes";
 import useDateInput from "../../hooks/useDateInput";
+import { useIngredients } from "../../contexts/IngredientsContext";
 
 export interface EditIngredientModalProps {
   row: Ingredient;
   storageMethods: StorageMethod[];
   onSave: (updatedIngredient: Ingredient) => void;
-  onDelete: (ingredientId: number) => void;
   onCancel: () => void;
 }
 
@@ -18,11 +18,12 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({
   row,
   storageMethods,
   onSave,
-  onDelete,
   onCancel,
 }) => {
+  const { deleteIngredient } = useIngredients(); // Context에서 삭제 함수 가져오기
   const [editedRow, setEditedRow] = useState({ ...row });
   const purchaseDateInput = useDateInput(row.purchaseDate || "");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (field: string, value: any) => {
     setEditedRow((prev) => ({ ...prev, [field]: value }));
@@ -37,6 +38,23 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({
       quantity: editedRow.quantity <= 0 ? 1 : editedRow.quantity,
     };
     onSave(finalRow);
+  };
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm("정말로 삭제하시겠습니까?");
+    if (!confirmed) return;
+
+    try {
+      setLoading(true);
+      await deleteIngredient(row.ingredientId); // Context의 삭제 함수 호출
+      alert("식재료가 성공적으로 삭제되었습니다.");
+      onCancel(); // 모달 닫기
+    } catch (error) {
+      console.error("식재료 삭제 실패:", error);
+      alert("식재료 삭제에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -130,13 +148,13 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({
         </tbody>
       </table>
       <div className="d-flex justify-content-between mt-3">
-        <button className="btn btn-success" onClick={handleSave}>
+        <button className="btn btn-success" onClick={handleSave} disabled={loading}>
           저장
         </button>
-        <button className="btn btn-warning" onClick={() => onDelete(row.ingredientId)}>
+        <button className="btn btn-warning" onClick={handleDelete} disabled={loading}>
           삭제
         </button>
-        <button className="btn btn-danger" onClick={onCancel}>
+        <button className="btn btn-danger" onClick={onCancel} disabled={loading}>
           취소
         </button>
       </div>

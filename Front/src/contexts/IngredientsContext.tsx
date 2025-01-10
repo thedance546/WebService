@@ -1,14 +1,14 @@
 // src/contexts/IngredientsContext.tsx
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { fetchOrders } from "../services/ServiceApi";
+import { fetchOrders, deleteUserIngredient } from "../services/ServiceApi"; // 삭제 API 추가
 import { Ingredient } from "../types/EntityTypes";
 
 interface IngredientsContextType {
   ingredients: Ingredient[];
   addIngredient: (newIngredients: Ingredient[]) => void;
   updateIngredient: (updatedIngredient: Ingredient) => void;
-  deleteIngredient: (ingredientId: number) => void;
+  deleteIngredient: (ingredientId: number) => Promise<void>;
   refreshIngredients: () => Promise<void>;
 }
 
@@ -27,6 +27,17 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   };
 
+  const deleteIngredient = async (ingredientId: number) => {
+    try {
+      await deleteUserIngredient(ingredientId); // API 호출
+      setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== ingredientId));
+      console.log(`식재료 삭제 성공: ID=${ingredientId}`);
+    } catch (error) {
+      console.error("식재료 삭제 실패:", error);
+      throw new Error("식재료 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   useEffect(() => {
     refreshIngredients();
   }, []);
@@ -42,8 +53,7 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
               ingredient.ingredientId === updatedIngredient.ingredientId ? updatedIngredient : ingredient
             )
           ),
-        deleteIngredient: (ingredientId) =>
-          setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== ingredientId)),
+        deleteIngredient,
         refreshIngredients,
       }}
     >
@@ -61,24 +71,32 @@ export const useIngredients = (): IngredientsContextType => {
 };
 
 export const mapOrderToIngredients = (orders: any[]): Ingredient[] => {
-  return orders.flatMap((order) =>
-    order.orderItems.map((orderItem: any) => ({
-      ingredientId: orderItem.item.id,
-      name: orderItem.item.itemName,
-      quantity: orderItem.count,
-      category: {
-        id: orderItem.item.category.id,
-        categoryName: orderItem.item.category.categoryName,
-      },
-      storageMethod: {
-        id: orderItem.item.storageMethod.id,
-        storageMethodName: orderItem.item.storageMethod.storageMethodName,
-      },
-      shelfLife: calculateDate(order.orderDate, orderItem.item.shelfLife?.sellByDays),
-      consumeBy: calculateDate(order.orderDate, orderItem.item.shelfLife?.useByDays),
-      purchaseDate: order.orderDate,
-    }))
-  );
+  return orders
+    .filter((orderItem) => orderItem.item) // item이 존재하지 않는 항목 필터링
+    .map((orderItem) => {
+      const item = orderItem.item;
+
+      return {
+        ingredientId: orderItem.orderItemId || 0,
+        name: item.itemName || "이름 없음",
+        quantity: 1,
+        category: {
+          id: item.category?.id || 0,
+          categoryName: item.category?.categoryName || "",
+        },
+        storageMethod: {
+          id: item.storageMethod?.id || 0,
+          storageMethodName: item.storageMethod?.storageMethodName || "",
+        },
+        shelfLife: item.shelfLife?.sellByDays
+          ? calculateDate(new Date().toISOString(), item.shelfLife.sellByDays)
+          : undefined,
+        consumeBy: item.shelfLife?.useByDays
+          ? calculateDate(new Date().toISOString(), item.shelfLife.useByDays)
+          : undefined,
+        purchaseDate: new Date().toISOString(),
+      };
+    });
 };
 
 const calculateDate = (baseDate: string, daysToAdd: number | undefined): string | undefined => {

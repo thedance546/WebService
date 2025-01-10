@@ -59,7 +59,7 @@ export const createOrder = async (orderData: { orderDate: string; orderItems: { 
 export const fetchOrders = async (): Promise<any[]> => {
     try {
         const headers = getAuthHeaders('Bearer');
-        const response = await api.get('/orders', { headers });
+        const response = await api.get('/orders/user/items', { headers });
         console.log('주문 목록 조회 성공:', response.data);
         return response.data;
     } catch (error) {
