@@ -1,21 +1,15 @@
 package com.example.loginDemo.yolo;
 
-import com.example.loginDemo.dto.MultipartFileRequest;
 import com.example.loginDemo.dto.ReceiptResponse;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
@@ -39,49 +33,35 @@ public class YoloController {
 
     //yolo 바운딩 박스 리턴
     @PostMapping("/image")
-    public ResponseEntity<byte[]> returnImage(@RequestParam("image") MultipartFile image) {
+    public ResponseEntity<byte[]> returnImage(@RequestParam("image") MultipartFile file) {
         try {
-            // RestTemplate 생성
+            // 이미지를 Flask 서버로 전송
             RestTemplate restTemplate = new RestTemplate();
-
-            // 요청에 포함할 파일 데이터 생성
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // 요청의 파일 데이터를 Multipart 형식으로 변환
-            org.springframework.util.LinkedMultiValueMap<String, Object> body = new org.springframework.util.LinkedMultiValueMap<>();
-            body.add("image", new org.springframework.core.io.ByteArrayResource(image.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return image.getOriginalFilename();
-                }
-            });
+            // MultipartFile을 HttpEntity로 변환하여 Flask 서버로 전송
+            HttpEntity<MultipartFile> entity = new HttpEntity<>(file, headers);
 
-            HttpEntity<org.springframework.util.LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            // Flask 서버에 요청
-            ResponseEntity<byte[]> responseEntity = restTemplate.exchange(
-                    URI.create(Ingredient_bounding_URL),
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    Ingredient_bounding_URL,
                     HttpMethod.POST,
-                    requestEntity,
+                    entity,
                     byte[].class
             );
 
-            // Flask에서 반환된 이미지 데이터를 클라이언트로 전달
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
-                byte[] imageBytes = responseEntity.getBody();
-                return ResponseEntity
-                        .ok()
+            // Flask 서버에서 반환된 이미지 데이터 반환
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
-                        .body(imageBytes);  // 이미지 데이터를 ResponseEntity로 반환
+                        .body(response.getBody());
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(null);  // 오류 발생 시 500 상태 코드와 빈 본문 반환
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
+
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);  // 내부 서버 오류 처리
+            // RestTemplate에서 발생할 수 있는 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
