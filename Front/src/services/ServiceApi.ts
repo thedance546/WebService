@@ -45,15 +45,7 @@ export const recognizeReceipt = async (file: File): Promise<any> => {
     }
 };
 
-export const sendChatMessage = async (message: string): Promise<string> => {
-  try {
-    const response = await api.post('/chat/ask', { message });
-    return response.data.reply;
-  } catch (error: any) {
-    throw handleApiError(error, '챗봇 메시지 전송 중 오류가 발생했습니다.');
-  }
-};
-
+// 식재료 관리
 export const createOrder = async (orderData: { orderDate: string; orderItems: { itemName: string; count: number }[] }): Promise<void> => {
     try {
         const headers = getAuthHeaders('Bearer');
@@ -75,3 +67,18 @@ export const fetchOrders = async (): Promise<any[]> => {
         throw handleApiError(error, '주문 목록 조회에 실패했습니다.');
     }
 };
+
+// 챗봇 UI
+// 일반 질의
+export const sendChatMessage = async (message: string): Promise<string> => {
+    try {
+      const response = await api.post('/chat/general/questions', { message });
+      return response.data.reply;
+    } catch (error: any) {
+      throw handleApiError(error, '챗봇 메시지 전송 중 오류가 발생했습니다.');
+    }
+  };
+  
+// 레시피 추천
+
+// 모든 메시지 조회

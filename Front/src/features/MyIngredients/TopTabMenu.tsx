@@ -1,7 +1,7 @@
 // src/features/MyIngredients/CategoryTabs.tsx
 
 import React from "react";
-import { STORAGE_METHODS } from "../../constants/StorageMethods";
+import { STORAGE_METHODS } from "../../constants/StorageMethod";
 
 interface TopTabMenuProps {
   activeTab: string;

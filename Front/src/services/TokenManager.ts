@@ -33,7 +33,7 @@ export const refreshAccessToken = async (): Promise<string> => {
 
   console.log("토큰 갱신 요청 시작...");
   try {
-    const response = await api.post('/auth/refresh', {}, { withCredentials: true });
+    const response = await api.post('/auth/token/refresh', {}, { withCredentials: true });
     const newAccessToken: string = response.data.accessToken;
 
     setAccessToken(newAccessToken);

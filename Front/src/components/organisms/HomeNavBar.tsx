@@ -2,7 +2,7 @@
 
 import React from 'react';
 import NavList from '../molecules/NavList';
-import { navItems } from '../../constants/HomeNavItems';
+import { navItems } from '../../constants/HomeNavItem';
 import './HomeNavBar.css';
 
 const HomeNavBar: React.FC = () => (

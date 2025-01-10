@@ -3,7 +3,7 @@
 import React from "react";
 import { Ingredient } from "../../types/EntityTypes";
 import { calculateDate } from "../../utils/Utils";
-import { STATUS_COLORS } from "../../constants/IngredientsNotiColors";
+import { STATUS_COLORS } from "../../constants/IngredientsNotiColor";
 
 interface IngredientCardProps {
   ingredient: Ingredient;

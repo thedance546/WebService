@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../../components/molecules/FullScreenOverlay';
 import Button from '../../components/atoms/Button';
 import UserInfoForm from './UserInfoForm';
-import { StorageKeys } from '../../constants/StorageKeys';
+import { StorageKeys } from '../../constants/StorageKey';
 
 interface CustomInfoInputModalProps {
   isOpen: boolean;
