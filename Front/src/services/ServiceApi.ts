@@ -1,5 +1,7 @@
-// src/services/YOLOApi.ts
+// src/services/ServiceApi.ts
+
 import { api, getAuthHeaders } from './Api';
+import { handleApiError } from '../utils/Utils';
 
 export const detectObjectsInImage = async (file: File): Promise<any> => {
     if (!file.type.startsWith('image/')) {
@@ -19,8 +21,7 @@ export const detectObjectsInImage = async (file: File): Promise<any> => {
         console.log('[Ingredients API] 서버 응답 성공:', response.data);
         return response.data;
     } catch (error: any) {
-        console.error('[Ingredients API] 이미지 탐지 요청 중 오류 발생:', error.response?.status, error.response?.data || error.message);
-        throw new Error('이미지 탐지 실패. 서버와 연결에 문제가 있을 수 있습니다.');
+        throw handleApiError(error, '이미지 탐지 실패.');
     }
 };
 
@@ -40,7 +41,37 @@ export const recognizeReceipt = async (file: File): Promise<any> => {
         console.log('[OCR API] 서버 응답 성공:', response.data);
         return response.data;
     } catch (error: any) {
-        console.error('[영수증 인식 오류]', error.response?.status, error.response?.data || error.message);
-        throw new Error('영수증 인식에 실패했습니다. 서버와 연결 문제일 수 있습니다.');
+        throw handleApiError(error, '영수증 인식에 실패했습니다.');
+    }
+};
+
+export const sendChatMessage = async (message: string): Promise<string> => {
+  try {
+    const response = await api.post('/chat/ask', { message });
+    return response.data.reply;
+  } catch (error: any) {
+    throw handleApiError(error, '챗봇 메시지 전송 중 오류가 발생했습니다.');
+  }
+};
+
+export const createOrder = async (orderData: { orderDate: string; orderItems: { itemName: string; count: number }[] }): Promise<void> => {
+    try {
+        const headers = getAuthHeaders('Bearer');
+        console.log('주문 등록 요청:', orderData);
+        await api.post('/orders', orderData, { headers });
+        console.log('주문 등록 성공:', orderData);
+    } catch (error) {
+        throw handleApiError(error, '주문 등록에 실패했습니다.');
+    }
+};
+
+export const fetchOrders = async (): Promise<any[]> => {
+    try {
+        const headers = getAuthHeaders('Bearer');
+        const response = await api.get('/orders', { headers });
+        console.log('주문 목록 조회 성공:', response.data);
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error, '주문 목록 조회에 실패했습니다.');
     }
 };

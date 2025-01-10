@@ -4,7 +4,7 @@ import React from 'react';
 import Modal from '../../components/molecules/Modal';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
-import { detectObjectsInImage } from '../../services/YOLOApi';
+import { detectObjectsInImage } from '../../services/ServiceApi';
 import { Ingredient } from '../../types/EntityTypes';
 
 interface IngredientUploadModalProps {
@@ -49,7 +49,7 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
     try {
       const detectionResult = await detectObjectsInImage(state.selectedFile);
       const parsedIngredients = Object.entries(detectionResult).map(([name, quantity]) => ({
-        ingredientId: Date.now() + Math.random(),
+        ingredientId: 0,
         name,
         quantity: parseInt(quantity as string, 10),
       }));

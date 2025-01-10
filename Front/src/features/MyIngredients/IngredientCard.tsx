@@ -29,10 +29,9 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
     <p>
       <strong>수량:</strong> {ingredient.quantity}
       <br />
-      <strong>D-day:</strong> {ingredient.purchaseDate}
+      <strong>구매일자:</strong> {ingredient.purchaseDate}
     </p>
   </div>
-
 );
 
 export default IngredientCard;

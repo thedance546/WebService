@@ -17,7 +17,7 @@ import botAvatar from '../assets/matjipsa_logo.png';
 
 const ChatBotPage: React.FC = () => {
   const initialMessage: Message[] = [
-    { sender: Sender.Bot, text: '안녕하세요! 무엇을 도와드릴까요?', imageUrl: botAvatar },
+    { sender: Sender.Bot, text: '안녕하세요! 무엇을 도와드릴까요?', profileImage: botAvatar },
   ];
 
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -61,14 +61,14 @@ const ChatBotPage: React.FC = () => {
       addMessage({
         sender: Sender.User,
         text: '',
-        imageUrl: imageUploadModal.state.previewUrl,
+        attachedImage: imageUploadModal.state.previewUrl,
       });
       imageUploadModal.reset();
     }
   };
 
   return (
-    <div className="chatbot-container container">
+    <div className="container">
       <ChatMessages messages={messages} />
       <ChatInput
         addMessage={addMessage}

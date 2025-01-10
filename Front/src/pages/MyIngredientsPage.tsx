@@ -10,7 +10,7 @@ import LoadingModal from "../components/organisms/LoadingModal";
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from "../hooks/usePopupState";
 import { useIngredients } from "../contexts/IngredientsContext";
-import { recognizeReceipt } from "../services/YOLOApi";
+import { recognizeReceipt } from "../services/ServiceApi";
 
 const MyIngredientsPage: React.FC = () => {
   const optionsModal = usePopupState(null);

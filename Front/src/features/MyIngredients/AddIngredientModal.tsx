@@ -1,12 +1,15 @@
 // src/features/MyIngredients/AddIngredientModal.tsx
 
 import React, { useState, useEffect } from 'react';
-import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
 import Button from '../../components/atoms/Button';
-import EditIngredientForm from '../../components/organisms/EditIngredientForm';
 import Input from '../../components/atoms/Input';
-import { Ingredient } from '../../types/EntityTypes';
+import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
+import EditIngredientForm from '../../components/organisms/EditIngredientForm';
+import LoadingModal from '../../components/organisms/LoadingModal';
 import useDateInput from '../../hooks/useDateInput';
+import { Ingredient } from '../../types/EntityTypes';
+import { createOrder } from '../../services/ServiceApi';
+import { useIngredients } from "../../contexts/IngredientsContext";
 
 interface AddIngredientModalProps {
   matchedItems: string[];
@@ -21,8 +24,10 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   onConfirm,
   onClose,
 }) => {
+  const { refreshIngredients } = useIngredients();
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const purchaseDateInput = useDateInput(initialPurchaseDate); // Hook 사용
+  const [isLoading, setIsLoading] = useState(false);
+  const purchaseDateInput = useDateInput(initialPurchaseDate);
 
   useEffect(() => {
     const initialIngredients = matchedItems.map((item) => ({
@@ -33,8 +38,8 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
     setIngredients(initialIngredients);
   }, [matchedItems]);
 
-  const handleConfirm = () => {
-    const parsedPurchaseDate = purchaseDateInput.getParsedValue(); // 최종 변환된 날짜 가져오기
+  const handleConfirm = async () => {
+    const parsedPurchaseDate = purchaseDateInput.getParsedValue();
 
     if (!parsedPurchaseDate) {
       alert('구매일자를 입력해주세요.');
@@ -47,42 +52,65 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
       return;
     }
 
-    const resultWithDate = validItems.map((item) => ({
-      ...item,
-      purchaseDate: parsedPurchaseDate,
-    }));
+    const orderData = {
+      orderDate: parsedPurchaseDate,
+      orderItems: validItems.map((item) => ({
+        itemName: item.name,
+        count: item.quantity,
+      })),
+    };
 
-    onConfirm(resultWithDate);
+    setIsLoading(true);
+
+    try {
+      await createOrder(orderData);
+      await refreshIngredients();
+      onConfirm(validItems);
+      onClose();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('식재료 등록 실패:', error.message);
+        alert(`식재료 등록에 실패했습니다. 오류: ${error.message}`);
+      } else {
+        console.error('식재료 등록 실패: 알 수 없는 오류');
+        alert('식재료 등록에 실패했습니다. 알 수 없는 오류입니다.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <FullScreenOverlay title="인식된 식재료" onClose={onClose}>
-      <div className="mb-3">
-        <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
-        <Input
-          type="text"
-          id="purchaseDate"
-          value={purchaseDateInput.value}
-          onChange={purchaseDateInput.onChange}
-          onBlur={purchaseDateInput.onBlur}
-          className="form-control"
+    <>
+      {isLoading && <LoadingModal />}
+      <FullScreenOverlay title="인식된 식재료" onClose={onClose}>
+        <div className="mb-3">
+          <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
+          <Input
+            type="text"
+            id="purchaseDate"
+            value={purchaseDateInput.value}
+            onChange={purchaseDateInput.onChange}
+            onBlur={purchaseDateInput.onBlur}
+            className="form-control"
+          />
+        </div>
+
+        <EditIngredientForm
+          ingredients={ingredients}
+          onIngredientsChange={setIngredients}
         />
-      </div>
 
-      <EditIngredientForm
-        ingredients={ingredients}
-        onIngredientsChange={setIngredients}
-      />
-
-      <div className="d-flex justify-content-end mt-3">
-        <Button variant="success" onClick={handleConfirm}>
-          확인
-        </Button>
-        <Button variant="danger" onClick={onClose}>
-          취소
-        </Button>
-      </div>
-    </FullScreenOverlay>
+        <div className="d-flex justify-content-end mt-3">
+          <Button variant="success" onClick={handleConfirm}>
+            확인
+          </Button>
+          <Button variant="danger" onClick={onClose}>
+            취소
+          </Button>
+        </div>
+      </FullScreenOverlay>
+    </>
   );
 };
 

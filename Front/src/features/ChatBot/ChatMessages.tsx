@@ -19,7 +19,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
           key={index}
           sender={message.sender}
           text={message.text}
-          imageUrl={message.imageUrl}
+          profileImage={message.profileImage}
+          attachedImage={message.attachedImage}
         />
       ))}
       <div ref={messagesEndRef} />

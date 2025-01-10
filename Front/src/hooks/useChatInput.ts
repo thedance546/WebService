@@ -14,7 +14,7 @@ export const useChatInput = (addMessage: (message: Message) => void) => {
   const handleSendMessage = () => {
     if (input.trim() !== '') {
       const messageToAdd: Message = input.startsWith('#')
-        ? { text: input.slice(1).trim(), sender: Sender.Bot, imageUrl: botAvatar }
+        ? { text: input.slice(1).trim(), sender: Sender.Bot, profileImage: botAvatar }
         : { text: input, sender: Sender.User };
 
       addMessage(messageToAdd);
