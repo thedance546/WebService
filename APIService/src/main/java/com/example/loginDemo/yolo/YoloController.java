@@ -18,6 +18,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class YoloController {
     private final YoloService yoloService;
+
     private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
 
     //ingredient
@@ -31,22 +32,39 @@ public class YoloController {
         }
     }
 
-    @PostMapping("/process-image")
-    public ResponseEntity<byte[]> image(@RequestParam("image") MultipartFile image) {
-        return yoloService.getProcessedImage(image);
-    }
-
-    // 처리된 이미지 요청
-    @GetMapping("/processed-image/{imageName}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) {
+    //yolo 바운딩 박스 리턴
+    @PostMapping("/image")
+    public ResponseEntity<byte[]> returnImage(@RequestParam("image") MultipartFile image) {
         try {
-            // 컨테이너 내에서 처리된 이미지 반환
-            return yoloService.getProcessedImageFromContainer(imageName);
-        } catch (Exception e) {
-            // 오류 처리
-            return ResponseEntity.status(404).body(null);
+            // Flask 서버 URL
+            String url = Ingredient_URL + "/image";
+
+            // RestTemplate 생성
+            RestTemplate restTemplate = new RestTemplate();
+
+            // Multipart 요청을 위한 HttpHeaders 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            // 요청 바디 생성
+            org.springframework.core.io.Resource fileResource = new org.springframework.core.io.InputStreamResource(image.getInputStream());
+            HttpEntity<org.springframework.core.io.Resource> requestEntity = new HttpEntity<>(fileResource, headers);
+
+            // Flask 서버로 POST 요청 전송
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    byte[].class
+            );
+
+            // Flask 서버 응답 반환
+            return new ResponseEntity<>(response.getBody(), response.getHeaders(), response.getStatusCode());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     // 확인할 품목 리스트
     private static final List<String> ITEMS_TO_CHECK = Arrays.asList(
