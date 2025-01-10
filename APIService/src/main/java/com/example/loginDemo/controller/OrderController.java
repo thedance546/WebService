@@ -26,7 +26,7 @@ public class OrderController {
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, @RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
 
-        orderService.createOrder(orderRequest, token);
+        orderService.createOrder2(orderRequest, token);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

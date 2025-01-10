@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +49,40 @@ public class OrderService {
                     });
         }
     }
+
+    //주문 2
+    @Transactional
+    public void createOrder2(OrderRequest orderRequest, String accessToken) {
+        User user = getCurrentUser(accessToken); // 중복된 유저 정보 추출 부분을 호출
+
+        // 주문 생성
+        Order order = new Order();
+        order.setOrderDate(orderRequest.getOrderDate());
+        order.setUser(user);
+
+        Order savedOrder = orderRepository.save(order);
+
+        // 주문 아이템 처리
+        for (OrderItemRequest orderItemRequest : orderRequest.getOrderItems()) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(savedOrder);
+            orderItem.setCount(orderItemRequest.getCount());
+
+            // Item이 미리 정의되어 있는지 확인
+            Optional<Item> existingItem = itemRepository.findByItemName(orderItemRequest.getItemName());
+
+            if (existingItem.isPresent()) {
+                // 미리 정의된 상품이 있으면 그 상품을 사용
+                orderItem.setItem(existingItem.get());
+            } else {
+                // 미리 정의된 상품이 없으면 Item을 null로 설정
+                orderItem.setItem(null); // 새로 Item을 추가하지 않음
+            }
+
+            orderItemRepository.save(orderItem); // OrderItem 저장
+        }
+    }
+
 
     // 유저별 식재료 조회
     public List<OrderItemResponse> findItemsByUser(String accessToken) {
