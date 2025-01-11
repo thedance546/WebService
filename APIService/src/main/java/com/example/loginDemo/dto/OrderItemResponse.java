@@ -19,5 +19,6 @@ public class OrderItemResponse {
     private String storageMethodName;
     private Integer sellByDays;
     private Integer useByDays;
+    private int count;
 
 }

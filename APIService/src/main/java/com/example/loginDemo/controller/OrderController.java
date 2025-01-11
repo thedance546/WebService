@@ -39,14 +39,31 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findItemsByUser(token));
     }
 
+    // 주문 아이템 수량 수정
+    @PutMapping("/{orderItemId}")
+    public ResponseEntity<String> updateOrderItemCount(
+            @PathVariable Long orderItemId,
+            @RequestParam int newCount,
+            @RequestHeader("Authorization") String accessToken) {
+
+        try {
+            String token = extractToken(accessToken);
+            orderService.updateOrderItemCount(orderItemId, newCount, token);
+
+            return ResponseEntity.ok("Order item count updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
     // 유저가 주문 아이템 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{orderItemId}")
     public ResponseEntity<String> deleteOrderItemByUser(
-            @PathVariable Long id,
+            @PathVariable Long orderItemId,
             @RequestHeader("Authorization") String accessToken) {
         try {
             String token = extractToken(accessToken);
-            orderService.deleteOrderItemByUser(id, token);
+            orderService.deleteOrderItemByUser(orderItemId, token);
             return ResponseEntity.ok("Order item deleted successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

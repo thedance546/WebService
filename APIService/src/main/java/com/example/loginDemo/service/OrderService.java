@@ -119,7 +119,8 @@ public class OrderService {
                                 item.getCategory().getCategoryName(),
                                 item.getStorageMethod().getStorageMethodName(),
                                 item.getShelfLife().getSellByDays(),
-                                item.getShelfLife().getUseByDays()
+                                item.getShelfLife().getUseByDays(),
+                                orderItem.getCount() // count 추가
                         );
                     } else if (orderItem.getUserCustomItem() != null) {
                         // UserCustomItem 정보를 OrderItemResponse로 매핑
@@ -131,13 +132,33 @@ public class OrderService {
                                 customItem.getCategoryName(),
                                 customItem.getStorageMethodName(),
                                 customItem.getSellByDays(),
-                                customItem.getUseByDays()
+                                customItem.getUseByDays(),
+                                orderItem.getCount() // count 추가
                         );
                     }
                     return null; // 안전을 위해 추가 (null 반환 방지)
                 })
                 .filter(item -> item != null) // null 값 필터링
                 .collect(Collectors.toList());
+    }
+
+
+    //orderItem의 count수정
+    @Transactional
+    public void updateOrderItemCount(Long orderItemId, int newCount, String accessToken) {
+        // 현재 로그인한 유저 정보 추출
+        User user = getCurrentUser(accessToken);
+
+        // 해당 유저의 주문에서 수정하려는 주문 아이템 찾기
+        OrderItem orderItem = orderItemRepository.findById(orderItemId)
+                .filter(item -> item.getOrder().getUser().equals(user)) // 해당 주문이 유저의 주문인지 확인
+                .orElseThrow(() -> new IllegalArgumentException("OrderItem not found or not owned by the user"));
+
+        // 새로운 수량으로 수정
+        orderItem.setCount(newCount);
+
+        // 주문 아이템 업데이트 (자동으로 영속성 컨텍스트에서 업데이트됨)
+        orderItemRepository.save(orderItem);
     }
 
 
@@ -151,7 +172,6 @@ public class OrderService {
                 .filter(item -> item.getOrder().getUser().equals(user)) // 해당 주문이 유저의 주문인지 확인
                 .orElseThrow(() -> new IllegalArgumentException("OrderItem not found or not owned by the user"));
 
-        // 주문 아이템 삭제
         orderItemRepository.delete(orderItem);
     }
 
