@@ -11,7 +11,7 @@ import HomeNavBar from "../components/organisms/HomeNavBar";
 
 const SettingsPage: React.FC = () => {
   return (
-    <div className="container settings-container">
+    <div className="container">
       <CommonHeader pageTitle="설정" />
       <div style={{ height: 'var(--top-margin)' }}></div>
 

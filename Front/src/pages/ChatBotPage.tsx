@@ -18,7 +18,7 @@ import botAvatar from '../assets/matjipsa_logo.webp';
 
 const ChatBotPage: React.FC = () => {
   const initialMessage: Message[] = [
-    { sender: Sender.Bot, text: '안녕하세요! 무엇을 도와드릴까요?', profileImage: botAvatar },
+    { sender: Sender.Bot, text: '안녕하세요! 맛집사 챗봇입니다!\n식재료 정보나 관리에 대해 물어보세요\nAI 레시피 추천은 옵션에서 할 수 있습니다', profileImage: botAvatar },
   ];
 
   const [messages, setMessages] = useState<Message[]>(() => {

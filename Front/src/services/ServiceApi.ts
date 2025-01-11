@@ -2,14 +2,8 @@
 
 import { api, getAuthHeaders } from './Api';
 import { handleApiError } from '../utils/Utils';
+import { OrderRequest } from '../types/FeatureTypes';
 
-/**
- * 공통 이미지 업로드 처리 함수
- * @param endpoint - API 요청 엔드포인트
- * @param file - 업로드할 이미지 파일
- * @param errorMessage - 에러 발생 시 표시할 메시지
- * @returns API 응답 데이터
- */
 const uploadImageToEndpoint = async (
     endpoint: string,
     file: File,
@@ -56,22 +50,32 @@ export const fetchBoundingBoxImage = async (): Promise<string> => {
     }
 };
 
-// 식재료 관리
-export const createOrder = async (orderData: { orderDate: string; orderItems: { itemName: string; count: number }[] }): Promise<void> => {
+// 식재료 관리 API
+const createOrder = async (endpoint: string, orderData: OrderRequest): Promise<void> => {
     try {
         const headers = getAuthHeaders('Bearer');
-        console.log('주문 등록 요청:', orderData);
-        await api.post('/orders', orderData, { headers });
-        console.log('주문 등록 성공:', orderData);
+        console.log(`${endpoint} 주문 등록 요청:`, orderData);
+        await api.post(endpoint, orderData, { headers });
+        console.log(`${endpoint} 주문 등록 성공:`, orderData);
     } catch (error) {
-        throw handleApiError(error, '주문 등록에 실패했습니다.');
+        throw handleApiError(error, `${endpoint} 주문 등록에 실패했습니다.`);
     }
+};
+
+// 영수증으로 주문 자동 등록
+export const createReceiptsOrder = async (orderData: OrderRequest): Promise<void> => {
+    await createOrder('/ingredients/receipts', orderData);
+};
+
+// 수동 주문 등록
+export const createManualOrder = async (orderData: OrderRequest): Promise<void> => {
+    await createOrder('/ingredients/manual', orderData);
 };
 
 export const fetchOrders = async (): Promise<any[]> => {
     try {
         const headers = getAuthHeaders('Bearer');
-        const response = await api.get('/orders/user/items', { headers });
+        const response = await api.get('/ingredients', { headers });
         console.log('주문 목록 조회 성공:', response.data);
         return response.data;
     } catch (error) {
@@ -81,17 +85,17 @@ export const fetchOrders = async (): Promise<any[]> => {
 
 export const deleteUserIngredient = async (orderItemId: number): Promise<string> => {
     try {
-      const headers = getAuthHeaders('Bearer');
-      console.log(`[DELETE] 요청 준비: /api/orders/items/${orderItemId}`);
-  
-      const response = await api.delete(`/orders/items/${orderItemId}`, { headers });
-      console.log('식재료 삭제 성공:', response.data);
-      return response.data.message || '식재료가 성공적으로 삭제되었습니다.';
+        const headers = getAuthHeaders('Bearer');
+        console.log(`[DELETE] 요청 준비: /api/ingredients/${orderItemId}`);
+
+        const response = await api.delete(`/ingredients/${orderItemId}`, { headers });
+        console.log('식재료 삭제 성공:', response.data);
+        return response.data.message || '식재료가 성공적으로 삭제되었습니다.';
     } catch (error: any) {
-      throw handleApiError(error, '식재료 삭제 중 오류가 발생했습니다.');
+        throw handleApiError(error, '식재료 삭제 중 오류가 발생했습니다.');
     }
-  };
-  
+};
+
 // 챗봇 UI
 /**
  * 공통 API 호출 함수

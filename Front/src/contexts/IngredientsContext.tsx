@@ -1,7 +1,7 @@
 // src/contexts/IngredientsContext.tsx
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { fetchOrders, deleteUserIngredient } from "../services/ServiceApi"; // 삭제 API 추가
+import React, { ReactNode, createContext, useContext, useState, useEffect } from "react";
+import { fetchOrders, deleteUserIngredient } from "../services/ServiceApi";
 import { Ingredient } from "../types/EntityTypes";
 
 interface IngredientsContextType {
@@ -17,6 +17,29 @@ const IngredientsContext = createContext<IngredientsContextType | undefined>(und
 export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
+  const mapOrderToIngredients = (orders: any[]): Ingredient[] => {
+    return orders.map((orderItem) => ({
+      ingredientId: orderItem.orderItemId,
+      name: orderItem.itemName,
+      quantity: 1,
+      category: {
+        id: orderItem.categoryId || undefined, // id가 없으면 undefined
+        categoryName: orderItem.categoryName || "카테고리 없음",
+      },
+      storageMethod: {
+        id: orderItem.storageMethodId || undefined, // id가 없으면 undefined
+        storageMethodName: orderItem.storageMethodName || "보관 방법 없음",
+      },
+      shelfLife: orderItem.sellByDays
+        ? calculateDate(orderItem.orderDate, orderItem.sellByDays)
+        : undefined,
+      consumeBy: orderItem.useByDays
+        ? calculateDate(orderItem.orderDate, orderItem.useByDays)
+        : undefined,
+      purchaseDate: orderItem.orderDate,
+    }));
+  };
+  
   const refreshIngredients = async () => {
     try {
       const orders = await fetchOrders();
@@ -65,38 +88,9 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
 export const useIngredients = (): IngredientsContextType => {
   const context = useContext(IngredientsContext);
   if (!context) {
-    throw new Error("useIngredients must be used within an IngredientsProvider");
+    throw new Error("useIngredients는 IngredientsProvider 내에서만 사용 가능합니다.");
   }
   return context;
-};
-
-export const mapOrderToIngredients = (orders: any[]): Ingredient[] => {
-  return orders
-    .filter((orderItem) => orderItem.item) // item이 존재하지 않는 항목 필터링
-    .map((orderItem) => {
-      const item = orderItem.item;
-
-      return {
-        ingredientId: orderItem.orderItemId || 0,
-        name: item.itemName || "이름 없음",
-        quantity: 1,
-        category: {
-          id: item.category?.id || 0,
-          categoryName: item.category?.categoryName || "",
-        },
-        storageMethod: {
-          id: item.storageMethod?.id || 0,
-          storageMethodName: item.storageMethod?.storageMethodName || "",
-        },
-        shelfLife: item.shelfLife?.sellByDays
-          ? calculateDate(new Date().toISOString(), item.shelfLife.sellByDays)
-          : undefined,
-        consumeBy: item.shelfLife?.useByDays
-          ? calculateDate(new Date().toISOString(), item.shelfLife.useByDays)
-          : undefined,
-        purchaseDate: new Date().toISOString(),
-      };
-    });
 };
 
 const calculateDate = (baseDate: string, daysToAdd: number | undefined): string | undefined => {

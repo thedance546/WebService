@@ -11,7 +11,7 @@ import LoadingModal from "../components/organisms/LoadingModal";
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from "../hooks/usePopupState";
 import { useIngredients } from "../contexts/IngredientsContext";
-import { Ingredient, StorageMethod } from "../types/EntityTypes";
+import { Ingredient } from "../types/EntityTypes";
 import { recognizeReceipt } from "../services/ServiceApi";
 
 const MyIngredientsPage: React.FC = () => {
@@ -25,7 +25,7 @@ const MyIngredientsPage: React.FC = () => {
     matchedItems: [],
   });
   const editModal = usePopupState<Ingredient | null>(null);
-  const { ingredients, updateIngredient } = useIngredients();
+  const { updateIngredient } = useIngredients();
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleReceiptUploadConfirm = async () => {
@@ -62,12 +62,8 @@ const MyIngredientsPage: React.FC = () => {
     optionsModal.close();
   };
 
-  const storageMethods = ingredients
-    .map((item) => item.storageMethod)
-    .filter((method): method is StorageMethod => method !== undefined);
-
   return (
-    <div className="container container-fluid px-0">
+    <div className="container">
       <CommonHeader pageTitle="나의 식재료" />
 
       {/* 식재료 카드 리스트 */}
@@ -112,7 +108,6 @@ const MyIngredientsPage: React.FC = () => {
       {editModal.isOpen && editModal.state && (
         <EditIngredientModal
           row={editModal.state}
-          storageMethods={storageMethods} // StorageMethod 데이터 전달
           onSave={(updatedIngredientRow) => {
             const updatedIngredient = {
               ...updatedIngredientRow,

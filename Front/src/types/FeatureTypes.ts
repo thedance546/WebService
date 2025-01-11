@@ -36,3 +36,17 @@ export interface UserInfoFormProps {
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
+
+export interface OrderItem {
+  itemName: string;
+  count: number;
+  category?: string; // 직접 추가에서만 사용
+  storageMethod?: string; // 직접 추가에서만 사용
+  sellByDays?: number; // 직접 추가에서만 사용
+  useByDays?: number; // 직접 추가에서만 사용
+}
+
+export interface OrderRequest {
+  orderDate: string;
+  orderItems: OrderItem[];
+}

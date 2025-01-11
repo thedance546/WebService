@@ -27,7 +27,11 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={`btn btn-${variant} ${className}`}
       disabled={disabled}
-      style={style}
+      style={{
+        backgroundColor: variant === 'primary' ? 'var(--primary-color)' : undefined,
+        color: variant === 'primary' ? '#fff' : undefined,
+        ...style,
+      }}
     >
       {children}
     </button>

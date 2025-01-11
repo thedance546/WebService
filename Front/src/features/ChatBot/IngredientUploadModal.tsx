@@ -4,7 +4,7 @@ import React from 'react';
 import Modal from '../../components/molecules/Modal';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
-import { detectObjectsInImage } from '../../services/ServiceApi';
+import { detectObjectsInImage, fetchBoundingBoxImage } from '../../services/ServiceApi';
 import { Ingredient } from '../../types/EntityTypes';
 
 interface IngredientUploadModalProps {
@@ -37,34 +37,37 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
     setState((prevState) => ({ ...prevState, selectedFile: file }));
   };
 
-  // IngredientUploadModal.tsx
-const handleDetection = async () => {
-  if (!state.selectedFile) {
+  const handleDetection = async () => {
+    if (!state.selectedFile) {
       alert('이미지를 업로드해주세요.');
       return;
-  }
+    }
 
-  setState((prevState) => ({ ...prevState, loading: true }));
+    setState((prevState) => ({ ...prevState, loading: true }));
 
-  try {
-      // 1. Detect objects
+    try {
+        // 1. Detect objects
       const detectionResult = await detectObjectsInImage(state.selectedFile);
-      setIngredients(detectionResult.ingredients);
-
-      // 2. Fetch bounding box image
-      
-
-      // 4. Close modal and open recipe recommendation modal
+       // 2. Parse and Set the result
+      const parsedIngredients = Object.entries(detectionResult).map(([name, quantity]) => ({
+        ingredientId: 0,
+        name,
+        quantity: parseInt(quantity as string, 10),
+      }));
+      setIngredients(parsedIngredients);
+        // 3. Fetch bounding box image
+        // const boundingBoxImage = await fetchBoundingBoxImage();
+        
+        // 4. Close modal and open recipe recommendation modal
       openDetectionModal();
       onClose();
-  } catch (error) {
+    } catch (error) {
       console.error(error);
       alert('탐지 중 오류가 발생했습니다.');
-  } finally {
+    } finally {
       setState((prevState) => ({ ...prevState, loading: false }));
-  }
-};
-
+    }
+  };
 
   return (
     <Modal title="레시피 추천 받기" onClose={onClose}>
