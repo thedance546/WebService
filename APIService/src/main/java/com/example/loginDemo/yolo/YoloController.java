@@ -22,8 +22,6 @@ import java.util.*;
 public class YoloController {
     private final YoloService yoloService;
 
-    private final String Ingredient_bounding_URL = "http://yolo-container:5000/object-detection/object_detection/image";
-
     //ingredient
     @PostMapping("/items/detection")
     public ResponseEntity<Map<String, String>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
