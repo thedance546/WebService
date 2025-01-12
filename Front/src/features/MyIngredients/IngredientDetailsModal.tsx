@@ -49,6 +49,16 @@ const IngredientDetailsModal: React.FC<IngredientDetailsModalProps> = ({
     }
   };
 
+  const increaseQuantity = () => {
+    setSelectedQuantity((prev) => prev + 1);
+  };
+
+  const decreaseQuantity = () => {
+    if (selectedQuantity > 1) {
+      setSelectedQuantity((prev) => prev - 1);
+    }
+  };
+
   return (
     <Modal title="식재료 상세정보" onClose={onClose}>
       <table className="table table-bordered">
@@ -64,17 +74,22 @@ const IngredientDetailsModal: React.FC<IngredientDetailsModalProps> = ({
               수량
             </th>
             <td style={{ width: "70%" }}>
-              <select
-                value={selectedQuantity}
-                onChange={(e) => setSelectedQuantity(parseInt(e.target.value, 10))}
-                className="form-select"
-              >
-                {[...Array(20)].map((_, i) => (
-                  <option key={i} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </select>
+              <div className="d-flex align-items-center">
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={decreaseQuantity}
+                  disabled={selectedQuantity <= 1}
+                >
+                  -
+                </button>
+                <span className="mx-3">{selectedQuantity}</span>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={increaseQuantity}
+                >
+                  +
+                </button>
+              </div>
             </td>
           </tr>
           <tr>

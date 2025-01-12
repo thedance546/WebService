@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Ingredient } from "../../types/EntityTypes";
-import { calculateDate } from "../../utils/Utils";
 import { STATUS_COLORS } from "../../constants/IngredientsNotiColor";
 import { getIconForIngredient } from "../../utils/LoadIcons";
 
@@ -20,42 +19,27 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
   let backgroundColor = "";
   let badgeIcon = null;
 
-  // 조건 1: 소비기한 만료
-  if (consumeByDate && currentDate > consumeByDate) {
-    status = "소비기한 만료";
-    backgroundColor = STATUS_COLORS.expired;
-    badgeIcon = "❗"; // 빨간색 위험 아이콘
+  // 조건 1: 유통기한 이전
+  if (shelfLifeDate && currentDate <= shelfLifeDate) {
+    status = "안전";
+    backgroundColor = STATUS_COLORS.safe;
   }
-  // 조건 2: 소비기한 임박
-  else if (
-    consumeByDate &&
-    currentDate > new Date(calculateDate(consumeByDate.toISOString(), -2)) &&
-    currentDate <= consumeByDate
-  ) {
-    status = "소비기한 임박";
-    backgroundColor = STATUS_COLORS.nearConsume;
-    badgeIcon = "❗"; // 빨간색 위험 아이콘
-  }
-  // 조건 3: 유통기한 만료 및 소비기한 이내
-  else if (shelfLifeDate && consumeByDate && currentDate > shelfLifeDate && currentDate <= consumeByDate) {
-    status = "소비기한 이내";
-    backgroundColor = STATUS_COLORS.withinConsume;
-    badgeIcon = "⚠️"; // 노란색 경고 아이콘
-  }
-  // 조건 4: 유통기한 임박
+  // 조건 2: 소비기한 이전 (유통기한 지났으나 소비기한 이전)
   else if (
     shelfLifeDate &&
-    currentDate > new Date(calculateDate(shelfLifeDate.toISOString(), -2)) &&
-    currentDate <= shelfLifeDate
+    consumeByDate &&
+    currentDate > shelfLifeDate &&
+    currentDate <= consumeByDate
   ) {
-    status = "유통기한 임박";
-    backgroundColor = STATUS_COLORS.nearShelfLife;
-    badgeIcon = "⚠️"; // 노란색 경고 아이콘
+    status = "주의";
+    backgroundColor = STATUS_COLORS.caution;
+    badgeIcon = "⚠️"; // 경고 아이콘
   }
-  // 조건 5: 유통기한 이내
-  else if (shelfLifeDate && currentDate <= shelfLifeDate) {
-    status = "유통기한 이내";
-    backgroundColor = STATUS_COLORS.safe;
+  // 조건 3: 소비기한 이후 (만료)
+  else if (consumeByDate && currentDate > consumeByDate) {
+    status = "위험";
+    backgroundColor = STATUS_COLORS.expired;
+    badgeIcon = "❗"; // 위험 아이콘
   }
 
   // 이름 또는 카테고리를 기준으로 아이콘 가져오기
@@ -83,7 +67,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
       }}
       onClick={onClick}
     >
-      {/* 경고/위험 아이콘 */}
+      {/* 경고/위험 배지 아이콘 */}
       {badgeIcon && (
         <div
           style={{
@@ -91,7 +75,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
             top: "8px",
             right: "8px",
             fontSize: "1.5rem",
-            color: badgeIcon === "❗" ? "red" : "orange", // 아이콘 색상 조정
+            color: badgeIcon === "⚠️" ? "orange" : "red", // 아이콘 색상 지정
           }}
         >
           {badgeIcon}
@@ -121,7 +105,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
         <br />
         <strong>{status}</strong>
         <br />
-        {status === "유통기한 이내" || status === "유통기한 임박" ? (
+        {status === "안전" || status === "주의" ? (
           <span>유통기한: {ingredient.shelfLife}</span>
         ) : (
           <span>소비기한: {ingredient.consumeBy}</span>

@@ -7,6 +7,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { createManualOrder } from '../../services/ServiceApi';
 import { useIngredients } from '../../contexts/IngredientsContext';
+import { formatLocalDate } from '../../utils/Utils';
 
 interface AddManualIngredientModalProps {
     onClose: () => void;
@@ -52,64 +53,47 @@ const AddManualIngredientModal: React.FC<AddManualIngredientModalProps> = ({
         setOrderItems(updatedItems);
     };
 
-    const formatDate = (date: Date): string => {
-        const year = date.getUTCFullYear(); // UTC 기준 연도
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // UTC 기준 월
-        const day = String(date.getUTCDate()).padStart(2, '0'); // UTC 기준 일
-        return `${year}-${month}-${day}`;
-    };
-    
     const handleSubmit = async () => {
         if (!orderDate) {
             alert("구매일자를 입력해주세요.");
             return;
         }
-
+    
         const invalidDates = orderItems.some((item) => {
             if (item.sellByDate && item.sellByDate < orderDate) {
-                alert(`유통기한은 구매일자(${formatDate(orderDate)})보다 빠를 수 없습니다.`);
+                alert(`유통기한은 구매일자(${formatLocalDate(orderDate)})보다 빠를 수 없습니다.`);
                 return true;
             }
             if (item.useByDate && item.useByDate < orderDate) {
-                alert(`소비기한은 구매일자(${formatDate(orderDate)})보다 빠를 수 없습니다.`);
+                alert(`소비기한은 구매일자(${formatLocalDate(orderDate)})보다 빠를 수 없습니다.`);
                 return true;
             }
             return false;
         });
-
+    
         if (invalidDates) {
             return;
         }
-
-        const missingFields = orderItems.some(
-            (item) =>
-                !item.itemName ||
-                !item.count ||
-                !item.category ||
-                !item.storageMethod ||
-                !item.sellByDate ||
-                !item.useByDate
-        );
-
-        if (missingFields) {
-            alert("모든 필드를 입력해주세요.");
-            return;
-        }
-
-        // JSON 데이터 준비
+    
         const orderData = {
-            orderDate: formatDate(orderDate),
+            orderDate: formatLocalDate(orderDate),
             orderItems: orderItems.map((item) => ({
                 itemName: item.itemName,
                 count: item.count,
                 category: item.category,
                 storageMethod: item.storageMethod,
-                sellByDays: calculateDaysFromPurchase(item.sellByDate, orderDate), // 구매일자 기준으로 계산
-                useByDays: calculateDaysFromPurchase(item.useByDate, orderDate),  // 구매일자 기준으로 계산
+                sellByDays: item.sellByDate
+                    ? calculateDays(item.sellByDate, orderDate)
+                    : 0, // 기본값 설정
+                useByDays: item.useByDate
+                    ? calculateDays(item.useByDate, orderDate)
+                    : 0, // 기본값 설정
             })),
         };
-
-        console.log(orderData);
+    
+        // 디버깅용 데이터 출력
+        console.log("Prepared Order Data:", JSON.stringify(orderData, null, 2));
+    
         try {
             await createManualOrder(orderData);
             await refreshIngredients();
@@ -119,24 +103,14 @@ const AddManualIngredientModal: React.FC<AddManualIngredientModalProps> = ({
             alert("등록 중 오류가 발생했습니다.");
         }
     };
-
-    const calculateDaysFromPurchase = (targetDate: Date | null, purchaseDate: Date | null): number => {
-        if (!targetDate || !purchaseDate) return 0;
-
-        // 기준 날짜와 목표 날짜를 UTC로 변환해 시간 차이를 계산
-        const utcPurchase = Date.UTC(
-            purchaseDate.getUTCFullYear(),
-            purchaseDate.getUTCMonth(),
-            purchaseDate.getUTCDate()
-        );
-        const utcTarget = Date.UTC(
-            targetDate.getUTCFullYear(),
-            targetDate.getUTCMonth(),
-            targetDate.getUTCDate()
-        );
-
-        return Math.ceil((utcTarget - utcPurchase) / (1000 * 60 * 60 * 24)); // ms -> days
+    
+    const calculateDays = (targetDate: Date | null, baseDate: Date | null): number => {
+        if (!targetDate || !baseDate) return 0;
+        const utcTarget = Date.UTC(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+        const utcBase = Date.UTC(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+        return Math.ceil((utcTarget - utcBase) / (1000 * 60 * 60 * 24));
     };
+    
 
     return (
         <FullScreenOverlay title="직접 추가" onClose={onClose}>

@@ -10,6 +10,7 @@ import { createReceiptsOrder } from '../../services/ServiceApi';
 import { useIngredients } from '../../contexts/IngredientsContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { formatLocalDate } from '../../utils/Utils';
 
 interface AddIngredientModalProps {
   matchedItems: string[];
@@ -24,7 +25,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
 }) => {
   const { refreshIngredients } = useIngredients();
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const parseDate = (dateString: string | undefined): Date | null => {
     if (!dateString) return null;
@@ -50,40 +51,32 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
       alert('구매일자를 선택해주세요.');
       return;
     }
-
+  
     const validItems = ingredients.filter((item) => item.name.trim() !== '');
     if (validItems.length === 0) {
       alert('추가할 유효한 항목이 없습니다.');
       return;
     }
-
+  
     const orderData = {
-      orderDate: selectedDate.toISOString().split('T')[0],
+      orderDate: formatLocalDate(selectedDate), // 로컬 시간대 기준 포맷
       orderItems: validItems.map((item) => ({
         itemName: item.name,
         count: item.quantity,
       })),
     };
-
-    console.log(orderData);
-    setIsLoading(true);
-
+  
+    console.log('Final Order Data:', orderData);
+  
     try {
-      // 서버에 주문 데이터 전송
       await createReceiptsOrder(orderData);
-
-      // 컨텍스트 데이터 새로고침
       await refreshIngredients();
-
-      alert('식재료 등록이 완료되었습니다.');
       onClose();
     } catch (error) {
       console.error('식재료 등록 실패:', error);
       alert('등록에 실패했습니다.');
-    } finally {
-      setIsLoading(false);
     }
-  };
+  };  
 
   return (
     <>
