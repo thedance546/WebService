@@ -16,7 +16,7 @@ import java.util.Map;
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
 public class ChatBotController {
-    private static final String LLM_URL = "http://llm_run:5002/ask";
+    private static final String LLM_URL = "http://llm-container:5002/ask";
     private static final String gpt_URL = "http://gpt-container:5003/ask";
     private final ChatBotService chatBotService;
 
@@ -87,7 +87,7 @@ public class ChatBotController {
         try {
             // Flask 서버에 POST 요청
             ResponseEntity<Map> response = restTemplate.exchange(
-                    gpt_URL,
+                    LLM_URL,
                     HttpMethod.POST,
                     request,
                     Map.class
