@@ -1,13 +1,14 @@
 // src/contexts/IngredientsContext.tsx
 
 import React, { ReactNode, createContext, useContext, useState, useEffect, useCallback } from "react";
-import { fetchOrders, deleteUserIngredient } from "../services/ServiceApi";
+import { fetchOrders, deleteUserIngredient, updateIngredientQuantity } from "../services/ServiceApi";
 import { Ingredient } from "../types/EntityTypes";
 
 interface IngredientsContextType {
   ingredients: Ingredient[];
   addIngredient: (newIngredients: Ingredient[]) => void;
   updateIngredient: (updatedIngredient: Ingredient) => void;
+  updateIngredientQuantity: (ingredientId: number, quantity: number) => Promise<void>;
   deleteIngredient: (ingredientId: number) => Promise<void>;
   refreshIngredients: () => Promise<void>;
 }
@@ -21,13 +22,13 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
     return orders.map((orderItem) => ({
       ingredientId: orderItem.orderItemId,
       name: orderItem.itemName,
-      quantity: 1,
+      quantity: orderItem.count,
       category: {
-        id: orderItem.categoryId || undefined, // id가 없으면 undefined
+        id: orderItem.categoryId || undefined,
         categoryName: orderItem.categoryName || "카테고리 없음",
       },
       storageMethod: {
-        id: orderItem.storageMethodId || undefined, // id가 없으면 undefined
+        id: orderItem.storageMethodId || undefined,
         storageMethodName: orderItem.storageMethodName || "보관 방법 없음",
       },
       shelfLife: orderItem.sellByDays
@@ -39,7 +40,7 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
       purchaseDate: orderItem.orderDate,
     }));
   };
-  
+
   const refreshIngredients = useCallback(async () => {
     try {
       const orders = await fetchOrders();
@@ -48,9 +49,26 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
     } catch (error) {
       console.error("식재료 데이터 가져오기 실패:", error);
     }
-  }, []); // 빈 배열로 한 번만 초기화
+  }, []);
 
-  const deleteIngredient = async (ingredientId: number) => {
+  const updateIngredientQuantityHandler = async (ingredientId: number, quantity: number) => {
+    try {
+      await updateIngredientQuantity(ingredientId, quantity);
+      setIngredients((prev) =>
+        prev.map((ingredient) =>
+          ingredient.ingredientId === ingredientId
+            ? { ...ingredient, quantity }
+            : ingredient
+        )
+      );
+      console.log(`수량 업데이트 성공: ID=${ingredientId}, 수량=${quantity}`);
+    } catch (error) {
+      console.error("수량 업데이트 실패:", error);
+      throw new Error("수량 업데이트 중 오류가 발생했습니다.");
+    }
+  };
+
+  const deleteIngredientHandler = async (ingredientId: number) => {
     try {
       await deleteUserIngredient(ingredientId);
       setIngredients((prev) => prev.filter((ingredient) => ingredient.ingredientId !== ingredientId));
@@ -76,7 +94,8 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
               ingredient.ingredientId === updatedIngredient.ingredientId ? updatedIngredient : ingredient
             )
           ),
-        deleteIngredient,
+        updateIngredientQuantity: updateIngredientQuantityHandler,
+        deleteIngredient: deleteIngredientHandler,
         refreshIngredients,
       }}
     >

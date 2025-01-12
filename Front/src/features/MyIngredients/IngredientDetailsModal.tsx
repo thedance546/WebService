@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Modal from "../../components/molecules/Modal";
 import { Ingredient } from "../../types/EntityTypes";
-import { updateIngredientQuantity, deleteUserIngredient } from "../../services/ServiceApi";
+import { useIngredients } from "../../contexts/IngredientsContext";
 
 export interface IngredientDetailsModalProps {
   row: Ingredient;
@@ -18,14 +18,13 @@ const IngredientDetailsModal: React.FC<IngredientDetailsModalProps> = ({
 }) => {
   const [selectedQuantity, setSelectedQuantity] = useState(row.quantity);
   const [loading, setLoading] = useState(false);
+  const { updateIngredientQuantity, deleteIngredient } = useIngredients();
 
   const handleSave = async () => {
     try {
       setLoading(true);
       await updateIngredientQuantity(row.ingredientId, selectedQuantity);
-      const updatedIngredient = { ...row, quantity: selectedQuantity };
-      onQuantityUpdated(updatedIngredient);
-      alert("수량이 업데이트되었습니다.");
+      onQuantityUpdated({ ...row, quantity: selectedQuantity });
     } catch (error) {
       console.error("수량 업데이트 실패:", error);
       alert("수량 업데이트 중 오류가 발생했습니다.");
@@ -40,8 +39,7 @@ const IngredientDetailsModal: React.FC<IngredientDetailsModalProps> = ({
 
     try {
       setLoading(true);
-      await deleteUserIngredient(row.ingredientId);
-      alert("식재료가 삭제되었습니다.");
+      await deleteIngredient(row.ingredientId);
       onClose();
     } catch (error) {
       console.error("삭제 실패:", error);
