@@ -30,7 +30,7 @@ if not client.is_ready():
 print("Weaviate 서버에 성공적으로 연결되었습니다!")
 
 # LangChain과 OpenAI LLM 설정
-llm = ChatOpenAI(model="gpt-4", openai_api_key=OPENAI_API_KEY)
+llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
 
 # 시스템 메시지: AI의 역할과 응답 지침 설정
 system_message_prompt = SystemMessagePromptTemplate.from_template(
@@ -144,7 +144,7 @@ def generate_rag_answer(question):
         contents = contents_match.group(0).strip() if contents_match else llm_response.strip()
 
         image_links_match = re.search(r"(?<=이미지 링크: ).*", llm_response)
-        image_links = image_links_match.group(0).strip() if image_links_match else "이미지 없음"
+        image_links = image_links_match.group(0).strip() if image_links_match else "NO Image"
     else:
         # 검색 결과가 없는 경우
         print("검색 결과가 없습니다. 질문을 기반으로 답변을 생성합니다.")
