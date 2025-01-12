@@ -3,7 +3,7 @@
 import React from "react";
 import CommonHeader from "../components/organisms/CommonHeader";
 import IngredientCardContainer from "../features/MyIngredients/IngredientCardContainer";
-import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
+import IngredientDetailsModal from "../features/MyIngredients/IngredientDetailsModal";
 import ReceiptUploadModal from "../features/MyIngredients/ReceiptUploadModal";
 import AddIngredientModal from "../features/MyIngredients/AddIngredientModal";
 import IngredientOptionsModal from "../features/MyIngredients/IngredientOptionModal";
@@ -26,7 +26,7 @@ const MyIngredientsPage: React.FC = () => {
     matchedItems: [],
   });
   const manualModal = usePopupState(null);
-  const editModal = usePopupState<Ingredient | null>(null);
+  const detailModal = usePopupState<Ingredient | null>(null);
   const { updateIngredient } = useIngredients();
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -71,8 +71,8 @@ const MyIngredientsPage: React.FC = () => {
       <IngredientCardContainer
         onAddClick={optionsModal.open}
         onCardClick={(ingredient) => {
-          editModal.setState(ingredient);
-          editModal.open();
+          detailModal.setState(ingredient);
+          detailModal.open();
         }}
       />
 
@@ -111,21 +111,16 @@ const MyIngredientsPage: React.FC = () => {
           onClose={manualModal.close} />
       }
 
-      {/* 수정 모달 */}
-      {editModal.isOpen && editModal.state && (
-        <EditIngredientModal
-          row={editModal.state}
-          onSave={(updatedIngredientRow) => {
-            const updatedIngredient = {
-              ...updatedIngredientRow,
-              ingredientId: editModal.state!.ingredientId,
-            };
+      {/* 상세 정보 모달 */}
+      {detailModal.isOpen && detailModal.state && (
+        <IngredientDetailsModal
+          row={detailModal.state}
+          onQuantityUpdated={(updatedIngredient) => {
             updateIngredient(updatedIngredient);
-            editModal.close();
+            detailModal.close();
           }}
-          onCancel={editModal.close}
+          onClose={detailModal.close}
         />
-
       )}
 
       {/* 로딩 모달 */}

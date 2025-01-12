@@ -71,6 +71,18 @@ export const fetchOrders = async (): Promise<any[]> => {
     }
 };
 
+// 수량 업데이트
+export const updateIngredientQuantity = async (orderItemId: number, newCount: number): Promise<void> => {
+    try {
+        const headers = getAuthHeaders('Bearer');
+        const response = await api.put(`/ingredients/${orderItemId}?newCount=${newCount}`, null, { headers });
+        console.log('수량 업데이트 성공:', response.data);
+    } catch (error) {
+        throw handleApiError(error, '수량 업데이트 중 오류가 발생했습니다.');
+    }
+};
+
+// 식재료 삭제
 export const deleteUserIngredient = async (orderItemId: number): Promise<string> => {
     try {
         const headers = getAuthHeaders('Bearer');
