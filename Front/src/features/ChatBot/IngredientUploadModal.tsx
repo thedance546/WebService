@@ -44,29 +44,27 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
       alert('이미지를 업로드해주세요.');
       return;
     }
-
+  
     setState((prevState) => ({ ...prevState, loading: true }));
-
+  
     try {
       const { detectionResults, imageData } = await detectObjectsInImage(state.selectedFile);
-
-      // 콘솔로 이미지 데이터 출력 (디버깅용)
-      console.log('Received imageData:', imageData);
-
-      // 식재료 데이터를 변환 및 고유 ID 추가
+  
+      console.log('Received imageData:', imageData); // 로그로 이미지 데이터 확인
+  
       const parsedIngredients = Object.entries(detectionResults).map(([name, quantity]) => ({
         ingredientId: Date.now() + Math.floor(Math.random() * 1000), // 고유 ID 생성
         name,
-        quantity: parseInt(quantity as string, 10),
+        quantity: parseInt(quantity, 10),
       }));
-
+  
       setIngredients(parsedIngredients);
       setState((prevState) => ({
         ...prevState,
         detectionResult: detectionResults,
-        previewUrl: imageData, // 이미지 데이터 저장
+        previewUrl: imageData, // API에서 받은 이미지를 previewUrl로 저장
       }));
-
+  
       openDetectionModal();
       onClose();
     } catch (error) {
@@ -76,6 +74,7 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
       setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
+  
 
 
   return (

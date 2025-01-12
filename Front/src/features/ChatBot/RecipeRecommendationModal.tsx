@@ -96,12 +96,14 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
       const newWindow = window.open();
       if (newWindow) {
         newWindow.document.write(
-          `<img src="${detectedImageSrc}" alt="YOLO Detection Result" style="width:100%; height:auto;">`
+          `<img src="${detectedImageSrc}" alt="Detected Image" style="width:100%; height:auto;" />`
         );
-        newWindow.document.title = "YOLO Detection Result";
+        newWindow.document.title = 'YOLO Detection Result';
       } else {
         alert('팝업 차단을 해제해주세요.');
       }
+    } else {
+      console.warn('detectedImageSrc is not available');
     }
   };
   
