@@ -52,8 +52,8 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
     <div
       className="card"
       style={{
-        width: "180px",
-        height: "135px",
+        width: "100%",
+        height: "100px",
         padding: "0.75rem",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         borderRadius: "12px",
@@ -102,8 +102,6 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
 
       <p>
         <strong>수량:</strong> {ingredient.quantity}
-        <br />
-        <strong>{status}</strong>
         <br />
         {status === "안전" || status === "주의" ? (
           <span>유통기한: {ingredient.shelfLife}</span>
