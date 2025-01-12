@@ -37,8 +37,14 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
 
   return (
     <div style={{ position: "relative", paddingBottom: "5rem" }}>
-      <TopTabMenu activeTab={activeTab} onTabClick={setActiveTab} onAddClick={onAddClick} />
-
+      <TopTabMenu
+        activeTab={activeTab}
+        onTabClick={(tab) => {
+          setActiveTab(tab);
+          setCurrentPage(1);
+        }}
+        onAddClick={onAddClick}
+      />
       <div
         className="ingredient-card-grid"
         style={{
@@ -52,7 +58,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
           <IngredientCard
             key={ingredient.ingredientId}
             ingredient={ingredient}
-            
+
             onClick={() => onCardClick(ingredient)}
           />
         ))}
