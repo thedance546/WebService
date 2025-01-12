@@ -1,6 +1,7 @@
 package com.example.loginDemo.yolo;
 
 import ch.qos.logback.core.model.Model;
+import com.example.loginDemo.dto.DetectionResponse;
 import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +25,7 @@ public class YoloController {
 
     //ingredient
     @PostMapping("/items/detection")
-    public ResponseEntity<Map<String, String>> detectObjects(@RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<Map<String, String>> detectObjects(@RequestHeader("Authorization") String accessToken,@RequestParam("image") MultipartFile imageFile) {
         try {
             Map<String, String> detectionResults = yoloService.detectObjects(imageFile);
             return ResponseEntity.ok(detectionResults);
@@ -35,7 +36,7 @@ public class YoloController {
 
     //yolo 바운딩 박스 리턴
     @PostMapping("/items/bounding-box")
-    public ResponseEntity<String> detectObjectsImage(@RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<String> detectObjectsImage(@RequestHeader("Authorization") String accessToken,@RequestParam("image") MultipartFile imageFile) {
         try {
             // 이미지를 보내고 바운딩 박스를 그린 결과 이미지를 반환
             byte[] resultImage = yoloService.returnImage(imageFile);
@@ -49,6 +50,30 @@ public class YoloController {
             return ResponseEntity.status(500).body("Error processing image");  // 서버 오류
         }
     }
+
+    //yolo 합친 API
+    @PostMapping("/items/return")
+    public ResponseEntity<DetectionResponse> detectAndReturn(@RequestHeader("Authorization") String accessToken,@RequestParam("image") MultipartFile imageFile) {
+        try {
+            // 객체 감지 결과 가져오기
+            Map<String, String> detectionResults = yoloService.detectObjects(imageFile);
+
+            // 바운딩 박스를 그린 결과 이미지 가져오기
+            byte[] resultImage = yoloService.returnImage(imageFile);
+
+            // Base64로 인코딩
+            String base64Image = Base64.getEncoder().encodeToString(resultImage);
+            String imageDataUri = "data:image/jpeg;base64," + base64Image;
+
+            // DTO 생성
+            DetectionResponse response = new DetectionResponse(detectionResults, imageDataUri);
+
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
 
     // 확인할 품목 리스트
     private static final List<String> ITEMS_TO_CHECK = Arrays.asList(
