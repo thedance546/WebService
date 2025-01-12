@@ -6,7 +6,6 @@ import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { createManualOrder } from '../../services/ServiceApi';
-import { calculateDaysFromNow } from '../../utils/Utils';
 import { useIngredients } from '../../contexts/IngredientsContext';
 
 interface AddManualIngredientModalProps {
@@ -53,13 +52,32 @@ const AddManualIngredientModal: React.FC<AddManualIngredientModalProps> = ({
         setOrderItems(updatedItems);
     };
 
-    const formatDate = (date: Date | null): string => {
-        return date ? date.toISOString().split('T')[0] : '';
+    const formatDate = (date: Date): string => {
+        const year = date.getUTCFullYear(); // UTC 기준 연도
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // UTC 기준 월
+        const day = String(date.getUTCDate()).padStart(2, '0'); // UTC 기준 일
+        return `${year}-${month}-${day}`;
     };
-
+    
     const handleSubmit = async () => {
         if (!orderDate) {
-            alert('구매일자를 입력해주세요.');
+            alert("구매일자를 입력해주세요.");
+            return;
+        }
+
+        const invalidDates = orderItems.some((item) => {
+            if (item.sellByDate && item.sellByDate < orderDate) {
+                alert(`유통기한은 구매일자(${formatDate(orderDate)})보다 빠를 수 없습니다.`);
+                return true;
+            }
+            if (item.useByDate && item.useByDate < orderDate) {
+                alert(`소비기한은 구매일자(${formatDate(orderDate)})보다 빠를 수 없습니다.`);
+                return true;
+            }
+            return false;
+        });
+
+        if (invalidDates) {
             return;
         }
 
@@ -74,7 +92,7 @@ const AddManualIngredientModal: React.FC<AddManualIngredientModalProps> = ({
         );
 
         if (missingFields) {
-            alert('모든 필드를 입력해주세요.');
+            alert("모든 필드를 입력해주세요.");
             return;
         }
 
@@ -86,19 +104,38 @@ const AddManualIngredientModal: React.FC<AddManualIngredientModalProps> = ({
                 count: item.count,
                 category: item.category,
                 storageMethod: item.storageMethod,
-                sellByDays: calculateDaysFromNow(item.sellByDate),
-                useByDays: calculateDaysFromNow(item.useByDate),
+                sellByDays: calculateDaysFromPurchase(item.sellByDate, orderDate), // 구매일자 기준으로 계산
+                useByDays: calculateDaysFromPurchase(item.useByDate, orderDate),  // 구매일자 기준으로 계산
             })),
         };
 
+        console.log(orderData);
         try {
             await createManualOrder(orderData);
             await refreshIngredients();
             onClose();
         } catch (error) {
-            console.error('등록 실패:', error);
-            alert('등록 중 오류가 발생했습니다.');
+            console.error("등록 실패:", error);
+            alert("등록 중 오류가 발생했습니다.");
         }
+    };
+
+    const calculateDaysFromPurchase = (targetDate: Date | null, purchaseDate: Date | null): number => {
+        if (!targetDate || !purchaseDate) return 0;
+
+        // 기준 날짜와 목표 날짜를 UTC로 변환해 시간 차이를 계산
+        const utcPurchase = Date.UTC(
+            purchaseDate.getUTCFullYear(),
+            purchaseDate.getUTCMonth(),
+            purchaseDate.getUTCDate()
+        );
+        const utcTarget = Date.UTC(
+            targetDate.getUTCFullYear(),
+            targetDate.getUTCMonth(),
+            targetDate.getUTCDate()
+        );
+
+        return Math.ceil((utcTarget - utcPurchase) / (1000 * 60 * 60 * 24)); // ms -> days
     };
 
     return (

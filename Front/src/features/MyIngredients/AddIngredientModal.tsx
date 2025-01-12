@@ -65,6 +65,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
       })),
     };
 
+    console.log(orderData);
     setIsLoading(true);
 
     try {
