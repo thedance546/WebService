@@ -92,6 +92,7 @@ public class OrderService {
 
                 UserCustomItem savedCustomItem = userCustomItemRepository.save(customItem);
                 orderItem.setUserCustomItem(savedCustomItem);
+                customItem.setOrder(savedOrder);
             }
 
             orderItemRepository.save(orderItem);

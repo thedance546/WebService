@@ -1,10 +1,10 @@
-package com.example.loginDemo.chat;
+package com.example.loginDemo.controller;
 
+import com.example.loginDemo.service.ChatBotService;
 import com.example.loginDemo.domain.*;
 import com.example.loginDemo.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,7 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class ChatBotController {
     private static final String LLM_URL = "http://llm_run:5002/ask";

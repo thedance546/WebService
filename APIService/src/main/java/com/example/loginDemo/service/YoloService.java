@@ -1,4 +1,4 @@
-package com.example.loginDemo.yolo;
+package com.example.loginDemo.service;
 
 import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
@@ -8,21 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.Logger;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -98,18 +90,18 @@ public class YoloService {
     private Set<String> matchItems(List<String> items) {
         Set<String> matchedItemsSet = new HashSet<>();
         List<String> ITEMS_TO_CHECK = Arrays.asList(
-                "김치", "토마토", "방울토마토", "가지", "오이", "애호박", "팽이버섯", "새송이 버섯",
+                "김치", "토마토", "방울토마토", "가지", "오이", "애호박", "팽이버섯", "새송이버섯",
                 "돼지고기", "닭고기", "소고기", "두부", "콩나물", "대파", "양파", "마늘", "시금치",
-                "고추", "깻잎", "당근", "감자", "고구마", "계란", "무", "파프리카", "게맛살", "쌀",
-                "어묵", "사과", "비엔나 소세지",
+                "고추", "깻잎", "당근", "감자", "고구마", "계란", "무", "파프리카",
                 "배추", "열무", "고춧가루", "참기름", "들기름", "간장", "된장", "고추장",
                 "우유", "치즈", "버터", "요거트", "생수", "탄산수", "콜라", "사이다", "주스",
                 "라면", "국수", "스파게티", "케첩", "마요네즈", "소금", "후추", "설탕",
-                "빵", "크림빵", "소시지빵", "햄버거빵", "도넛", "떡", "떡볶이떡", "찹쌀떡",
-                "참치캔", "스팸", "햄", "소세지", "해물믹스", "생선", "고등어", "갈치", "오징어",
+                "빵", "참치캔", "스팸", "햄", "소세지",
+                "생선", "고등어", "갈치", "오징어","라면",
                 "미역", "다시마", "멸치", "김", "젓갈", "새우", "조개", "굴",
                 "감귤", "배", "포도", "바나나", "키위", "복숭아", "자두", "딸기", "체리", "블루베리",
-                "아몬드", "호두", "땅콩", "캐슈넛", "아보카도", "레몬", "라임"
+                "아몬드", "호두", "땅콩", "캐슈넛", "아보카도", "레몬", "라임",
+                "쌀", "생 돼지고기", "비엔나 소시지", "사과", "게 맛살", "어묵", "생 소고기", "생 닭고기"
         );
 
         for (String item : items) {
@@ -122,7 +114,6 @@ public class YoloService {
         return matchedItemsSet;
     }
 
-    // 공통 POST 메서드
     private <T> Map sendPostRequest(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);

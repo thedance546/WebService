@@ -1,4 +1,4 @@
-package com.example.loginDemo.chat;
+package com.example.loginDemo.service;
 
 import com.example.loginDemo.auth.JwtService;
 import com.example.loginDemo.domain.*;
