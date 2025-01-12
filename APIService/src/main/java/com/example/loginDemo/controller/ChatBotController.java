@@ -35,6 +35,7 @@ public class ChatBotController {
         // HTTP 요청을 위한 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", accessToken);  // Authorization 헤더 추가
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
@@ -46,8 +47,16 @@ public class ChatBotController {
                     LLM_RECIPE_URL, HttpMethod.POST, request, Map.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                String botResponse = (String) response.getBody().get("response");
-                return Map.of("response", botResponse);
+                // 응답에서 "response" 필드를 추출
+                Map responseBody = (Map) response.getBody().get("response");
+
+                // "response"가 Map이면 그 안의 값을 추출 (예: "message")
+                if (responseBody != null && responseBody.containsKey("message")) {
+                    String botResponse = (String) responseBody.get("message");
+                    return Map.of("response", botResponse);
+                } else {
+                    return Map.of("error", "'response' 필드에서 'message' 값을 찾을 수 없습니다.");
+                }
             } else {
                 return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
             }
@@ -56,6 +65,7 @@ public class ChatBotController {
             return Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
         }
     }
+
 
     //GPT
     @PostMapping("/general/questions")
