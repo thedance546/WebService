@@ -11,6 +11,7 @@ import { Ingredient } from '../../types/EntityTypes';
 import { StorageKeys } from '../../constants/StorageKey';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
+import { Sender, Message } from '../../types/FeatureTypes';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface RecipeRecommendationModalProps {
   ingredients: Ingredient[];
   setIngredients: React.Dispatch<React.SetStateAction<Ingredient[]>>;
   detectedImageSrc?: string;
+  addMessage: (message: Message) => void;
 }
 
 const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
@@ -26,6 +28,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   ingredients,
   setIngredients,
   detectedImageSrc,
+  addMessage,
 }) => {
   const { ingredients: storedIngredients } = useIngredients();
   const [userInfo, setUserInfo] = useState<any>(null);
@@ -40,7 +43,10 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   }, []);
 
   const handleSubmit = () => {
-    if (!userInfo) return;
+    if (!userInfo) {
+      alert("사용자 정보를 입력해주세요.");
+      return;
+    }
 
     const mergedFoodCategories = [
       ...userInfo.foodCategories,
@@ -63,7 +69,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
       shelfLife,
       consumeBy,
     }));
-    
+
     const payload = {
       detectedIngredients: sanitizedDetectedIngredients,
       selectedStoredIngredients: sanitizedStoredIngredients,
@@ -78,37 +84,42 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
     delete payload.userPreferences.customFoodCategory;
     delete payload.userPreferences.customAllergy;
 
-    console.log(JSON.stringify(payload, null, 2));
+    console.log("API 호출 데이터:", JSON.stringify(payload, null, 2));
+    alert("레시피 추천이 요청되었습니다.");
+    onClose();
   };
-
-
 
   if (!isOpen) return null;
 
   return (
     <FullScreenOverlay title="레시피 추천 받기" onClose={onClose}>
-      {/* 이미지 미리보기 */}
       <div className="mb-3">
         <ImagePreview
           src={detectedImageSrc}
           alt="탐지된 이미지 미리보기"
           style={{ height: '400px', width: '100%' }}
         />
+        <Button
+          variant="primary"
+          onClick={() => {
+            addMessage({
+              sender: Sender.User,
+              text: '탐지된 식재료를 확인하세요.',
+              attachedImage: detectedImageSrc,
+            });
+            onClose();
+          }}
+        >
+          확인
+        </Button>
       </div>
 
-      {/* 재료 편집 폼 */}
       <EditIngredientForm ingredients={ingredients} onIngredientsChange={setIngredients} />
-
-      {/* 저장된 식재료 */}
       <StoredIngredientsList
         ingredients={storedIngredients}
         onSelectionChange={setSelectedIngredients}
       />
-
-      {/* 사용자 맞춤 정보 */}
       {userInfo && <UserPreferencesCard userInfo={userInfo} />}
-
-      {/* 추가 요청사항 */}
       <div className="mt-3">
         <h5>추가 요청사항</h5>
         <Input
@@ -117,8 +128,6 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
           placeholder="추가 요청사항을 입력하세요"
         />
       </div>
-
-      {/* 제출 버튼 */}
       <div className="mt-4 d-flex justify-content-end">
         <Button variant="primary" onClick={handleSubmit}>
           레시피 추천 받기
