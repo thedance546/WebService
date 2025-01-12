@@ -19,7 +19,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   const [activeTab, setActiveTab] = useState<string>("전체");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12); // 기본 값
-  const [columns, setColumns] = useState(3); // 기본 열 수
+  const [, setColumns] = useState(3); // 기본 열 수
 
   useEffect(() => {
     const calculateItemsPerPage = () => {

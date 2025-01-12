@@ -4,11 +4,28 @@ import { api, getAuthHeaders } from './Api';
 import { handleApiError } from '../utils/Utils';
 import { OrderRequest } from '../types/FeatureTypes';
 
-const uploadImageToEndpoint = async (
+interface ImageDetectionResult {
+    detectionResults: Record<string, string>; // 식재료 이름과 수량
+    imageData: string; // base64 이미지 데이터
+}
+
+interface ReceiptRecognitionResult {
+    purchaseDate: string; // 구매 날짜
+    matchedItems: string[]; // 인식된 아이템 리스트
+}
+
+/**
+ * 이미지 업로드 및 데이터 반환 공통 함수
+ * @param endpoint API 엔드포인트
+ * @param file 업로드할 이미지 파일
+ * @param errorMessage 오류 메시지
+ * @returns 서버 응답 데이터
+ */
+const uploadImageToEndpoint = async <T>(
     endpoint: string,
     file: File,
     errorMessage: string
-): Promise<any> => {
+): Promise<T> => {
     if (!file.type.startsWith('image/')) {
         throw new Error('유효하지 않은 파일 형식입니다. 이미지를 업로드하세요.');
     }
@@ -18,24 +35,29 @@ const uploadImageToEndpoint = async (
 
     try {
         const headers = getAuthHeaders('Bearer');
-        console.log(`[${endpoint}] 헤더 정보:`, headers);
-
         const response = await api.post(endpoint, formData, { headers });
-        console.log(`[${endpoint}] 서버 응답 성공:`, response.data);
-        return response.data;
-    } catch (error: any) {
+        return response.data as T;
+    } catch (error) {
         throw handleApiError(error, errorMessage);
     }
 };
 
-// 이미지 탐지 API
-export const detectObjectsInImage = async (file: File): Promise<any> => {
-    return uploadImageToEndpoint('/items/detection', file, '이미지 탐지 실패.');
+ // 식재료 인식 API
+export const detectObjectsInImage = async (file: File): Promise<ImageDetectionResult> => {
+    return uploadImageToEndpoint<ImageDetectionResult>(
+        '/items/detection',
+        file,
+        '식재료 인식에 실패했습니다.'
+    );
 };
 
-// 영수증 인식 API
-export const recognizeReceipt = async (file: File): Promise<any> => {
-    return uploadImageToEndpoint('/receipts', file, '영수증 인식에 실패했습니다.');
+ // 영수증 인식 API
+export const recognizeReceipt = async (file: File): Promise<ReceiptRecognitionResult> => {
+    return uploadImageToEndpoint<ReceiptRecognitionResult>(
+        '/receipts',
+        file,
+        '영수증 인식에 실패했습니다.'
+    );
 };
 
 // 식재료 관리 API

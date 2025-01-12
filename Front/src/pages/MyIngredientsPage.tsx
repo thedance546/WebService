@@ -44,7 +44,7 @@ const MyIngredientsPage: React.FC = () => {
       console.log("영수증 인식 응답:", response);
 
       addIngredientModal.setState({
-        purchaseDate: response.구매일자 || "알 수 없음",
+        purchaseDate: response.purchaseDate || "알 수 없음",
         matchedItems: response.matchedItems || [],
       });
 
