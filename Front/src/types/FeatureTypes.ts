@@ -50,3 +50,13 @@ export interface OrderRequest {
   orderDate: string;
   orderItems: OrderItem[];
 }
+
+export interface ImageDetectionResult {
+  detectionResults: Record<string, string>; // 식재료 이름과 수량
+  imageData: string; // base64 이미지 데이터
+}
+
+export interface ReceiptRecognitionResult {
+  purchaseDate: string; // 구매 날짜
+  matchedItems: string[]; // 인식된 아이템 리스트
+}

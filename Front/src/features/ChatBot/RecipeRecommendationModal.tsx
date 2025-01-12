@@ -91,28 +91,67 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
 
   if (!isOpen) return null;
 
+  const handleOpenInNewTab = () => {
+    if (detectedImageSrc) {
+      const newWindow = window.open();
+      if (newWindow) {
+        newWindow.document.write(
+          `<img src="${detectedImageSrc}" alt="YOLO Detection Result" style="width:100%; height:auto;">`
+        );
+        newWindow.document.title = "YOLO Detection Result";
+      } else {
+        alert('팝업 차단을 해제해주세요.');
+      }
+    }
+  };
+  
+  const handleDownload = () => {
+    if (detectedImageSrc) {
+      const link = document.createElement('a');
+      link.href = detectedImageSrc;
+      link.download = 'yolo_detection_result.jpg'; // 다운로드 파일명 지정
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <FullScreenOverlay title="레시피 추천 받기" onClose={onClose}>
       <div className="mb-3">
-        <ImagePreview
-          src={detectedImageSrc}
-          alt="탐지된 이미지 미리보기"
-          style={{ height: '400px', width: '100%' }}
-        />
-        <Button
-          variant="primary"
-          onClick={() => {
-            addMessage({
-              sender: Sender.User,
-              text: '탐지된 식재료를 확인하세요.',
-              attachedImage: detectedImageSrc,
-            });
-            onClose();
-          }}
-        >
-          확인
+        {detectedImageSrc ? (
+          <ImagePreview
+            src={detectedImageSrc}
+            alt="탐지된 이미지 미리보기"
+            style={{ height: '400px', width: '100%' }}
+          />
+        ) : (
+          <p>이미지가 없습니다.</p>
+        )}
+      </div>
+
+      <div className="d-flex justify-content-start mb-3">
+        <Button variant="secondary" onClick={handleOpenInNewTab} className="me-2">
+          새 탭에서 보기
+        </Button>
+        <Button variant="secondary" onClick={handleDownload}>
+          다운로드
         </Button>
       </div>
+      
+      <Button
+        variant="primary"
+        onClick={() => {
+          addMessage({
+            sender: Sender.User,
+            text: '탐지된 식재료를 확인하세요.',
+            attachedImage: detectedImageSrc,
+          });
+          onClose();
+        }}
+      >
+        확인
+      </Button>
 
       <EditIngredientForm ingredients={ingredients} onIngredientsChange={setIngredients} />
       <StoredIngredientsList

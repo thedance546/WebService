@@ -18,19 +18,23 @@ const Button: React.FC<ButtonProps> = ({
   children,
   className = '',
   disabled = false,
-  variant = 'primary',
+  variant,
   style,
 }) => {
+  const defaultStyle: CSSProperties = {
+    backgroundColor: !variant && !style?.backgroundColor ? 'var(--primary-color)' : undefined,
+    color: !variant && !style?.color ? '#000' : undefined,
+  };
+
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`btn btn-${variant} ${className}`}
+      className={`btn ${variant ? `btn-${variant}` : ''} ${className}`}
       disabled={disabled}
       style={{
-        backgroundColor: variant === 'primary' ? 'var(--primary-color)' : undefined,
-        color: variant === 'primary' ? '#fff' : undefined,
-        ...style,
+        ...defaultStyle, // 기본 색상
+        ...style,        // 사용자 지정 스타일
       }}
     >
       {children}

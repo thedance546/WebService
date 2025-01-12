@@ -41,34 +41,42 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
 
   const handleDetection = async () => {
     if (!state.selectedFile) {
-        alert('이미지를 업로드해주세요.');
-        return;
+      alert('이미지를 업로드해주세요.');
+      return;
     }
 
     setState((prevState) => ({ ...prevState, loading: true }));
 
     try {
-        const { detectionResults, imageData } = await detectObjectsInImage(state.selectedFile);
-        const parsedIngredients = Object.entries(detectionResults).map(([name, quantity]) => ({
-            ingredientId: 0,
-            name,
-            quantity: parseInt(quantity as string, 10),
-        }));
-        setIngredients(parsedIngredients);
-        setState((prevState) => ({
-            ...prevState,
-            detectionResult: detectionResults,
-            previewUrl: imageData,
-        }));
-        openDetectionModal();
-        onClose();
+      const { detectionResults, imageData } = await detectObjectsInImage(state.selectedFile);
+
+      // 콘솔로 이미지 데이터 출력 (디버깅용)
+      console.log('Received imageData:', imageData);
+
+      // 식재료 데이터를 변환 및 고유 ID 추가
+      const parsedIngredients = Object.entries(detectionResults).map(([name, quantity]) => ({
+        ingredientId: Date.now() + Math.floor(Math.random() * 1000), // 고유 ID 생성
+        name,
+        quantity: parseInt(quantity as string, 10),
+      }));
+
+      setIngredients(parsedIngredients);
+      setState((prevState) => ({
+        ...prevState,
+        detectionResult: detectionResults,
+        previewUrl: imageData, // 이미지 데이터 저장
+      }));
+
+      openDetectionModal();
+      onClose();
     } catch (error) {
-        console.error(error);
-        alert('탐지 중 오류가 발생했습니다.');
+      console.error('Detection failed:', error);
+      alert('이미지 인식 중 오류가 발생했습니다.');
     } finally {
-        setState((prevState) => ({ ...prevState, loading: false }));
+      setState((prevState) => ({ ...prevState, loading: false }));
     }
-};
+  };
+
 
   return (
     <Modal title="레시피 추천 받기" onClose={onClose}>
