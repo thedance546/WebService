@@ -1,5 +1,6 @@
 package com.example.loginDemo.controller;
 
+import com.example.loginDemo.dto.ChatMessageDTO;
 import com.example.loginDemo.dto.RecipeResponse;
 import com.example.loginDemo.service.ChatBotService;
 import com.example.loginDemo.domain.*;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -132,11 +134,21 @@ public class ChatBotController {
 
     //메세지 조회
     @GetMapping("/messages")
-    public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<List<ChatMessageDTO>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
 
         List<Message> messages = chatBotService.getAllMessagesByUser(token);
-        return ResponseEntity.ok(messages);
+
+        // Message 객체를 ChatMessageDTO로 변환
+        List<ChatMessageDTO> chatMessageDTOs = messages.stream()
+                .map(message -> new ChatMessageDTO(
+                        message.getId(),
+                        message.getQuestion(),
+                        message.getResponse()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(chatMessageDTOs);
     }
 
     // 토큰 추출 메서드

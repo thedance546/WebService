@@ -21,7 +21,6 @@ public class ChatBotService {
         return messageRepository.findByUser(user);
     }
 
-
     // 메시지 저장
     public void saveMessage(String accessToken,String question, String response) {
         User user = getCurrentUser(accessToken);
