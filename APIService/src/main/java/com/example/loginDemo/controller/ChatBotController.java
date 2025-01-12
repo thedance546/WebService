@@ -37,7 +37,6 @@ public class ChatBotController {
         // HTTP 요청을 위한 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", accessToken);  // Authorization 헤더 추가
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
@@ -61,7 +60,7 @@ public class ChatBotController {
                     RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
 
                     // 메시지 저장
-                    chatBotService.saveMessage(token, (String) payload.get("question"), contents);
+                    chatBotService.saveMessage(token, (String) payload.get("detectedIngredients"), contents);
 
                     // DTO를 Map에 추가하여 반환
                     return Map.of(

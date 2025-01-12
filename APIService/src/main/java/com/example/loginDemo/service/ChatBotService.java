@@ -4,11 +4,9 @@ import com.example.loginDemo.auth.JwtService;
 import com.example.loginDemo.domain.*;
 import com.example.loginDemo.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +17,7 @@ public class ChatBotService {
 
     // 유저별 메시지 조회
     public List<Message> getAllMessagesByUser(String accessToken) {
-        String email = jwtService.extractUsername(accessToken);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = getCurrentUser(accessToken);
         return messageRepository.findByUser(user);
     }
 
@@ -29,7 +25,6 @@ public class ChatBotService {
     // 메시지 저장
     public void saveMessage(String question, String response, String accessToken) {
         User user = getCurrentUser(accessToken);
-
 
         Message message = new Message();
         message.setQuestion(question);
