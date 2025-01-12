@@ -59,16 +59,6 @@ public class ChatBotController {
         }
     }
 
-    @PostMapping("/recipes/questions/json")
-
-    //메세지 조회
-    @GetMapping("/messages")
-    public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
-        String token = extractToken(accessToken);
-        List<Message> messages = chatBotService.getAllMessagesByUser(token);
-        return ResponseEntity.ok(messages);
-    }
-
     //GPT
     @PostMapping("/general/questions")
     public ResponseEntity<?> askToGPT(@RequestBody Map<String, String> payload, @RequestHeader("Authorization") String accessToken) {
@@ -115,6 +105,14 @@ public class ChatBotController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage()));
         }
+    }
+
+    //메세지 조회
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
+        String token = extractToken(accessToken);
+        List<Message> messages = chatBotService.getAllMessagesByUser(token);
+        return ResponseEntity.ok(messages);
     }
 
     // 추출 메서드

@@ -1,5 +1,6 @@
 package com.example.loginDemo.service;
 
+import com.example.loginDemo.dto.DetectionResponse;
 import com.example.loginDemo.dto.ReceiptResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -22,19 +23,23 @@ import java.util.*;
 public class YoloService {
     private final RestTemplate restTemplate = new RestTemplate();
 //    private final String Ingredient_URL = "http://yolo-container-:5000/object-detection/object_detection";
-    private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
 //    private final String Receipt_URL = "http://receipt-container-:5001/ocr-detection";
+    private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
+    public DetectionResponse detectAndReturn(MultipartFile imageFile) throws IOException {
+        // 객체 감지 결과 가져오기
+        Map<String, String> detectionResults = sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
-    // ingredient
-    public Map<String, String> detectObjects(MultipartFile imageFile) throws IOException {
-        return sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-    }
+        // 바운딩 박스를 그린 결과 이미지 가져오기
+        byte[] resultImage = sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
-    //bounding
-    public byte[] returnImage(MultipartFile imageFile) throws IOException {
-        return sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+        // Base64로 인코딩
+        String base64Image = Base64.getEncoder().encodeToString(resultImage);
+        String imageDataUri = "data:image/jpeg;base64," + base64Image;
+
+        // DTO 생성하여 반환
+        return new DetectionResponse(detectionResults, imageDataUri);
     }
 
     private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
@@ -114,6 +119,7 @@ public class YoloService {
         return matchedItemsSet;
     }
 
+    //공통 메서드
     private <T> Map sendPostRequest(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);

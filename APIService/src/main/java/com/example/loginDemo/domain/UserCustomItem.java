@@ -1,6 +1,7 @@
 package com.example.loginDemo.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,7 @@ public class UserCustomItem {
     private String itemName;
 
     @Column(name = "count", nullable = false, unique = true)
+    @Min(0)
     private int count;
 
     @Column(name = "category_name", nullable = false, unique = true)

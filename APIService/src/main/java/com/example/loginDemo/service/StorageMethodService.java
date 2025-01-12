@@ -27,18 +27,12 @@ public class StorageMethodService {
         return storageMethodRepository.save(storageMethod);
     }
 
-    // 보관 방법 이름으로 조회
-    public StorageMethod findByStorageMethodName(String storageMethodName) {
-        return storageMethodRepository.findByStorageMethodName(storageMethodName)
-                .orElseThrow(() -> new IllegalArgumentException("Storage method not found: " + storageMethodName));
-    }
-
     // 모든 보관 방법 조회
     public List<StorageMethod> getAllStorageMethods() {
         return storageMethodRepository.findAll();
     }
 
-    //삭제
+    // 보관 방법 삭제
     @Transactional
     public void deleteStorageMethod(Long id) {
         itemRepository.deleteByStorageMethodId(id);
