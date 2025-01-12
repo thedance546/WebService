@@ -34,17 +34,26 @@ llm = ChatOpenAI(model="gpt-4", openai_api_key=OPENAI_API_KEY)
 
 # 시스템 메시지: AI의 역할과 응답 지침 설정
 system_message_prompt = SystemMessagePromptTemplate.from_template(
-    "You are a world-class recipe bot equipped to handle queries related to recipes, ingredients, cooking methods, and dietary restrictions.. "
-    "질문과 제공된 검색 결과를 기반으로 재료와 레시피를 분리하여 깔끔하게 답변하세요. "
-    "답변이 불가능할 경우 '관련된 레시피를 찾을 수 없습니다.'라고 답변하세요."
+    "당신은 레시피, 요리 방법, 식이 제한, 음식 저장 방법에 대한 전문적인 AI 어시스턴트입니다. "
+    "검색 결과가 제공된 경우 이를 우선적으로 사용하여 정확하고 세부적인 답변을 생성하세요. "
+    "검색 결과가 제공되지 않은 경우 질문을 기반으로 일반적인 지식을 사용해 답변하세요. "
+    "만약 답변이 불가능하다면 '관련된 정보를 찾을 수 없습니다.'라고 답변하세요."
 )
+
+
 
 # 사용자 메시지: 질문과 검색 결과를 전달
 user_message_prompt = HumanMessagePromptTemplate.from_template(
     "질문: {question}\n\n"
     "검색 결과:\n{context}\n\n"
-    "링크는 Image: ['*.jpg', '*.jpg'] 형식으로 제공됩니다."
+    "검색 결과가 제공되지 않은 경우에만 일반적인 지식을 사용하여 답변하세요. "
+    "중복 없이 간결하고 명확한 형식으로 답변을 작성하세요."
 )
+
+
+
+
+
 
 
 # ChatPromptTemplate 생성
@@ -89,18 +98,19 @@ def search_weaviate(query_text, top_k=5, min_certainty=0.5):
         return query_vector, [], []
 
 
-# LangChain RAG에서 사용자 질문 처리
+
+
 def generate_answer(question, result_texts):
     """
-    Generate an answer using LangChain LLM with context.
+    LLM을 통해 단일 레시피 추천 답변 생성.
     """
-    print(f"LLM에 전달할 컨텍스트:\n{result_texts}\n")
-
     try:
         response = chain.invoke({
-            "question": f"{question} 레시피 목록은 생략하고 추천 레시피의 제목과 선택 이유만 답변해주세요. "
-                        f"사용재료, 쓰면 안되는 재료에 특히 집중해주세요. "
-                        f"사용재료 중에 레시피에 포함되지 않는 재료가 있다면 가벼운 말투로 솔직히 말해주세요.",
+            "question": f"{question}\n추천 레시피를 한 가지 선택하여 다음 형식으로 답변해주세요:\n\n"
+                        "추천 레시피 제목: <레시피 제목>\n"
+                        "재료: <레시피에 필요한 재료 목록>\n"
+                        "레시피 만드는 법: <간단한 요리 방법>\n"
+                        "선택 이유: <왜 이 레시피를 추천했는지에 대한 설명>\n",
             "context": result_texts
         })
         print(f"LLM 응답:\n{response}\n")
@@ -111,48 +121,54 @@ def generate_answer(question, result_texts):
 
 
 
-# RAG 응답 생성
+
+
+
 def generate_rag_answer(question):
     """
-    질문에 따라 5개의 레시피를 검색하고, LangChain이 추론한 가장 적합한 레시피를 반환
+    Weaviate에서 검색된 결과를 기반으로 LLM 답변 생성.
+    검색 결과가 없으면 질문만을 기반으로 LLM 추론.
     """
-    # Weaviate에서 검색 수행
     _, _, result_texts = search_weaviate(question, top_k=5)
-    if not result_texts:
-        return "관련된 레시피를 찾을 수 없습니다."
 
-    # LangChain에 전달할 컨텍스트 생성
-    context = "\n\n".join(result_texts)
+    if result_texts:
+        # 검색 결과가 있는 경우 단일 레시피 선택
+        selected_recipe = result_texts[0]  # 첫 번째 레시피 선택
+        llm_response = generate_answer(
+            question=f"{question}와 관련된 레시피를 추천해 주세요. 추천 이유와 생략된 재료에 대해 코멘트를 추가해 주세요.",
+            result_texts=selected_recipe
+        )
 
-    # LangChain을 사용하여 추천 레시피 추출
-    llm_response = generate_answer(question, context)
+        # LLM 응답에서 내용과 이미지 링크 분리
+        contents_match = re.search(r"(?<=내용: ).*?(?=\n이미지:)", llm_response, re.DOTALL)
+        contents = contents_match.group(0).strip() if contents_match else llm_response.strip()
 
-    # LangChain 응답에서 필요한 데이터 추출
-    try:
-        # 정규식을 사용하여 응답에서 데이터를 추출
-        title = re.search(r"Title: (.+)", llm_response)
-        ingredients = re.search(r"Ingredients: (.+)", llm_response)
-        recipe = re.search(r"Recipe: (.+)", llm_response)
-        image = re.search(r"Image: (.+)", llm_response)
+        image_links_match = re.search(r"(?<=이미지 링크: ).*", llm_response)
+        image_links = image_links_match.group(0).strip() if image_links_match else "이미지 없음"
+    else:
+        # 검색 결과가 없는 경우
+        print("검색 결과가 없습니다. 질문을 기반으로 답변을 생성합니다.")
+        llm_response = generate_answer(
+            question=f"{question}와 관련된 레시피를 추천해 주세요. 추천 이유와 생략된 재료에 대해 코멘트를 추가해 주세요.",
+            result_texts=""
+        )
+        contents = llm_response.strip()
+        image_links = "이미지 없음"
 
-        # 매칭된 데이터 가져오기
-        title = title.group(1) if title else "정보 없음"
-        ingredients = ingredients.group(1) if ingredients else "정보 없음"
-        recipe = recipe.group(1) if recipe else "정보 없음"
-        image = image.group(1) if image else "정보 없음"
-    except Exception as e:
-        return f"레시피 정보를 처리하는 중 오류가 발생했습니다: {e}"
-
-    # 최종 응답 구성
-    response = (
-        f"추천 레시피:\n\n"
-        f"제목: {title}\n"
-        f"재료: {ingredients}\n"
-        f"레시피: {recipe}\n"
-        f"이미지: {image}\n\n"
-        f"추천 이유:\n{llm_response}"
-    )
+    # 최종 JSON 응답
+    response = {
+        "contents": contents,
+        "imageLink": image_links
+    }
     return response
+
+
+
+
+
+
+
+
 
 
 def generate_sentence(data):
@@ -160,75 +176,63 @@ def generate_sentence(data):
     def is_valid(value):
         return value not in ["없음", None, 0]
 
-    # 재료 정보
+    # 재료 정보 (detectedIngredients)
     detected_ingredients = ", ".join(
-        [f"{ingredient['name']} {ingredient['quantity']}개" for ingredient in data["yolov5_results"]["detected_ingredients"]]
+        [f"{ingredient['name']} {ingredient['quantity']}개" for ingredient in data.get("detectedIngredients", [])]
     )
 
-    # 사용자 정보
-    user_info = data["personalized_answers"]["user_info"]
-    age_group = user_info.get("ageGroup", None)
-    gender = user_info.get("gender", None)
-    activity_level = user_info.get("activityLevel", None)
-    health_goal = user_info.get("healthGoal", None)
-    meal_times = user_info.get("mealTimes", [])
+    # 저장된 재료 정보 (selectedStoredIngredients)
+    stored_ingredients = ", ".join(
+        [f"{ingredient['name']} {ingredient['quantity']}개 (소비기한: {ingredient['consumeBy']})"
+         for ingredient in data.get("selectedStoredIngredients", [])]
+    )
+
+    # 사용자 정보 (userPreferences)
+    user_preferences = data.get("userPreferences", {})
+    age_group = user_preferences.get("ageGroup", None)
+    gender = user_preferences.get("gender", None)
+    health_goal = user_preferences.get("healthGoal", None)
+    meal_times = user_preferences.get("mealTimes", [])
     meal_times = [time for time in meal_times if is_valid(time)]
     meal_times_str = ", ".join(meal_times)
-    allergies = user_info.get("allergies", [])
+    allergies = user_preferences.get("allergies", [])
     allergies = [allergy for allergy in allergies if is_valid(allergy)]
-    food_categories = user_info.get("foodCategories", [])
+    food_categories = user_preferences.get("foodCategories", [])
     food_categories = [category for category in food_categories if is_valid(category)]
+
+    # 추가 요청 사항 (additionalRequest)
+    additional_request = data.get("additionalRequest", "").strip()
 
     # 문장 생성
     sentence = f"{detected_ingredients}를 사용한 레시피 타이틀 추천 목록 만들어줘."
 
+    if stored_ingredients:
+        sentence += f" 저장된 재료로는 {stored_ingredients}가 있어."
+
     if allergies:
         sentence += f" {', '.join(allergies)}는 쓰면 안 돼."
-    if is_valid(age_group) or is_valid(gender) or is_valid(activity_level) or is_valid(health_goal) or meal_times or food_categories:
+    
+    if is_valid(age_group) or is_valid(gender) or is_valid(health_goal) or meal_times or food_categories:
         sentence += " 그리고 그 중에"
-        if is_valid(activity_level):
-            sentence += f" {activity_level} 수준인 운동량의"
+        if is_valid(health_goal):
+            sentence += f" {health_goal}를 위한"
         if is_valid(age_group):
             sentence += f" {age_group}"
         if is_valid(gender):
             sentence += f" {gender}이"
-        if is_valid(health_goal):
-            sentence += f" {health_goal} 중에도"
         if meal_times:
             sentence += f" {meal_times_str}에"
         if food_categories:
             sentence += f" {', '.join(food_categories)}로 분류된"
         sentence += " 먹을만한 요리를 추천해줘."
 
+    if additional_request:
+        sentence += f" 추가 요청 사항: {additional_request}."
+
     return sentence
 
-# 예시 JSON 데이터 2
-Jsondata2 = {
-    "yolov5_results": {
-        "detected_ingredients": [
-            { "name": "토마토", "quantity": 3 },
-            { "name": "당근", "quantity": 2 },
-            { "name": "양배추", "quantity": 1 }
-        ]
-    },
-    "personalized_answers": {
-        "user_info": {
-            "ageGroup": None,
-            "gender": None,
-            "activityLevel": "없음",
-            "healthGoal": 0,
-            "allergies": [None],
-            "mealTimes": [0],
-            "foodCategories": ["없음"],
-        }
-    },
-    "database_check": {
-        "is_included_in_database": True
-    }
-}
 
-response = generate_rag_answer(generate_sentence(Jsondata2))
-print("Response:", response)
+
 
 # Flask 앱 설정
 app = Flask(__name__)
@@ -257,40 +261,46 @@ def ask_general():
             return jsonify({"error": "No question provided"}), 400
         
         question = data["question"]
+        context = data.get("context", "")  # context가 없으면 기본값으로 빈 문자열 사용
 
         # LangChain의 체인을 통해 질문 처리
-        response = chain.invoke({"question": question, "context": ""})  # context는 빈 값으로 전달
+        response = chain.invoke({"question": question, "context": context})  
         return jsonify({"response": response}), 200
     except Exception as e:
-        app.logger.error(f"Error during GPT processing: {e}")
+        print(f"Error during GPT processing: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+
     
 @app.route('/ask/recipe', methods=['POST'])
 def ask_recipe():
-    """
-    RAG 시스템 기반 질문 처리
-    """
     try:
         data = request.json
-        if not data:
-            return jsonify({"error": "Invalid JSON data provided"}), 400
-        print(data)
-        
-        # JSON 데이터를 문장으로 변환
+        print(f"Received data: {data}")  # 요청 데이터 로그
+
+        if not isinstance(data, dict):
+            return jsonify({"error": "Invalid input format. Must be JSON."}), 400
+
+        # JSON 데이터 검증 및 키 매핑
+        detected_ingredients = data.get("detectedIngredients")
+        if not detected_ingredients:
+            return jsonify({"error": "'detectedIngredients' is missing"}), 400
+
+        # 요청 데이터에서 문장 생성
         query_text = generate_sentence(data)
-        print(query_text)
-        # Weaviate에서 검색 수행
-        result_texts = search_weaviate(query_text)
-        print(result_texts)
+        print(f"Generated query: {query_text}")  # 생성된 문장 로그
+
+        _, _, result_texts = search_weaviate(query_text)
+
         if not result_texts:
             return jsonify({"response": "검색된 결과가 없습니다."}), 404
 
-        # RAG 기반 응답 생성
-        response = generate_rag_answer(query_text, result_texts)
+        response = generate_rag_answer(query_text)
         return jsonify({"response": response}), 200
     except Exception as e:
-        app.logger.error(f"Error during RAG processing: {e}")
+        print(f"Error during RAG processing: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5002, debug=False)  # 디버그 모드 활성화d
+    app.run(host='0.0.0.0', port=5002, debug=True, use_reloader=False)
