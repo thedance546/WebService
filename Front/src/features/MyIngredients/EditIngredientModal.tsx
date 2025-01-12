@@ -16,7 +16,7 @@ const EditIngredientModal: React.FC<EditIngredientModalProps> = ({
   onCancel,
 }) => {
   const [editedRow, setEditedRow] = useState({ ...row });
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   const handleChange = (field: string, value: any) => {
     setEditedRow((prev) => ({ ...prev, [field]: value }));

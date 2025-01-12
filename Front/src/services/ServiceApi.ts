@@ -38,18 +38,6 @@ export const recognizeReceipt = async (file: File): Promise<any> => {
     return uploadImageToEndpoint('/receipts', file, '영수증 인식에 실패했습니다.');
 };
 
-// 이미지 탐지 결과 이미지 호출 API
-export const fetchBoundingBoxImage = async (): Promise<string> => {
-    try {
-        const headers = getAuthHeaders('Bearer');
-        const response = await api.get('/items/bounding-box', { headers });
-        console.log('[BoundingBox Image] 서버 응답 성공:', response.data);
-        return response.data.imageUrl;
-    } catch (error: any) {
-        throw handleApiError(error, 'Bounding Box 이미지를 가져오는 데 실패했습니다.');
-    }
-};
-
 // 식재료 관리 API
 const createOrder = async (endpoint: string, orderData: OrderRequest): Promise<void> => {
     try {

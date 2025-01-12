@@ -37,3 +37,11 @@ export const parseDate = (input: string): string | null => {
 
   return null;
 };
+
+// 현재 날짜와 비교하여 날짜 차이를 계산하는 함수
+export const calculateDaysFromNow = (date: Date | null): number => {
+  if (!date) return 0;
+  const now = new Date();
+  const diffTime = date.getTime() - now.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 하루 단위로 계산
+};

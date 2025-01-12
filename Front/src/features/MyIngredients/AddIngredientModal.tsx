@@ -110,7 +110,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
           onIngredientsChange={setIngredients}
         />
 
-        <div className="d-flex justify-content-end mt-3">
+        <div className="d-flex justify-content-end mt-3 gap-2">
           <Button variant="success" onClick={handleConfirm}>
             확인
           </Button>

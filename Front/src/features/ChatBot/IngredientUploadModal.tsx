@@ -4,7 +4,7 @@ import React from 'react';
 import Modal from '../../components/molecules/Modal';
 import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
-import { detectObjectsInImage, fetchBoundingBoxImage } from '../../services/ServiceApi';
+import { detectObjectsInImage } from '../../services/ServiceApi';
 import { Ingredient } from '../../types/EntityTypes';
 
 interface IngredientUploadModalProps {
@@ -46,19 +46,15 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
     setState((prevState) => ({ ...prevState, loading: true }));
 
     try {
-        // 1. Detect objects
+      // 1. Detect objects
       const detectionResult = await detectObjectsInImage(state.selectedFile);
-       // 2. Parse and Set the result
+      // 2. Parse and Set the result
       const parsedIngredients = Object.entries(detectionResult).map(([name, quantity]) => ({
         ingredientId: 0,
         name,
         quantity: parseInt(quantity as string, 10),
       }));
       setIngredients(parsedIngredients);
-        // 3. Fetch bounding box image
-        // const boundingBoxImage = await fetchBoundingBoxImage();
-        
-        // 4. Close modal and open recipe recommendation modal
       openDetectionModal();
       onClose();
     } catch (error) {

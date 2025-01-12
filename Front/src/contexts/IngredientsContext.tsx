@@ -1,6 +1,6 @@
 // src/contexts/IngredientsContext.tsx
 
-import React, { ReactNode, createContext, useContext, useState, useEffect } from "react";
+import React, { ReactNode, createContext, useContext, useState, useEffect, useCallback } from "react";
 import { fetchOrders, deleteUserIngredient } from "../services/ServiceApi";
 import { Ingredient } from "../types/EntityTypes";
 
@@ -40,7 +40,7 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
     }));
   };
   
-  const refreshIngredients = async () => {
+  const refreshIngredients = useCallback(async () => {
     try {
       const orders = await fetchOrders();
       const formattedIngredients = mapOrderToIngredients(orders);
@@ -48,7 +48,7 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
     } catch (error) {
       console.error("식재료 데이터 가져오기 실패:", error);
     }
-  };
+  }, []); // 빈 배열로 한 번만 초기화
 
   const deleteIngredient = async (ingredientId: number) => {
     try {
@@ -63,7 +63,7 @@ export const IngredientsProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   useEffect(() => {
     refreshIngredients();
-  }, []);
+  }, [refreshIngredients]);
 
   return (
     <IngredientsContext.Provider

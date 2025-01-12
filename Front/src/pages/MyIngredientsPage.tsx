@@ -7,6 +7,7 @@ import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
 import ReceiptUploadModal from "../features/MyIngredients/ReceiptUploadModal";
 import AddIngredientModal from "../features/MyIngredients/AddIngredientModal";
 import IngredientOptionsModal from "../features/MyIngredients/IngredientOptionModal";
+import AddManualIngredientModal from "../features/MyIngredients/AddManualIngredientModal";
 import LoadingModal from "../components/organisms/LoadingModal";
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from "../hooks/usePopupState";
@@ -24,6 +25,7 @@ const MyIngredientsPage: React.FC = () => {
     purchaseDate: '',
     matchedItems: [],
   });
+  const manualModal = usePopupState(null);
   const editModal = usePopupState<Ingredient | null>(null);
   const { updateIngredient } = useIngredients();
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -57,8 +59,7 @@ const MyIngredientsPage: React.FC = () => {
   };
 
   const handleDirectInput = () => {
-    addIngredientModal.setState({ purchaseDate: '', matchedItems: [""] });
-    addIngredientModal.open();
+    manualModal.open();
     optionsModal.close();
   };
 
@@ -95,7 +96,7 @@ const MyIngredientsPage: React.FC = () => {
         />
       )}
 
-      {/* 식재료 추가 모달 */}
+      {/* 영수증 인식 식재료 추가 모달 */}
       {addIngredientModal.isOpen && (
         <AddIngredientModal
           purchaseDate={addIngredientModal.state.purchaseDate}
@@ -103,6 +104,12 @@ const MyIngredientsPage: React.FC = () => {
           onClose={addIngredientModal.close}
         />
       )}
+
+      {/* 직접 입력 식재료 추가 모달 */}
+      {manualModal.isOpen &&
+        <AddManualIngredientModal
+          onClose={manualModal.close} />
+      }
 
       {/* 수정 모달 */}
       {editModal.isOpen && editModal.state && (
