@@ -1,10 +1,10 @@
-package com.example.loginDemo.chat;
+package com.example.loginDemo.controller;
 
+import com.example.loginDemo.service.ChatBotService;
 import com.example.loginDemo.domain.*;
 import com.example.loginDemo.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,7 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class ChatBotController {
     private static final String LLM_URL = "http://llm_run:5002/ask";
@@ -58,16 +57,6 @@ public class ChatBotController {
         } catch (Exception e) {
             throw new FlaskCommunicationException("Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
         }
-    }
-
-    @PostMapping("/recipes/questions/json")
-
-    //메세지 조회
-    @GetMapping("/messages")
-    public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
-        String token = extractToken(accessToken);
-        List<Message> messages = chatBotService.getAllMessagesByUser(token);
-        return ResponseEntity.ok(messages);
     }
 
     //GPT
@@ -116,6 +105,14 @@ public class ChatBotController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage()));
         }
+    }
+
+    //메세지 조회
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
+        String token = extractToken(accessToken);
+        List<Message> messages = chatBotService.getAllMessagesByUser(token);
+        return ResponseEntity.ok(messages);
     }
 
     // 추출 메서드

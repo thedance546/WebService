@@ -2,6 +2,7 @@ package com.example.loginDemo.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class OrderItem {
     private Long id;
 
     @Column(nullable = true)
+    @Min(0)
     private int count;
 
     @ManyToOne

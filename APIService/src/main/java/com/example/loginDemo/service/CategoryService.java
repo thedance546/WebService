@@ -28,12 +28,6 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    // 카테고리 이름으로 조회
-    public Category findByCategoryName(String categoryName) {
-        return categoryRepository.findByCategoryName(categoryName)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found: " + categoryName));
-    }
-
     // 모든 카테고리 조회
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();

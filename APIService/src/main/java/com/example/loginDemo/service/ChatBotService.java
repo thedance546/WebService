@@ -1,4 +1,4 @@
-package com.example.loginDemo.chat;
+package com.example.loginDemo.service;
 
 import com.example.loginDemo.auth.JwtService;
 import com.example.loginDemo.domain.*;
@@ -18,7 +18,6 @@ public class ChatBotService {
     private final JwtService jwtService;
 
     // 유저별 메시지 조회
-    // 특정 사용자의 메시지만 조회
     public List<Message> getAllMessagesByUser(String accessToken) {
         String email = jwtService.extractUsername(accessToken);
         User user = userRepository.findByEmail(email)
