@@ -117,7 +117,7 @@ public class ChatBotController {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 // 메시지 저장
                 String responseContent = (String) response.getBody().get("response");
-//                chatBotService.saveMessage(token, question, responseContent);
+                chatBotService.saveMessage(token, question, responseContent);
                 return ResponseEntity.ok(response.getBody());
             } else {
                 return ResponseEntity.status(response.getStatusCode())
