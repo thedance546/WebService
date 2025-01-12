@@ -22,40 +22,38 @@ public class ChatBotController {
 
     //LLM
     @PostMapping("/recipes/questions")
-    public Map<String, String> askToLLM(@RequestBody Map<String, String> payload,
-                                        @RequestHeader("Authorization") String accessToken) {
+    public Map<String, Object> askToFlask(@RequestBody Map<String, Object> payload,
+                                          @RequestHeader("Authorization") String accessToken) {
 
-        String token = extractToken(accessToken);
+        // Flask 서버에 전달할 요청 본문 구성
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("detectedIngredients", payload.get("detectedIngredients"));
+        requestBody.put("selectedStoredIngredients", payload.get("selectedStoredIngredients"));
+        requestBody.put("userPreferences", payload.get("userPreferences"));
+        requestBody.put("additionalRequest", payload.get("additionalRequest"));
 
-        String question = payload.get("question");
-        if (question == null || question.trim().isEmpty()) {
-            return Map.of("error", "질문이 제공되지 않았습니다.");
-        }
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("question", question);
-
+        // HTTP 요청을 위한 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
+        // RestTemplate을 사용하여 Flask 서버에 요청 보내기
+        RestTemplate restTemplate = new RestTemplate();
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(LLM_RECIPE_URL, request, Map.class);
+            // Flask 서버에 POST 요청 보내기
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    LLM_RECIPE_URL, HttpMethod.POST, request, Map.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                String botResponse = response.getBody().get("response").toString();
-
-                chatBotService.saveMessage(request, response, token);
-
+                String botResponse = (String) response.getBody().get("response");
                 return Map.of("response", botResponse);
             } else {
-                throw new FlaskCommunicationException("Flask 서버로부터 유효하지 않은 응답이 반환되었습니다.");
+                return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
             }
+
         } catch (Exception e) {
-            throw new FlaskCommunicationException("Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
+            return Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
         }
     }
 
