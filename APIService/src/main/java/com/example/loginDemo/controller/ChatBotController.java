@@ -16,7 +16,7 @@ import java.util.Map;
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
 public class ChatBotController {
-    private static final String LLM_URL = "http://llm-container:5002/ask";
+    private static final String LLM_URL = "http://llm-container:5002/process";
     private static final String gpt_URL = "http://gpt-container:5003/ask";
     private final ChatBotService chatBotService;
 
