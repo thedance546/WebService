@@ -81,7 +81,7 @@ public class ChatBotController {
     //GPT
     @PostMapping("/general/questions")
     public ResponseEntity<?> askToGPT(@RequestBody Map<String, String> payload, @RequestHeader("Authorization") String accessToken) {
-//        String token = extractToken(accessToken);
+        String token = extractToken(accessToken);
 
         String question = payload.get("question");
         String searchResults = payload.getOrDefault("search_results", "");
@@ -116,7 +116,7 @@ public class ChatBotController {
             // Flask 서버 응답 처리
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 // 메시지 저장
-//                String responseContent = (String) response.getBody().get("response");
+                String responseContent = (String) response.getBody().get("response");
 //                chatBotService.saveMessage(token, question, responseContent);
                 return ResponseEntity.ok(response.getBody());
             } else {
@@ -139,7 +139,7 @@ public class ChatBotController {
         return ResponseEntity.ok(messages);
     }
 
-    // 추출 메서드
+    // 토큰 추출 메서드
     private String extractToken(String accessToken) {
         return accessToken.replace("Bearer ", "");
     }

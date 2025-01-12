@@ -23,16 +23,16 @@ public class ChatBotService {
 
 
     // 메시지 저장
-    public void saveMessage(String question, String response, String accessToken) {
-        User user = getCurrentUser(accessToken);
-
-        Message message = new Message();
-        message.setQuestion(question);
-        message.setResponse(response);
-        message.setUser(user);
-
-        messageRepository.save(message);
-    }
+//    public void saveMessage(String question, String response, String accessToken) {
+//        User user = getCurrentUser(accessToken);
+//
+//        Message message = new Message();
+//        message.setQuestion(question);
+//        message.setResponse(response);
+//        message.setUser(user);
+//
+//        messageRepository.save(message);
+//    }
 
 
     // 현재 로그인한 유저 정보 추출
