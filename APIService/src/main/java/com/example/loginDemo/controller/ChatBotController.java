@@ -22,59 +22,10 @@ public class ChatBotController {
     private final ChatBotService chatBotService;
 
     //LLM
-//    @PostMapping("/recipes/questions")
-//    public Map<String, Object> askToFlask(@RequestBody Map<String, Object> payload,
-//                                          @RequestHeader("Authorization") String accessToken) {
-//
-//        // Flask 서버에 전달할 요청 본문 구성
-//        Map<String, Object> requestBody = new HashMap<>();
-//        requestBody.put("detectedIngredients", payload.get("detectedIngredients"));
-//        requestBody.put("selectedStoredIngredients", payload.get("selectedStoredIngredients"));
-//        requestBody.put("userPreferences", payload.get("userPreferences"));
-//        requestBody.put("additionalRequest", payload.get("additionalRequest"));
-//
-//        // HTTP 요청을 위한 헤더 설정
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.set("Authorization", accessToken);  // Authorization 헤더 추가
-//
-//        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-//
-//        // RestTemplate을 사용하여 Flask 서버에 요청 보내기
-//        RestTemplate restTemplate = new RestTemplate();
-//        try {
-//            // Flask 서버에 POST 요청 보내기
-//            ResponseEntity<Map> response = restTemplate.exchange(
-//                    LLM_RECIPE_URL, HttpMethod.POST, request, Map.class);
-//
-//            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-//                // 응답에서 "response" 필드를 추출
-//                Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
-//
-//                // "response" 필드 내의 "contents"와 "imageLink" 필드가 존재하는지 확인
-//                if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
-//                    String contents = (String) responseBody.get("contents");
-//                    String imageLink = (String) responseBody.get("imageLink");
-//
-//                    // 필요한 데이터를 Map으로 반환
-//                    return Map.of(
-//                            "response", Map.of("contents", contents, "imageLink", imageLink)
-//                    );
-//                } else {
-//                    return Map.of("error", "'response' 필드에서 'contents' 또는 'imageLink' 값을 찾을 수 없습니다.");
-//                }
-//            } else {
-//                return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
-//            }
-//
-//        } catch (Exception e) {
-//            return Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
-//        }
-//    }
-
     @PostMapping("/recipes/questions")
     public Map<String, Object> askToFlask(@RequestBody Map<String, Object> payload,
                                           @RequestHeader("Authorization") String accessToken) {
+        String token = extractToken(accessToken);
 
         // Flask 서버에 전달할 요청 본문 구성
         Map<String, Object> requestBody = new HashMap<>();
@@ -109,6 +60,9 @@ public class ChatBotController {
                     // RecipeResponse DTO로 응답 생성
                     RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
 
+                    // 메시지 저장
+                    chatBotService.saveMessage(token, (String) payload.get("question"), contents);
+
                     // DTO를 Map에 추가하여 반환
                     return Map.of(
                             "response", recipeResponse
@@ -125,12 +79,11 @@ public class ChatBotController {
         }
     }
 
-
-
     //GPT
     @PostMapping("/general/questions")
     public ResponseEntity<?> askToGPT(@RequestBody Map<String, String> payload, @RequestHeader("Authorization") String accessToken) {
-        // 질문 및 검색 결과를 검증
+        String token = extractToken(accessToken);
+
         String question = payload.get("question");
         String searchResults = payload.getOrDefault("search_results", "");
 
@@ -163,6 +116,11 @@ public class ChatBotController {
 
             // Flask 서버 응답 처리
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                String responseContent = (String) response.getBody().get("response");
+
+                // 메시지 저장
+                chatBotService.saveMessage(token, question, responseContent);
+
                 return ResponseEntity.ok(response.getBody());
             } else {
                 return ResponseEntity.status(response.getStatusCode())
@@ -179,6 +137,7 @@ public class ChatBotController {
     @GetMapping("/messages")
     public ResponseEntity<List<Message>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
+
         List<Message> messages = chatBotService.getAllMessagesByUser(token);
         return ResponseEntity.ok(messages);
     }

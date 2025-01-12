@@ -27,19 +27,18 @@ public class ChatBotService {
 
 
     // 메시지 저장
-    public void saveMessage(HttpEntity<Map<String, String>> request, ResponseEntity<Map> response, String accessToken) {
+    public void saveMessage(String question, String response, String accessToken) {
         User user = getCurrentUser(accessToken);
 
-        String question = (String) request.getBody().get("question");
-        String botResponse = response.getBody().get("response").toString();
 
         Message message = new Message();
         message.setQuestion(question);
-        message.setResponse(botResponse);
+        message.setResponse(response);
         message.setUser(user);
 
         messageRepository.save(message);
     }
+
 
     // 현재 로그인한 유저 정보 추출
     private User getCurrentUser(String accessToken) {
