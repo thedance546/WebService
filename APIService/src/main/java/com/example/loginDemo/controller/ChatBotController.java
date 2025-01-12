@@ -48,14 +48,19 @@ public class ChatBotController {
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 // 응답에서 "response" 필드를 추출
-                Map responseBody = (Map) response.getBody();
+                Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
 
-                // "response" 필드를 추출하고 메시지 반환
-                if (responseBody.containsKey("response")) {
-                    String botResponse = (String) responseBody.get("response");
-                    return Map.of("response", botResponse);
+                // "response" 필드 내의 "contents"와 "imageLink" 필드가 존재하는지 확인
+                if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
+                    String contents = (String) responseBody.get("contents");
+                    String imageLink = (String) responseBody.get("imageLink");
+
+                    // 필요한 데이터를 Map으로 반환
+                    return Map.of(
+                            "response", Map.of("contents", contents, "imageLink", imageLink)
+                    );
                 } else {
-                    return Map.of("error", "'response' 필드를 찾을 수 없습니다.");
+                    return Map.of("error", "'response' 필드에서 'contents' 또는 'imageLink' 값을 찾을 수 없습니다.");
                 }
             } else {
                 return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
@@ -65,6 +70,7 @@ public class ChatBotController {
             return Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
         }
     }
+
 
     //GPT
     @PostMapping("/general/questions")
