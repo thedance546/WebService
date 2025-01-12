@@ -4,11 +4,9 @@ import com.example.loginDemo.auth.JwtService;
 import com.example.loginDemo.domain.*;
 import com.example.loginDemo.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,27 +17,22 @@ public class ChatBotService {
 
     // 유저별 메시지 조회
     public List<Message> getAllMessagesByUser(String accessToken) {
-        String email = jwtService.extractUsername(accessToken);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = getCurrentUser(accessToken);
         return messageRepository.findByUser(user);
     }
 
-
     // 메시지 저장
-    public void saveMessage(HttpEntity<Map<String, String>> request, ResponseEntity<Map> response, String accessToken) {
+    public void saveMessage(String accessToken,String question, String response) {
         User user = getCurrentUser(accessToken);
-
-        String question = (String) request.getBody().get("question");
-        String botResponse = response.getBody().get("response").toString();
 
         Message message = new Message();
         message.setQuestion(question);
-        message.setResponse(botResponse);
+        message.setResponse(response);
         message.setUser(user);
 
         messageRepository.save(message);
     }
+
 
     // 현재 로그인한 유저 정보 추출
     private User getCurrentUser(String accessToken) {
