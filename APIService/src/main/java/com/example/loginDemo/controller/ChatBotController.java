@@ -37,6 +37,7 @@ public class ChatBotController {
         // HTTP 요청을 위한 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", accessToken);  // Authorization 헤더 추가
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
@@ -59,9 +60,6 @@ public class ChatBotController {
                     // RecipeResponse DTO로 응답 생성
                     RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
 
-                    // 메시지 저장
-                    chatBotService.saveMessage(token, (String) payload.get("detectedIngredients"), contents);
-
                     // DTO를 Map에 추가하여 반환
                     return Map.of(
                             "response", recipeResponse
@@ -77,6 +75,8 @@ public class ChatBotController {
             return Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
         }
     }
+
+
 
     //GPT
     @PostMapping("/general/questions")
@@ -115,11 +115,9 @@ public class ChatBotController {
 
             // Flask 서버 응답 처리
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                String responseContent = (String) response.getBody().get("response");
-
                 // 메시지 저장
+                String responseContent = (String) response.getBody().get("response");
                 chatBotService.saveMessage(token, question, responseContent);
-
                 return ResponseEntity.ok(response.getBody());
             } else {
                 return ResponseEntity.status(response.getStatusCode())
