@@ -9,12 +9,12 @@ import org.springframework.http.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.io.IOException;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:8080")
 @RequiredArgsConstructor
 public class YoloController {
     private final YoloService yoloService;
@@ -30,16 +30,11 @@ public class YoloController {
         }
     }
 
-    //바운딩2
+    //바운딩
     @PostMapping("/items/detection2")
-    public ResponseEntity<byte[]> getResultImage(@RequestParam("image") MultipartFile imageFile) {
-        try {
-            return yoloService.getResultImage(imageFile);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<byte[]> getBoundingBoxImage(@RequestParam("image") MultipartFile imageFile) throws IOException {
+        return yoloService.b(imageFile);
     }
-
 
     // receipt
     @PostMapping("/receipts")
