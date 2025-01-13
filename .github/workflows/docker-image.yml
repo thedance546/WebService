@@ -32,7 +32,7 @@ jobs:
     # 4. Docker 컨테이너 실행
     - name: Run Docker Container
       run: |
-        docker run -d --name llm-container --network service_network \
+        docker run -d --name llm-container \
           -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
           -e WEAVIATE_URL=${{ secrets.WEAVIATE_URL }} \
           -p 5002:5002 \
