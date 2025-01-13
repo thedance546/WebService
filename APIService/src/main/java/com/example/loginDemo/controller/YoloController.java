@@ -46,4 +46,10 @@ public class YoloController {
             return ResponseEntity.status(500).body(new ReceiptResponse(null, List.of("Failed to process image")));
         }
     }
+
+    //ocr2
+    @PostMapping("/receipts2")
+    public List<String> ocr(@RequestParam("image") MultipartFile imageFile) throws IOException {
+        return yoloService.ocr(imageFile);
+    }
 }

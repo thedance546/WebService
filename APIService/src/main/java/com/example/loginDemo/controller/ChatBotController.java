@@ -23,64 +23,59 @@ public class ChatBotController {
     private static final String LLM_RECIPE_URL = "http://llm-container:5002/ask/recipe";
     private final ChatBotService chatBotService;
 
-    //LLM
+    // 공통된 Flask 서버로의 요청 처리 메서드
+    private ResponseEntity<Map> sendRequestToFlask(String url, Map<String, Object> requestBody, String accessToken) {
+        HttpHeaders headers = createHeaders(accessToken);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            return restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage()));
+        }
+    }
+
+    // 공통된 헤더 생성 메서드
+    private HttpHeaders createHeaders(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", accessToken);
+        return headers;
+    }
+
+    // LLM (레시피 관련 요청)
     @PostMapping("/recipes/questions")
     public Map<String, Object> askToFlask(@RequestBody Map<String, Object> payload,
                                           @RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
 
-        // Flask 서버에 전달할 요청 본문 구성
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("detectedIngredients", payload.get("detectedIngredients"));
         requestBody.put("selectedStoredIngredients", payload.get("selectedStoredIngredients"));
         requestBody.put("userPreferences", payload.get("userPreferences"));
         requestBody.put("additionalRequest", payload.get("additionalRequest"));
 
-        // HTTP 요청을 위한 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", accessToken);  // Authorization 헤더 추가
+        // Flask 서버에 요청 보내기
+        ResponseEntity<Map> response = sendRequestToFlask(LLM_RECIPE_URL, requestBody, accessToken);
 
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-
-        // RestTemplate을 사용하여 Flask 서버에 요청 보내기
-        RestTemplate restTemplate = new RestTemplate();
-        try {
-            // Flask 서버에 POST 요청 보내기
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    LLM_RECIPE_URL, HttpMethod.POST, request, Map.class);
-
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                // 응답에서 "response" 필드를 추출
-                Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
-
-                // "response" 필드 내의 "contents"와 "imageLink" 필드가 존재하는지 확인
-                if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
-                    String contents = (String) responseBody.get("contents");
-                    String imageLink = (String) responseBody.get("imageLink");
-
-                    // RecipeResponse DTO로 응답 생성
-                    RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
-
-                    // DTO를 Map에 추가하여 반환
-                    return Map.of(
-                            "response", recipeResponse
-                    );
-                } else {
-                    return Map.of("error", "'response' 필드에서 'contents' 또는 'imageLink' 값을 찾을 수 없습니다.");
-                }
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
+            if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
+                String contents = (String) responseBody.get("contents");
+                String imageLink = (String) responseBody.get("imageLink");
+                RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
+                return Map.of("response", recipeResponse);
             } else {
-                return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
+                return Map.of("error", "'response' 필드에서 'contents' 또는 'imageLink' 값을 찾을 수 없습니다.");
             }
-
-        } catch (Exception e) {
-            return Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage());
+        } else {
+            return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
         }
     }
 
-
-
-    //GPT
+    // GPT (일반 질문 관련 요청)
     @PostMapping("/general/questions")
     public ResponseEntity<?> askToGPT(@RequestBody Map<String, String> payload, @RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
@@ -92,54 +87,30 @@ public class ChatBotController {
             return ResponseEntity.badRequest().body(Map.of("error", "질문이 제공되지 않았습니다."));
         }
 
-        RestTemplate restTemplate = new RestTemplate();
-
-        // Flask 서버로 보낼 요청 데이터
         Map<String, Object> flaskRequest = new HashMap<>();
         flaskRequest.put("question", question);
         flaskRequest.put("search_results", searchResults);
 
-        // HTTP 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        // Flask 서버에 요청 보내기
+        ResponseEntity<Map> response = sendRequestToFlask(LLM_GENERAL_URL, flaskRequest, accessToken);
 
-        // HTTP 요청 생성
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(flaskRequest, headers);
-
-        try {
-            // Flask 서버에 POST 요청
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    LLM_GENERAL_URL,
-                    HttpMethod.POST,
-                    request,
-                    Map.class
-            );
-
-            // Flask 서버 응답 처리
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                // 메시지 저장
-                String responseContent = (String) response.getBody().get("response");
-                chatBotService.saveMessage(token, question, responseContent);
-                return ResponseEntity.ok(response.getBody());
-            } else {
-                return ResponseEntity.status(response.getStatusCode())
-                        .body(Map.of("error", "Flask 서버로부터 유효하지 않은 응답이 반환되었습니다."));
-            }
-        } catch (Exception e) {
-            // 오류 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Flask 서버와의 통신 중 오류 발생: " + e.getMessage()));
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            String responseContent = (String) response.getBody().get("response");
+            chatBotService.saveMessage(token, question, responseContent);
+            return ResponseEntity.ok(response.getBody());
+        } else {
+            return ResponseEntity.status(response.getStatusCode())
+                    .body(Map.of("error", "Flask 서버로부터 유효하지 않은 응답이 반환되었습니다."));
         }
     }
 
-    //메세지 조회
+    // 메시지 조회
     @GetMapping("/messages")
     public ResponseEntity<List<ChatMessageDTO>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
 
         List<Message> messages = chatBotService.getAllMessagesByUser(token);
 
-        // Message 객체를 ChatMessageDTO로 변환
         List<ChatMessageDTO> chatMessageDTOs = messages.stream()
                 .map(message -> new ChatMessageDTO(
                         message.getId(),

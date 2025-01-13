@@ -64,6 +64,11 @@ public class YoloService {
         // '품목' 추출
         List<String> items = (List<String>) response.get("품목");
 
+        // '품목'이 null인 경우 예외 처리
+        if (items == null) {
+            throw new IllegalArgumentException("영수증에서 인식된 내역이 없습니다.");
+        }
+
         // 아이템 매칭
         Set<String> matchedItemsSet = matchItems(items);
 
@@ -79,6 +84,18 @@ public class YoloService {
         // ReceiptResponse 객체 생성하여 리턴
         return new ReceiptResponse(purchaseDate, matchedItems);
     }
+
+    //ocr2
+    public List<String> ocr(MultipartFile imageFile) throws IOException {
+        Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+
+        // '품목' 추출
+        List<String> items = (List<String>) response.get("품목");
+
+        // 품목 리스트만 리턴
+        return items;
+    }
+
 
     //메서드
     private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
