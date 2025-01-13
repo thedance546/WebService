@@ -18,33 +18,25 @@ import java.util.*;
 @RequiredArgsConstructor
 public class YoloController {
     private final YoloService yoloService;
-    private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
 
     //ingredient
-//    @PostMapping("/items/detection")
-//    public ResponseEntity<DetectionResponse> detectAndReturn(@RequestParam("image") MultipartFile imageFile) {
-//        try {
-//            DetectionResponse response = yoloService.detectAndReturn(imageFile);
-//            return ResponseEntity.ok(response);
-//        } catch (IOException e) {
-//            return ResponseEntity.status(500).body(null);
-//        }
-//    }
+    @PostMapping("/items/detection")
+    public ResponseEntity<DetectionResponse> detectAndReturn(@RequestParam("image") MultipartFile imageFile) {
+        try {
+            DetectionResponse response = yoloService.detectAndReturn(imageFile);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
 
     //바운딩2
     @PostMapping("/items/detection2")
-    public ResponseEntity<byte[]> detectAndReturn(@RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<byte[]> getResultImage(@RequestParam("image") MultipartFile imageFile) {
         try {
-            // 바운딩 박스를 그린 결과 이미지 가져오기
-            byte[] resultImage = yoloService.sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-
-            // Content-Type을 image/jpeg로 설정하여 반환
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);
-
-            return new ResponseEntity<>(resultImage, headers, HttpStatus.OK);
+            return yoloService.getResultImage(imageFile);
         } catch (IOException e) {
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
