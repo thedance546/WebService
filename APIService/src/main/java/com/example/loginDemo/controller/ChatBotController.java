@@ -24,40 +24,40 @@ public class ChatBotController {
     private final ChatBotService chatBotService;
 
     // LLM (레시피 관련 요청)
-    @PostMapping("/recipes/questions")
-    public Map<String, Object> askToFlask(@RequestBody Map<String, Object> payload,
-                                          @RequestHeader("Authorization") String accessToken) {
-
-        String token = extractToken(accessToken);
-
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("detectedIngredients", payload.get("detectedIngredients"));
-        requestBody.put("selectedStoredIngredients", payload.get("selectedStoredIngredients"));
-        requestBody.put("userPreferences", payload.get("userPreferences"));
-        requestBody.put("additionalRequest", payload.get("additionalRequest"));
-
-        // Flask 서버에 요청 보내기
-        ResponseEntity<Map> response = sendRequestToFlask(LLM_RECIPE_URL, requestBody, token);
-
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
-            if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
-                String contents = (String) responseBody.get("contents");
-                String imageLink = (String) responseBody.get("imageLink");
-                RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
-                return Map.of("response", recipeResponse);
-            } else {
-                return Map.of("error", "'response' 필드에서 'contents' 또는 'imageLink' 값을 찾을 수 없습니다.");
-            }
-        } else {
-            return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
-        }
-    }
+//    @PostMapping("/recipes/questions")
+//    public Map<String, Object> askToFlask(@RequestBody Map<String, Object> payload,
+//                                          @RequestHeader("Authorization") String accessToken) {
+//
+//        String token = extractToken(accessToken);
+//
+//        Map<String, Object> requestBody = new HashMap<>();
+//        requestBody.put("detectedIngredients", payload.get("detectedIngredients"));
+//        requestBody.put("selectedStoredIngredients", payload.get("selectedStoredIngredients"));
+//        requestBody.put("userPreferences", payload.get("userPreferences"));
+//        requestBody.put("additionalRequest", payload.get("additionalRequest"));
+//
+//        // Flask 서버에 요청 보내기
+//        ResponseEntity<Map> response = sendRequestToFlask(LLM_RECIPE_URL, requestBody, token);
+//
+//        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+//            Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
+//            if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
+//                String contents = (String) responseBody.get("contents");
+//                String imageLink = (String) responseBody.get("imageLink");
+//                RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
+//                return Map.of("response", recipeResponse);
+//            } else {
+//                return Map.of("error", "'response' 필드에서 'contents' 또는 'imageLink' 값을 찾을 수 없습니다.");
+//            }
+//        } else {
+//            return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
+//        }
+//    }
 
     //LLM2
-    @PostMapping("/recipes/questions2")
+    @PostMapping("/recipes/questions")
     public Map<String, Object> ask(@RequestBody Map<String, Object> payload,
-                                          @RequestHeader("Authorization") String accessToken) {
+                                   @RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
 
         Map<String, Object> requestBody = new HashMap<>();
@@ -75,11 +75,11 @@ public class ChatBotController {
             Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
             if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
                 String contents = (String) responseBody.get("contents");
-                String content = contents.replace("\n", " ");
+                contents = contents.replace("\n", " ");
                 String imageLink = (String) responseBody.get("imageLink");
                 RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
 
-                chatBotService.saveMessage(token, recipeRequest, content);
+                chatBotService.saveMessage(token, recipeRequest, contents);
 
                 return Map.of("response", recipeResponse);
             } else {
