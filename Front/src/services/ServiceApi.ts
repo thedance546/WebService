@@ -41,7 +41,7 @@ const uploadImageToEndpoint = async <T>(
   
     try {
       const headers = getAuthHeaders('Bearer');
-      const response = await api.post<ImageDetectionResult>('/items/detection', formData, { headers });
+      const response = await api.post<ImageDetectionResult>('/items/detection2', formData, { headers });
   
       console.log('Detection API Response:', response.data);
   
