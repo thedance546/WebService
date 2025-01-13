@@ -5,6 +5,7 @@ import com.example.loginDemo.domain.*;
 import com.example.loginDemo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,13 @@ public class ChatBotService {
     public List<Message> getAllMessagesByUser(String accessToken) {
         User user = getCurrentUser(accessToken);
         return messageRepository.findByUser(user);
+    }
+
+    // 유저별 메시지 삭제
+    @Transactional
+    public void deleteAllMessagesByUser(String accessToken) {
+        User user = getCurrentUser(accessToken);
+        messageRepository.deleteByUser(user);
     }
 
     // 메시지 저장
