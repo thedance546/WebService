@@ -75,10 +75,11 @@ public class ChatBotController {
             Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
             if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
                 String contents = (String) responseBody.get("contents");
+                String content = contents.replace("\n", " ");
                 String imageLink = (String) responseBody.get("imageLink");
                 RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
 
-                chatBotService.saveMessage(token, recipeRequest, contents);
+                chatBotService.saveMessage(token, recipeRequest, content);
 
                 return Map.of("response", recipeResponse);
             } else {
