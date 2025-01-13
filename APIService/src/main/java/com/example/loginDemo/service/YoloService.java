@@ -34,7 +34,7 @@ public class YoloService {
         Map<String, String> detectionResults = sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
         // 바운딩 박스를 그린 결과 이미지 가져오기
-        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+        byte[] resultImage = sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
         // Base64로 인코딩
         String base64Image = Base64.getEncoder().encodeToString(resultImage);
