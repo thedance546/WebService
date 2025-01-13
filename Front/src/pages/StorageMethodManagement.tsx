@@ -62,7 +62,10 @@ const StorageMethodManagement: React.FC = () => {
                 <td>{method.id}</td>
                 <td>{method.storageMethodName}</td>
                 <td>
-                  <Button variant="danger" onClick={() => handleDelete(method.id)}>
+                  <Button
+                    variant="danger"
+                    onClick={() => method.id !== undefined && handleDelete(method.id)} // undefined 검증 추가
+                  >
                     삭제
                   </Button>
                 </td>

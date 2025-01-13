@@ -47,7 +47,7 @@ const CustomInfoInputModal: React.FC<CustomInfoInputModalProps> = ({ isOpen, onC
         <UserInfoForm formData={formData} setFormData={setFormData} />
         <div className="d-flex justify-content-end mt-3">
           <Button onClick={onClose} variant="secondary" className="me-2">취소</Button>
-          <Button onClick={handleSubmit} variant="primary">제출</Button>
+          <Button onClick={handleSubmit} variant="primary">저장</Button>
         </div>
       </div>
     </Modal>

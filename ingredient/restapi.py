@@ -146,15 +146,24 @@ def object_detection_image(model_name):
             result_image = draw_bounding_boxes(image.copy(), results)
             result_image_pil = Image.fromarray(result_image)
 
-            # 메모리 내에서 이미지 저장 및 반환
+            # 디버그: 결과 이미지를 디스크에 저장
+            debug_path = "/tmp/debug_output.jpg"
+            result_image_pil.save(debug_path)
+            print(f"[DEBUG] 결과 이미지가 {debug_path}에 저장되었습니다.")
+
+            # 메모리 내에서 이미지 저장
             img_io = BytesIO()
             result_image_pil.save(img_io, format='JPEG')
             img_io.seek(0)
+
+            # 디버그: 메모리 내 이미지 크기 확인
+            print(f"[DEBUG] 메모리 내 이미지 크기: {len(img_io.getvalue())} bytes")
 
             return send_file(img_io, mimetype='image/jpeg')
         else:
             return jsonify({"error": f"Model {model_name} not found"}), 404
     except Exception as e:
+        print(f"[ERROR] {e}")
         return jsonify({"error": "Internal server error", "message": str(e)}), 500
 
 if __name__ == '__main__':

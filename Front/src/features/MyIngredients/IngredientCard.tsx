@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Ingredient } from "../../types/EntityTypes";
-import { calculateDate } from "../../utils/Utils";
 import { STATUS_COLORS } from "../../constants/IngredientsNotiColor";
+import { getIconForIngredient } from "../../utils/LoadIcons";
 
 interface IngredientCardProps {
   ingredient: Ingredient;
@@ -12,61 +12,48 @@ interface IngredientCardProps {
 
 const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) => {
   const currentDate = new Date();
+  const shelfLifeDate = ingredient.shelfLife ? new Date(ingredient.shelfLife) : null;
+  const consumeByDate = ingredient.consumeBy ? new Date(ingredient.consumeBy) : null;
 
   let status = "";
   let backgroundColor = "";
-  let icon = null;
+  let badgeIcon = null;
 
-  const isShelfLifeNear = (date: string | undefined) => {
-    if (!date) return false;
-    const nearDate = new Date(calculateDate(date, -2)); // 유통기한 2일 전
-    return currentDate > nearDate && currentDate <= new Date(date);
-  };
-
-  const isConsumeByNear = (date: string | undefined) => {
-    if (!date) return false;
-    const nearDate = new Date(calculateDate(date, -2)); // 소비기한 2일 전
-    return currentDate > nearDate && currentDate <= new Date(date);
-  };
-
-  if (ingredient.shelfLife && currentDate <= new Date(ingredient.shelfLife)) {
-    // 유통기한 이내
-    status = "유통기한 이내";
+  // 조건 1: 유통기한 이전
+  if (shelfLifeDate && currentDate <= shelfLifeDate) {
+    status = "안전";
     backgroundColor = STATUS_COLORS.safe;
-  } else if (
-    ingredient.shelfLife &&
-    currentDate > new Date(ingredient.shelfLife) &&
-    ingredient.consumeBy &&
-    currentDate <= new Date(ingredient.consumeBy)
+  }
+  // 조건 2: 소비기한 이전 (유통기한 지났으나 소비기한 이전)
+  else if (
+    shelfLifeDate &&
+    consumeByDate &&
+    currentDate > shelfLifeDate &&
+    currentDate <= consumeByDate
   ) {
-    // 유통기한 경과, 소비기한 이내
-    status = "소비기한 이내";
-    backgroundColor = STATUS_COLORS.withinConsume;
-  } else if (ingredient.consumeBy && currentDate > new Date(ingredient.consumeBy)) {
-    // 소비기한 만료
-    status = "소비기한 만료";
+    status = "주의";
+    backgroundColor = STATUS_COLORS.caution;
+    badgeIcon = "⚠️"; // 경고 아이콘
+  }
+  // 조건 3: 소비기한 이후 (만료)
+  else if (consumeByDate && currentDate > consumeByDate) {
+    status = "위험";
     backgroundColor = STATUS_COLORS.expired;
-    icon = "❗"; // 경고 아이콘
+    badgeIcon = "❗"; // 위험 아이콘
   }
 
-  if (isShelfLifeNear(ingredient.shelfLife)) {
-    // 유통기한 임박
-    status = "유통기한 임박";
-    backgroundColor = STATUS_COLORS.nearShelfLife;
-    icon = "⚠️"; // 주의 아이콘
-  } else if (isConsumeByNear(ingredient.consumeBy)) {
-    // 소비기한 임박
-    status = "소비기한 임박";
-    backgroundColor = STATUS_COLORS.nearConsume;
-    icon = "⚠️"; // 주의 아이콘
-  }
+  // 이름 또는 카테고리를 기준으로 아이콘 가져오기
+  const ingredientIcon = getIconForIngredient(
+    ingredient.name,
+    ingredient.category?.categoryName
+  );
 
   return (
     <div
       className="card"
       style={{
-        width: "180px",
-        height: "135px",
+        width: "100%",
+        height: "100px",
         padding: "0.75rem",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         borderRadius: "12px",
@@ -75,32 +62,48 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
-        backgroundColor, // 상태에 따라 동적 색상 적용
-        position: "relative", // 아이콘 배치를 위한 상대 위치
+        backgroundColor,
+        position: "relative",
       }}
       onClick={onClick}
     >
-      {/* 경고 및 주의 아이콘 */}
-      {icon && (
+      {/* 경고/위험 배지 아이콘 */}
+      {badgeIcon && (
         <div
           style={{
             position: "absolute",
             top: "8px",
             right: "8px",
             fontSize: "1.5rem",
+            color: badgeIcon === "⚠️" ? "orange" : "red", // 아이콘 색상 지정
           }}
         >
-          {icon}
+          {badgeIcon}
         </div>
       )}
 
-      <h5 className="card-title">{ingredient.name}</h5>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {/* 아이콘 */}
+        {ingredientIcon && (
+          <img
+            src={ingredientIcon}
+            alt={`${ingredient.name || ingredient.category?.categoryName} 아이콘`}
+            style={{
+              width: "1em",
+              height: "1em",
+              objectFit: "contain",
+              position: "relative",
+              top: "-2px",
+            }}
+          />
+        )}
+        <h5 className="card-title">{ingredient.name}</h5>
+      </div>
+
       <p>
         <strong>수량:</strong> {ingredient.quantity}
         <br />
-        <strong>{status}</strong>
-        <br />
-        {status === "유통기한 이내" || status === "유통기한 임박" ? (
+        {status === "안전" || status === "주의" ? (
           <span>유통기한: {ingredient.shelfLife}</span>
         ) : (
           <span>소비기한: {ingredient.consumeBy}</span>

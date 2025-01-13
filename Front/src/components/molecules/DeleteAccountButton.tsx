@@ -4,7 +4,13 @@ import React from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import Button from '../atoms/Button';
 
-const DeleteAccountButton: React.FC = () => {
+
+interface DeleteAccountButtonProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+const DeleteAccountButton: React.FC<DeleteAccountButtonProps> = ({ className, style }) => {
   const { deleteAccount } = useAuthContext();
 
   const onClick = async () => {
@@ -17,7 +23,10 @@ const DeleteAccountButton: React.FC = () => {
   };
 
   return (
-    <Button onClick={onClick} className="btn btn-danger w-100">
+    <Button
+      onClick={onClick}
+      className={`btn btn-danger text-nowrap ${className}`}
+      style={style}>
       회원탈퇴
     </Button>
   );

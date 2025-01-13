@@ -1,4 +1,4 @@
-name: Build and Deploy YOLO Docker Image
+name: Build & Deploy YOLO Docker Image
 
 on:
   push:
