@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,6 +52,58 @@ public class ChatBotController {
         } else {
             return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
         }
+    }
+
+    //LLM2
+    @PostMapping("/recipes/questions2")
+    public Map<String, Object> ask(@RequestBody Map<String, Object> payload,
+                                          @RequestHeader("Authorization") String accessToken) {
+        String token = extractToken(accessToken);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("detectedIngredients", payload.get("detectedIngredients"));
+        requestBody.put("selectedStoredIngredients", payload.get("selectedStoredIngredients"));
+        requestBody.put("userPreferences", payload.get("userPreferences"));
+        requestBody.put("additionalRequest", payload.get("additionalRequest"));
+
+        String recipeRequest = generateRecipeRequestString(payload);
+
+        // Flask 서버에 요청 보내기
+        ResponseEntity<Map> response = sendRequestToFlask(LLM_RECIPE_URL, requestBody, token);
+
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
+            if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
+                String contents = (String) responseBody.get("contents");
+                String imageLink = (String) responseBody.get("imageLink");
+                RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
+
+                chatBotService.saveMessage(token, recipeRequest, contents);
+
+                return Map.of("response", recipeResponse);
+            } else {
+                return Map.of("error", "'response' 필드에서 'contents' 또는 'imageLink' 값을 찾을 수 없습니다.");
+            }
+        } else {
+            return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
+        }
+    }
+
+    public String generateRecipeRequestString(Map<String, Object> payload) {
+        // "detectedIngredients"에서 재료 이름 추출
+        List<Map<String, Object>> detectedIngredients = (List<Map<String, Object>>) payload.get("detectedIngredients");
+        if (detectedIngredients == null || detectedIngredients.isEmpty()) {
+            return "유효한 재료 목록이 없습니다.";
+        }
+
+        // 재료 이름을 콤마로 구분하여 문자열로 변환
+        String ingredients = detectedIngredients.stream()
+                .map(ingredient -> (String) ingredient.get("name"))
+                .filter(Objects::nonNull) // 이름이 null인 경우 제외
+                .collect(Collectors.joining(", "));
+
+        // 결과 문자열 생성
+        return ingredients + "로 만들 수 있는 레시피 알려줘";
     }
 
     // GPT (일반 질문 관련 요청)
