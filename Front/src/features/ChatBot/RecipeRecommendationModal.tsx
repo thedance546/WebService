@@ -13,6 +13,9 @@ import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
 import { useChatbotContext } from '../../contexts/ChatbotContext';
 import { fetchRecipeRecommendation } from '../../services/ServiceApi';
+import { Sender } from '../../types/FeatureTypes'
+import LoadingModal from '../../components/organisms/LoadingModal';
+import botAvatar from '../../assets/matjipsa_logo.webp';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
@@ -27,7 +30,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   ingredients,
   setIngredients,
 }) => {
-  const { imageData } = useChatbotContext();
+  const { imageData, addMessage } = useChatbotContext();
   const { ingredients: storedIngredients } = useIngredients();
   const [userInfo, setUserInfo] = useState<any>(null);
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
@@ -87,12 +90,29 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
       setLoading(true); // 로딩 시작
       const response = await fetchRecipeRecommendation(payload);
       console.log('레시피 추천 응답:', response);
-      alert(`추천된 레시피: ${response}`);
+
+      if (imageData) {
+        addMessage({
+          sender: Sender.User,
+          text: '',
+          attachedImage: imageData,
+        });
+      }
+
+      if (response) {
+        addMessage({
+          sender: Sender.Bot,
+          text: response.contents,
+          profileImage: botAvatar,
+          formatted: true,
+        });
+      }
+
     } catch (error) {
       console.error('레시피 추천 요청 실패:', error);
       alert('레시피 추천 요청 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false); // 로딩 종료
+      setLoading(false);
       onClose();
     }
   };
@@ -100,39 +120,43 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <FullScreenOverlay title="레시피 추천 받기" onClose={onClose}>
-      <div className="mb-3">
-        {imageData ? (
-          <ImagePreview
-            src={imageData}
-            alt="탐지된 이미지"
-            style={{ height: '400px', width: '100%' }}
-          />
-        ) : (
-          <p>이미지가 없습니다.</p>
-        )}
-      </div>
+    <>
+      <FullScreenOverlay title="레시피 추천 받기" onClose={onClose}>
+        <div className="mb-3">
+          {imageData ? (
+            <ImagePreview
+              src={imageData}
+              alt="탐지된 이미지"
+              style={{ height: '400px', width: '100%' }}
+            />
+          ) : (
+            <p>이미지가 없습니다.</p>
+          )}
+        </div>
 
-      <EditIngredientForm ingredients={ingredients} onIngredientsChange={setIngredients} />
-      <StoredIngredientsList
-        ingredients={storedIngredients}
-        onSelectionChange={setSelectedIngredients}
-      />
-      {userInfo && <UserPreferencesCard userInfo={userInfo} />}
-      <div className="mt-3">
-        <h5>추가 요청사항</h5>
-        <Input
-          value={additionalRequest}
-          onChange={(e) => setAdditionalRequest(e.target.value)}
-          placeholder="ex) 어떤 재료를 많이 써줘, 매운맛이 강한 음식 추천 등"
+        <EditIngredientForm ingredients={ingredients} onIngredientsChange={setIngredients} />
+        <StoredIngredientsList
+          ingredients={storedIngredients}
+          onSelectionChange={setSelectedIngredients}
         />
-      </div>
-      <div className="mt-4 d-flex justify-content-end">
-        <Button variant="primary" onClick={handleSubmit} disabled={loading}>
-          {loading ? '요청 중...' : '레시피 추천 받기'}
-        </Button>
-      </div>
-    </FullScreenOverlay>
+        {userInfo && <UserPreferencesCard userInfo={userInfo} />}
+        <div className="mt-3">
+          <h5>추가 요청사항</h5>
+          <Input
+            value={additionalRequest}
+            onChange={(e) => setAdditionalRequest(e.target.value)}
+            placeholder="ex) 어떤 재료를 많이 써줘, 매운맛이 강한 음식 추천 등"
+          />
+        </div>
+        <div className="mt-4 d-flex justify-content-end">
+          <Button variant="primary" onClick={handleSubmit} disabled={loading}>
+            {loading ? '요청 중...' : '레시피 추천 받기'}
+          </Button>
+        </div>
+      </FullScreenOverlay>
+
+      {loading && <LoadingModal />} {/* 로딩 모달 조건부 렌더링 */}
+    </>
   );
 };
 

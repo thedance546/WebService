@@ -10,12 +10,11 @@ import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
 import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
-import { Sender } from '../types/FeatureTypes';
 import { useChatbotContext } from '../contexts/ChatbotContext';
 import { Ingredient } from '../types/EntityTypes';
 
 const ChatBotPage: React.FC = () => {
-  const { imageData, setImageData, messages, addMessage, clearMessages } = useChatbotContext();
+  const { messages, clearMessages } = useChatbotContext();
 
   const optionsModal = usePopupState({ isOpen: false });
   const uploadModal = usePopupState({
@@ -33,14 +32,6 @@ const ChatBotPage: React.FC = () => {
   const customInfoModal = usePopupState({ isOpen: false });
 
   const handleRecommendModalClose = () => {
-    if (imageData) {
-      addMessage({
-        sender: Sender.User,
-        text: '',
-        attachedImage: imageData,
-      });
-      setImageData(null);
-    }
     recommendModal.close();
   };
 
