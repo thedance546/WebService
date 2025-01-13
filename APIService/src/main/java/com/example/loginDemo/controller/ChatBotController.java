@@ -100,6 +100,14 @@ public class ChatBotController {
         return ResponseEntity.ok(chatMessageDTOs);
     }
 
+    // 유저별 메시지 삭제
+    @DeleteMapping("/messages")
+    public ResponseEntity<Void> deleteAllMessages(@RequestHeader("Authorization") String accessToken) {
+        String token = extractToken(accessToken);
+        chatBotService.deleteAllMessagesByUser(token);
+        return ResponseEntity.noContent().build();
+    }
+
     // 공통 요청 처리 메서드
     private ResponseEntity<Map> sendRequestToFlask(String url, Map<String, Object> requestBody, String accessToken) {
         HttpHeaders headers = createHeaders(accessToken);
