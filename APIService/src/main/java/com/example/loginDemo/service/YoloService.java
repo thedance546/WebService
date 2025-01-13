@@ -42,7 +42,7 @@ public class YoloService {
         return new DetectionResponse(detectionResults, imageDataUri);
     }
 
-    private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
+    public byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
