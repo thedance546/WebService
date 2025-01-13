@@ -6,7 +6,7 @@ import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
 import { detectObjectsInImage } from '../../services/ServiceApi';
 import { Ingredient } from '../../types/EntityTypes';
-import { useImageContext } from '../../contexts/ChatbotContext';
+import { useChatbotContext } from '../../contexts/ChatbotContext';
 
 interface IngredientUploadModalProps {
   isOpen: boolean;
@@ -34,7 +34,7 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
   openDetectionModal,
   setIngredients,
 }) => {
-  const { setImageData } = useImageContext(); // Context 사용
+  const { setImageData } = useChatbotContext(); // Context 사용
 
   const handleFileChange = (file: File) => {
     setState((prevState) => ({ ...prevState, selectedFile: file }));
@@ -63,7 +63,6 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
         ...prevState,
         detectionResult: detectionResults,
       }));
-      console.log('Updated state.previewUrl:', imageData);
   
       openDetectionModal();
       onClose();

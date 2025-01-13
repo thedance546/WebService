@@ -6,7 +6,7 @@ import { Message } from '../types/FeatureTypes';
 
 interface ChatbotContextType {
     imageData: string | null;
-    setImageData: (data: string) => void;
+    setImageData: (data: string | null) => void;
     messages: Message[];
     setMessages: (messages: Message[]) => void;
     loadMessages: () => Promise<void>;
@@ -42,20 +42,16 @@ export const ChatbotProvider: React.FC<ChatbotProviderProps> = ({ children }) =>
     );
 };
 
-// 기존 useChatbotContext
-export const useChatbotContext = (): ChatbotContextType => {
+export const useChatbotContext = (): {
+    imageData: string | null;
+    setImageData: (data: string | null) => void;
+  } => {
     const context = useContext(ChatbotContext);
     if (!context) {
-        throw new Error('useChatbotContext must be used within a ChatbotProvider');
+      throw new Error('useChatbotContext는 ChatbotProvider 내에서 사용해야 합니다.');
     }
-    return context;
-};
-
-// 복원된 useImageContext
-export const useImageContext = (): { imageData: string | null; setImageData: (data: string) => void } => {
-    const context = useContext(ChatbotContext);
-    if (!context) {
-        throw new Error('useImageContext must be used within a ChatbotProvider');
-    }
-    return { imageData: context.imageData, setImageData: context.setImageData };
-};
+    return {
+      imageData: context.imageData,
+      setImageData: context.setImageData,
+    };
+  };

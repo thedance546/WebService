@@ -11,14 +11,13 @@ import { Ingredient } from '../../types/EntityTypes';
 import { StorageKeys } from '../../constants/StorageKey';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
-import { useImageContext } from '../../contexts/ChatbotContext';
+import { useChatbotContext } from '../../contexts/ChatbotContext';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
   onClose: () => void;
   ingredients: Ingredient[];
   setIngredients: React.Dispatch<React.SetStateAction<Ingredient[]>>;
-  detectedImageSrc?: string;
 }
 
 const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
@@ -26,9 +25,8 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   onClose,
   ingredients,
   setIngredients,
-  detectedImageSrc,
 }) => {
-  const { imageData } = useImageContext();
+  const { imageData } = useChatbotContext();
   const { ingredients: storedIngredients } = useIngredients();
   const [userInfo, setUserInfo] = useState<any>(null);
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
@@ -39,8 +37,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
     if (savedData) {
       setUserInfo(JSON.parse(savedData));
     }
-    console.log('Received detectedImageSrc in RecipeRecommendationModal:', detectedImageSrc);
-  }, [detectedImageSrc]);
+  }, []);
 
   const handleSubmit = () => {
     if (!userInfo) {
@@ -97,7 +94,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
         {imageData ? (
           <ImagePreview
             src={imageData}
-            alt="탐지된 이미지 미리보기"
+            alt="탐지된 이미지"
             style={{ height: '400px', width: '100%' }}
           />
         ) : (
