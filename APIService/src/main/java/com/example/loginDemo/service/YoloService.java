@@ -56,6 +56,18 @@ public class YoloService {
         return new ResponseEntity<>(resultImage, headers, HttpStatus.OK);
     }
 
+    //바운딩 요청
+    public byte[] b(MultipartFile imageFile) throws IOException {
+        // 객체 감지 결과 가져오기
+        Map<String, String> detectionResults = sendPostRequest(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+
+        // 바운딩 박스를 그린 결과 이미지 가져오기
+        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+
+        return resultImage;
+    }
+
+
 
     private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();

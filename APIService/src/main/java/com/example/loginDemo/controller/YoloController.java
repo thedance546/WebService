@@ -40,6 +40,23 @@ public class YoloController {
         }
     }
 
+    //바운딩3
+    @PostMapping("/items/detection3")
+    public ResponseEntity<byte[]> b(@RequestParam("image") MultipartFile imageFile) {
+        try {
+            // 바운딩 박스 그린 결과 이미지 가져오기
+            byte[] resultImage = yoloService.b(imageFile);
+
+            // 이미지 결과를 byte[] 형태로 반환
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG) // 결과가 JPEG 이미지라고 가정
+                    .body(resultImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);  // 오류 처리
+        }
+    }
+
 
     // receipt
     @PostMapping("/receipts")
