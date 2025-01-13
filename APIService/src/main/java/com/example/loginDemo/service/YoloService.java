@@ -44,6 +44,19 @@ public class YoloService {
         return new DetectionResponse(detectionResults, imageDataUri);
     }
 
+    //바운딩
+    public ResponseEntity<byte[]> b(MultipartFile imageFile) throws IOException {
+        // 바운딩 박스를 그린 결과 이미지 가져오기
+        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+
+        // 이미지 반환을 byte[]로 바로 리턴
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);  // 이미지를 JPEG로 지정
+
+        return new ResponseEntity<>(resultImage, headers, HttpStatus.OK);
+    }
+
+
     // ocr
     public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
         Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());

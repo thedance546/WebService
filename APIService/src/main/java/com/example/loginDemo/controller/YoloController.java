@@ -29,6 +29,12 @@ public class YoloController {
         }
     }
 
+    //바운딩
+    @PostMapping("/items/detection2")
+    public ResponseEntity<byte[]> getBoundingBoxImage(@RequestParam("image") MultipartFile imageFile) throws IOException {
+        return yoloService.b(imageFile);
+    }
+
     // receipt
     @PostMapping("/receipts")
     public ResponseEntity<ReceiptResponse> processImage(@RequestParam("image") MultipartFile imageFile) {
