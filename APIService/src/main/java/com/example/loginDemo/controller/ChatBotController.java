@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
 public class ChatBotController {
-    private static final String LLM_GENERAL_URL = "http://llm-container:5002/ask/general";
-    private static final String LLM_RECIPE_URL = "http://llm-container:5002/ask/recipe";
+    private static final String LLM_GENERAL_URL = "http://llm-flask:5002/ask/general";
+    private static final String LLM_RECIPE_URL = "http://llm-flask:5002/ask/recipe";
     private final ChatBotService chatBotService;
 
     // 공통된 Flask 서버로의 요청 처리 메서드
