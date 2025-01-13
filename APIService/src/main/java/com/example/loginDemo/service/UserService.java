@@ -14,10 +14,6 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

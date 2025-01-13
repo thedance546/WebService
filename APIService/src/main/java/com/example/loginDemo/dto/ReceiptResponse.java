@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReceiptResponse {
-    private LocalDate purchaseDate; // 구매일자
-    private List<String> matchedItems; // 매칭된 아이템들
+    private LocalDate purchaseDate;
+    private List<String> matchedItems;
 }

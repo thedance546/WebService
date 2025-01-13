@@ -103,8 +103,8 @@ const RegisterPage: React.FC = () => {
           />
         </div>
         <div className="d-flex justify-content-between mt-3">
-          <BackButton />
-          <Button type="submit" className="btn btn-success w-50 ms-2" disabled={loading}>
+          <BackButton className="btn btn-light" />
+          <Button type="submit" className="btn w-50 ms-2" variant="success" disabled={loading}>
             회원가입
           </Button>
         </div>

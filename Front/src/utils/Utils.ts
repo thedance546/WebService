@@ -37,3 +37,11 @@ export const parseDate = (input: string): string | null => {
 
   return null;
 };
+
+// 로컬 날짜 형식으로 변환하는 함수
+export const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear(); // 로컬 연도
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 로컬 월
+  const day = String(date.getDate()).padStart(2, '0'); // 로컬 일
+  return `${year}-${month}-${day}`;
+};

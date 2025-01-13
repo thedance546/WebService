@@ -61,7 +61,10 @@ const CategoryManagement: React.FC = () => {
                 <td>{category.id}</td>
                 <td>{category.categoryName}</td>
                 <td>
-                  <Button variant="danger" onClick={() => handleDelete(category.id)}>
+                  <Button
+                    variant="danger"
+                    onClick={() => category.id !== undefined && handleDelete(category.id)} // undefined 검증 추가
+                  >
                     삭제
                   </Button>
                 </td>

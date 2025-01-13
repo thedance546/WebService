@@ -36,3 +36,27 @@ export interface UserInfoFormProps {
   };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
+
+export interface OrderItem {
+  itemName: string;
+  count: number;
+  category?: string; // 직접 추가에서만 사용
+  storageMethod?: string; // 직접 추가에서만 사용
+  sellByDays?: number; // 직접 추가에서만 사용
+  useByDays?: number; // 직접 추가에서만 사용
+}
+
+export interface OrderRequest {
+  orderDate: string;
+  orderItems: OrderItem[];
+}
+
+export interface ImageDetectionResult {
+  detectionResults: Record<string, string>; // 식재료 이름과 수량
+  imageData: string; // base64 이미지 데이터
+}
+
+export interface ReceiptRecognitionResult {
+  purchaseDate: string; // 구매 날짜
+  matchedItems: string[]; // 인식된 아이템 리스트
+}

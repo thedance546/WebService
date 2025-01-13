@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import Button from '../../components/atoms/Button';
-import Input from '../../components/atoms/Input';
 import FullScreenOverlay from '../../components/molecules/FullScreenOverlay';
 import EditIngredientForm from '../../components/organisms/EditIngredientForm';
 import LoadingModal from '../../components/organisms/LoadingModal';
-import useDateInput from '../../hooks/useDateInput';
 import { Ingredient } from '../../types/EntityTypes';
-import { createOrder } from '../../services/ServiceApi';
-import { useIngredients } from "../../contexts/IngredientsContext";
+import { createReceiptsOrder } from '../../services/ServiceApi';
+import { useIngredients } from '../../contexts/IngredientsContext';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { formatLocalDate } from '../../utils/Utils';
 
 interface AddIngredientModalProps {
   matchedItems: string[];
@@ -24,12 +25,21 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
 }) => {
   const { refreshIngredients } = useIngredients();
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const purchaseDateInput = useDateInput(initialPurchaseDate);
+  const [isLoading] = useState(false);
+
+  const parseDate = (dateString: string | undefined): Date | null => {
+    if (!dateString) return null;
+    const parsedDate = new Date(dateString);
+    return isNaN(parsedDate.getTime()) ? null : parsedDate;
+  };
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    parseDate(initialPurchaseDate)
+  );
 
   useEffect(() => {
-    const initialIngredients = matchedItems.map((item) => ({
-      ingredientId: Date.now() + Math.random(),
+    const initialIngredients = matchedItems.map((item, index) => ({
+      ingredientId: Date.now() + index,
       name: item,
       quantity: 1,
     }));
@@ -37,59 +47,55 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
   }, [matchedItems]);
 
   const handleConfirm = async () => {
-    const parsedPurchaseDate = purchaseDateInput.getParsedValue();
-
-    if (!parsedPurchaseDate) {
-      alert('구매일자를 입력해주세요.');
+    if (!selectedDate) {
+      alert('구매일자를 선택해주세요.');
       return;
     }
-
+  
     const validItems = ingredients.filter((item) => item.name.trim() !== '');
     if (validItems.length === 0) {
       alert('추가할 유효한 항목이 없습니다.');
       return;
     }
-
+  
     const orderData = {
-      orderDate: parsedPurchaseDate,
+      orderDate: formatLocalDate(selectedDate), // 로컬 시간대 기준 포맷
       orderItems: validItems.map((item) => ({
         itemName: item.name,
         count: item.quantity,
       })),
     };
-
-    setIsLoading(true);
-
+  
+    console.log('Final Order Data:', orderData);
+  
     try {
-      await createOrder(orderData);
+      await createReceiptsOrder(orderData);
       await refreshIngredients();
       onClose();
     } catch (error) {
-      if (error instanceof Error) {
-        console.error('식재료 등록 실패:', error.message);
-        alert(`식재료 등록에 실패했습니다. 오류: ${error.message}`);
-      } else {
-        console.error('식재료 등록 실패: 알 수 없는 오류');
-        alert('식재료 등록에 실패했습니다. 알 수 없는 오류입니다.');
-      }
-    } finally {
-      setIsLoading(false);
+      console.error('식재료 등록 실패:', error);
+      alert('등록에 실패했습니다.');
     }
-  };
+  };  
 
   return (
     <>
       {isLoading && <LoadingModal />}
       <FullScreenOverlay title="인식된 식재료" onClose={onClose}>
         <div className="mb-3">
-          <label htmlFor="purchaseDate" className="form-label fw-bold">구매일자</label>
-          <Input
-            type="text"
-            id="purchaseDate"
-            value={purchaseDateInput.value}
-            onChange={purchaseDateInput.onChange}
-            onBlur={purchaseDateInput.onBlur}
+          <label
+            htmlFor="purchaseDate"
+            className="form-label fw-bold"
+            style={{ marginRight: '15px' }}
+          >
+            구매일자
+          </label>
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            dateFormat="yyyy-MM-dd"
             className="form-control"
+            placeholderText="날짜를 선택하세요"
           />
         </div>
 
@@ -98,7 +104,7 @@ const AddIngredientModal: React.FC<AddIngredientModalProps> = ({
           onIngredientsChange={setIngredients}
         />
 
-        <div className="d-flex justify-content-end mt-3">
+        <div className="d-flex justify-content-end mt-3 gap-2">
           <Button variant="success" onClick={handleConfirm}>
             확인
           </Button>

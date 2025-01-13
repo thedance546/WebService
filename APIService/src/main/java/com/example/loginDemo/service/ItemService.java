@@ -24,8 +24,8 @@ public class ItemService {
     private final StorageMethodRepository storageMethodRepository;
     private final ShelfLifeRepository shelfLifeRepository;
 
+    @Transactional
     public Item createItem(ItemRequest itemRequest) {
-        // 중복된 itemName이 존재하는지 확인
         if (itemRepository.existsByItemName(itemRequest.getItemName())) {
             throw new IllegalArgumentException("이미 존재하는 식재료 이름입니다.");
         }
@@ -47,16 +47,6 @@ public class ItemService {
 
     public void deleteItem(Long id) {
         itemRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void deleteItemsByCategoryId(Long categoryId) {
-        itemRepository.deleteByCategoryId(categoryId);
-    }
-
-    @Transactional
-    public void deleteItemsByStorageMethodId(Long storageMethodId) {
-        itemRepository.deleteByStorageMethodId(storageMethodId);
     }
 
 }

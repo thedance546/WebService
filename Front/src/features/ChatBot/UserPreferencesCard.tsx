@@ -19,7 +19,7 @@ const UserPreferencesCard: React.FC<UserPreferencesCardProps> = ({ userInfo }) =
             {userInfo.foodCategories.join(', ')} 
             {userInfo.customFoodCategory ? `, ${userInfo.customFoodCategory}` : ''}
           </p>
-          <p><strong>알레르기:</strong> 
+          <p><strong>알레르기 및 기피재료:</strong> 
             {userInfo.allergies.join(', ')} 
             {userInfo.customAllergy ? `, ${userInfo.customAllergy}` : ''}
           </p>

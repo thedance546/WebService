@@ -44,9 +44,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders;
-
     @Builder
     public User(String username, String email, String password, Role role) {
         this.username = username;

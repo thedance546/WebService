@@ -13,12 +13,14 @@ interface IngredientUploadModalProps {
   state: {
     selectedFile: File | null;
     detectionResult: any;
+    previewUrl: string | null;
     loading: boolean;
   };
   setState: React.Dispatch<
     React.SetStateAction<{
       selectedFile: File | null;
       detectionResult: any;
+      previewUrl: string | null;
       loading: boolean;
     }>
   >;
@@ -27,7 +29,6 @@ interface IngredientUploadModalProps {
 }
 
 const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
-  isOpen,
   onClose,
   state,
   setState,
@@ -43,26 +44,38 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
       alert('이미지를 업로드해주세요.');
       return;
     }
-
+  
     setState((prevState) => ({ ...prevState, loading: true }));
-
+  
     try {
-      const detectionResult = await detectObjectsInImage(state.selectedFile);
-      const parsedIngredients = Object.entries(detectionResult).map(([name, quantity]) => ({
-        ingredientId: 0,
+      const { detectionResults, imageData } = await detectObjectsInImage(state.selectedFile);
+  
+      console.log('Received imageData:', imageData); // 로그로 이미지 데이터 확인
+  
+      const parsedIngredients = Object.entries(detectionResults).map(([name, quantity]) => ({
+        ingredientId: Date.now() + Math.floor(Math.random() * 1000), // 고유 ID 생성
         name,
-        quantity: parseInt(quantity as string, 10),
+        quantity: parseInt(quantity, 10),
       }));
+  
       setIngredients(parsedIngredients);
+      setState((prevState) => ({
+        ...prevState,
+        detectionResult: detectionResults,
+        previewUrl: imageData, // API에서 받은 이미지를 previewUrl로 저장
+      }));
+  
       openDetectionModal();
       onClose();
     } catch (error) {
-      console.error(error);
-      alert('탐지 중 오류가 발생했습니다.');
+      console.error('Detection failed:', error);
+      alert('이미지 인식 중 오류가 발생했습니다.');
     } finally {
       setState((prevState) => ({ ...prevState, loading: false }));
     }
   };
+  
+
 
   return (
     <Modal title="레시피 추천 받기" onClose={onClose}>
