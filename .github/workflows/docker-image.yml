@@ -28,12 +28,3 @@ jobs:
         docker buildx build --no-cache --push \
           -t ${{ secrets.LLM_DOCKER_USERNAME }}/llm_flask:v1.1 \
           ./LLM/LLM_run
-
-    # 4. Docker 컨테이너 실행
-    - name: Run Docker Container
-      run: |
-        docker run -d --name llm-container \
-          -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
-          -e WEAVIATE_URL=${{ secrets.WEAVIATE_URL }} \
-          -p 5002:5002 \
-          ${{ secrets.LLM_DOCKER_USERNAME }}/llm_flask:v1.1
