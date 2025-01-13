@@ -27,7 +27,7 @@ jobs:
       run: |
         docker buildx build --no-cache --push \
           -t ${{ secrets.LLM_DOCKER_USERNAME }}/llm_flask:v1.1 \
-          ./LLM_run
+          ./LLM/LLM_run
 
     # 4. Docker 컨테이너 실행
     - name: Run Docker Container
