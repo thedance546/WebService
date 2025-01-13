@@ -28,20 +28,6 @@ public class YoloService {
     private final String Bounding_URL = "http://yolo-container:5000/object-detection/object_detection/image";
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
-    public boolean pingBoundingServer() {
-        try {
-            // Send a GET request to the server
-            ResponseEntity<String> response = restTemplate.getForEntity(Bounding_URL, String.class);
-
-            // If the response status is 200 OK, return true
-            return response.getStatusCode() == HttpStatus.OK;
-        } catch (Exception e) {
-            // If any exception occurs (e.g., server is not reachable), return false
-            System.err.println("Error pinging server: " + e.getMessage());
-            return false;
-        }
-    }
-
     //인식+바운딩
     public DetectionResponse detectAndReturn(MultipartFile imageFile) throws IOException {
         // 객체 감지 결과 가져오기
@@ -59,28 +45,12 @@ public class YoloService {
     }
 
     //바운딩 바이너리
-    public ResponseEntity<byte[]> getResultImage(MultipartFile imageFile) throws IOException {
-        // 바운딩 박스를 그린 결과 이미지 가져오기
-        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-
-        // Content-Type을 image/jpeg로 설정하여 반환
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-
-        return new ResponseEntity<>(resultImage, headers, HttpStatus.OK);
-    }
-
-    //바운딩 요청
-    public byte[] b(MultipartFile imageFile) throws IOException {
-        // 객체 감지 결과 가져오기
-        Map<String, String> detectionResults = sendPostRequest(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-
-        // 바운딩 박스를 그린 결과 이미지 가져오기
+    public byte[] sendBoundingImage(MultipartFile imageFile) throws IOException {
+        // 바운딩 요청을 보내고 결과 이미지 받기
         byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
         return resultImage;
     }
-
 
 
     private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {

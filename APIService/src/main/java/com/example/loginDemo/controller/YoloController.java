@@ -19,17 +19,6 @@ import java.util.*;
 public class YoloController {
     private final YoloService yoloService;
 
-    @GetMapping("/items/ping")
-    public ResponseEntity<String> pingBoundingServer() {
-        boolean isServerReachable = yoloService.pingBoundingServer();
-
-        if (isServerReachable) {
-            return new ResponseEntity<>("Bounding server is reachable", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Bounding server is not reachable", HttpStatus.SERVICE_UNAVAILABLE);
-        }
-    }
-
     //ingredient
     @PostMapping("/items/detection")
     public ResponseEntity<DetectionResponse> detectAndReturn(@RequestParam("image") MultipartFile imageFile) {
@@ -43,28 +32,20 @@ public class YoloController {
 
     //바운딩2
     @PostMapping("/items/detection2")
-    public ResponseEntity<byte[]> getResultImage(@RequestParam("image") MultipartFile imageFile) {
+    public ResponseEntity<byte[]> sendBoundingImage(@RequestParam("image") MultipartFile imageFile) {
         try {
-            return yoloService.getResultImage(imageFile);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+            // 이미지를 보내고 바운딩 박스를 그린 결과 이미지 받기
+            byte[] resultImage = yoloService.sendBoundingImage(imageFile);
 
-    //바운딩3
-    @PostMapping("/items/detection3")
-    public ResponseEntity<byte[]> b(@RequestParam("image") MultipartFile imageFile) {
-        try {
-            // 바운딩 박스 그린 결과 이미지 가져오기
-            byte[] resultImage = yoloService.b(imageFile);
+            // Content-Type을 image/jpeg로 설정하여 반환
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.IMAGE_JPEG);
 
-            // 이미지 결과를 byte[] 형태로 반환
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG) // 결과가 JPEG 이미지라고 가정
-                    .body(resultImage);
+            return new ResponseEntity<>(resultImage, headers, HttpStatus.OK);
+
         } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null);  // 오류 처리
+            // 예외 처리: 실패 시 500 에러 반환
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
