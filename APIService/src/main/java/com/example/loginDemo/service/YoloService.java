@@ -64,6 +64,11 @@ public class YoloService {
         // '품목' 추출
         List<String> items = (List<String>) response.get("품목");
 
+        // '품목'이 null인 경우 예외 처리
+        if (items == null) {
+            throw new IllegalArgumentException("영수증에서 인식된 내역이 없습니다.");
+        }
+
         // 아이템 매칭
         Set<String> matchedItemsSet = matchItems(items);
 
