@@ -19,6 +19,17 @@ import java.util.*;
 public class YoloController {
     private final YoloService yoloService;
 
+    @GetMapping("/items/ping")
+    public ResponseEntity<String> pingBoundingServer() {
+        boolean isServerReachable = yoloService.pingBoundingServer();
+
+        if (isServerReachable) {
+            return new ResponseEntity<>("Bounding server is reachable", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Bounding server is not reachable", HttpStatus.SERVICE_UNAVAILABLE);
+        }
+    }
+
     //ingredient
     @PostMapping("/items/detection")
     public ResponseEntity<DetectionResponse> detectAndReturn(@RequestParam("image") MultipartFile imageFile) {
