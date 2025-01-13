@@ -80,6 +80,18 @@ public class YoloService {
         return new ReceiptResponse(purchaseDate, matchedItems);
     }
 
+    //ocr2
+    public List<String> ocr(MultipartFile imageFile) throws IOException {
+        Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+
+        // '품목' 추출
+        List<String> items = (List<String>) response.get("품목");
+
+        // 품목 리스트만 리턴
+        return items;
+    }
+
+
     //메서드
     private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
