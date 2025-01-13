@@ -27,6 +27,7 @@ public class YoloService {
     private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
+    //인식+바운딩
     public DetectionResponse detectAndReturn(MultipartFile imageFile) throws IOException {
         // 객체 감지 결과 가져오기
         Map<String, String> detectionResults = sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
@@ -34,27 +35,28 @@ public class YoloService {
         // 바운딩 박스를 그린 결과 이미지 가져오기
         byte[] resultImage = sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
-        // 디버깅: 반환된 이미지 크기 출력
-        System.out.println("바운딩 박스 이미지 크기(byte): " + resultImage.length);
-
         // Base64로 인코딩
         String base64Image = Base64.getEncoder().encodeToString(resultImage);
-
-        // 디버깅: Base64 문자열 길이 출력
-        System.out.println("Base64 인코딩된 이미지 길이: " + base64Image.length());
-
-        // Base64 URI 생성
         String imageDataUri = "data:image/jpeg;base64," + base64Image;
-
-        // 디버깅: Base64 URI 출력
-        System.out.println("Base64 URI: " + imageDataUri.substring(0, 100) + "...");
 
         // DTO 생성하여 반환
         return new DetectionResponse(detectionResults, imageDataUri);
     }
 
+    //바운딩 바이너리
+    public ResponseEntity<byte[]> getResultImage(MultipartFile imageFile) throws IOException {
+        // 바운딩 박스를 그린 결과 이미지 가져오기
+        byte[] resultImage = sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
-    private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
+        // Content-Type을 image/jpeg로 설정하여 반환
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+
+        return new ResponseEntity<>(resultImage, headers, HttpStatus.OK);
+    }
+
+
+    public byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -69,11 +71,9 @@ public class YoloService {
         HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
 
         try {
-            // Flask 서버에 이미지 요청 및 응답 수신
+            // 이미지 반환을 byte[]로 받기
             ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
-
             if (response.getStatusCode() == HttpStatus.OK) {
-                System.out.println("Flask 서버로부터 받은 이미지 크기: " + response.getBody().length);
                 return response.getBody();
             } else {
                 throw new RuntimeException("요청 실패: 상태 코드 " + response.getStatusCode());
@@ -82,7 +82,6 @@ public class YoloService {
             throw new RuntimeException("Flask 서버와의 통신에 실패했습니다.", e);
         }
     }
-
 
     // ocr
     public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
@@ -152,8 +151,6 @@ public class YoloService {
         try {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                // 디버깅: 반환된 JSON 데이터 확인
-                System.out.println("Flask 서버에서 반환된 데이터: " + response.getBody());
                 return response.getBody();
             } else {
                 throw new RuntimeException("요청 실패: 상태 코드 " + response.getStatusCode());

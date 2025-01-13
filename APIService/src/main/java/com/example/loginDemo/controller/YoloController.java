@@ -30,6 +30,17 @@ public class YoloController {
         }
     }
 
+    //바운딩2
+    @PostMapping("/items/detection2")
+    public ResponseEntity<byte[]> getResultImage(@RequestParam("image") MultipartFile imageFile) {
+        try {
+            return yoloService.getResultImage(imageFile);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
     // receipt
     @PostMapping("/receipts")
     public ResponseEntity<ReceiptResponse> processImage(@RequestParam("image") MultipartFile imageFile) {
