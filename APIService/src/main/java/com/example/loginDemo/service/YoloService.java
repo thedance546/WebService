@@ -25,6 +25,7 @@ public class YoloService {
 //    private final String Ingredient_URL = "http://yolo-container-:5000/object-detection/object_detection";
 //    private final String Receipt_URL = "http://receipt-container-:5001/ocr-detection";
     private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
+    private final String Bounding_URL = "http://yolo-container:5000/object-detection/object_detection/image";
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
     //인식+바운딩
@@ -33,7 +34,7 @@ public class YoloService {
         Map<String, String> detectionResults = sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
         // 바운딩 박스를 그린 결과 이미지 가져오기
-        byte[] resultImage = sendPostRequestImage(Ingredient_URL+"/image", imageFile.getBytes(), imageFile.getOriginalFilename());
+        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
         // Base64로 인코딩
         String base64Image = Base64.getEncoder().encodeToString(resultImage);
@@ -46,7 +47,7 @@ public class YoloService {
     //바운딩 바이너리
     public ResponseEntity<byte[]> getResultImage(MultipartFile imageFile) throws IOException {
         // 바운딩 박스를 그린 결과 이미지 가져오기
-        byte[] resultImage = sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
         // Content-Type을 image/jpeg로 설정하여 반환
         HttpHeaders headers = new HttpHeaders();
