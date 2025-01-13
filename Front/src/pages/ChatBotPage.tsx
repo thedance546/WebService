@@ -1,6 +1,6 @@
 // src/pages/ChatBotPage.tsx
 
-import React, { useState } from 'react';
+import React from 'react';
 import CommonHeader from "../components/organisms/CommonHeader";
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
@@ -10,25 +10,12 @@ import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
 import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
-import { Message, Sender } from '../types/FeatureTypes';
-import { Ingredient } from '../types/EntityTypes';
-import botAvatar from '../assets/matjipsa_logo.webp';
+import { Sender } from '../types/FeatureTypes';
 import { useChatbotContext } from '../contexts/ChatbotContext';
+import { Ingredient } from '../types/EntityTypes';
 
 const ChatBotPage: React.FC = () => {
-  const initialMessage: Message[] = [
-    { sender: Sender.Bot, text: '안녕하세요! 맛집사 챗봇입니다!\n식재료 정보나 관리에 대해 물어보세요\nAI 레시피 추천은 옵션에서 할 수 있습니다', profileImage: botAvatar },
-  ];
-  const { imageData, setImageData } = useChatbotContext();
-
-  const [messages, setMessages] = useState<Message[]>(() => {
-    const savedMessages = localStorage.getItem('chatMessages');
-    return savedMessages ? JSON.parse(savedMessages) : initialMessage;
-  });
-
-  const addMessage = (message: Message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
-  };
+  const { imageData, setImageData, messages, addMessage, clearMessages } = useChatbotContext();
 
   const optionsModal = usePopupState({ isOpen: false });
   const uploadModal = usePopupState({
@@ -36,28 +23,25 @@ const ChatBotPage: React.FC = () => {
     detectionResult: null as any,
     loading: false,
   });
-  const recommendModal = usePopupState({
+  const recommendModal = usePopupState<{
+    isOpen: boolean;
+    ingredients: Ingredient[];
+  }>({
     isOpen: false,
-    ingredients: [] as Ingredient[],
+    ingredients: [],
   });
   const customInfoModal = usePopupState({ isOpen: false });
 
-  const clearMessages = () => {
-    setMessages(initialMessage);
-    localStorage.removeItem('chatMessages');
-  };
-
   const handleRecommendModalClose = () => {
     if (imageData) {
-      // 채팅에 이미지 추가
       addMessage({
         sender: Sender.User,
-        text: '', // 텍스트는 비워둠
-        attachedImage: imageData, // 컨텍스트의 이미지 사용
+        text: '',
+        attachedImage: imageData,
       });
-      setImageData(''); // 이미지 초기화
+      setImageData(null);
     }
-    recommendModal.close(); // 모달 닫기
+    recommendModal.close();
   };
 
   return (
@@ -66,11 +50,7 @@ const ChatBotPage: React.FC = () => {
 
       <ChatMessages messages={messages} />
 
-      <ChatInput
-        addMessage={addMessage}
-        toggleOptions={optionsModal.open}
-        disabled={optionsModal.isOpen}
-      />
+      <ChatInput toggleOptions={optionsModal.open} disabled={optionsModal.isOpen} />
 
       <OptionsModal
         isOpen={optionsModal.isOpen}
