@@ -6,6 +6,7 @@ import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
 import { detectObjectsInImage } from '../../services/ServiceApi';
 import { Ingredient } from '../../types/EntityTypes';
+import { useImageContext } from '../../contexts/ChatbotContext';
 
 interface IngredientUploadModalProps {
   isOpen: boolean;
@@ -13,14 +14,12 @@ interface IngredientUploadModalProps {
   state: {
     selectedFile: File | null;
     detectionResult: any;
-    previewUrl: string | null;
     loading: boolean;
   };
   setState: React.Dispatch<
     React.SetStateAction<{
       selectedFile: File | null;
       detectionResult: any;
-      previewUrl: string | null;
       loading: boolean;
     }>
   >;
@@ -35,6 +34,8 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
   openDetectionModal,
   setIngredients,
 }) => {
+  const { setImageData } = useImageContext(); // Context 사용
+
   const handleFileChange = (file: File) => {
     setState((prevState) => ({ ...prevState, selectedFile: file }));
   };
@@ -49,9 +50,8 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
   
     try {
       const { detectionResults, imageData } = await detectObjectsInImage(state.selectedFile);
-  
-      console.log('Received imageData:', imageData);
-  
+      setImageData(imageData);
+
       const parsedIngredients = Object.entries(detectionResults).map(([name, quantity]) => ({
         ingredientId: Date.now() + Math.floor(Math.random() * 1000),
         name,
@@ -62,8 +62,8 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
       setState((prevState) => ({
         ...prevState,
         detectionResult: detectionResults,
-        previewUrl: imageData,
       }));
+      console.log('Updated state.previewUrl:', imageData);
   
       openDetectionModal();
       onClose();

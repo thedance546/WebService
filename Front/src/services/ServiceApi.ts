@@ -35,27 +35,13 @@ const uploadImageToEndpoint = async <T>(
 };
 
  // 식재료 인식 API
- export const detectObjectsInImage = async (file: File): Promise<ImageDetectionResult> => {
-    const formData = new FormData();
-    formData.append('image', file);
-  
-    try {
-      const headers = getAuthHeaders('Bearer');
-      const response = await api.post<ImageDetectionResult>('/items/detection', formData, { headers });
-  
-      console.log('Detection API Response:', response.data);
-  
-      if (!response.data.imageData.startsWith('data:image/')) {
-        throw new Error('Invalid image data format');
-      }
-  
-      return response.data;
-    } catch (error) {
-      console.error('Image detection failed:', error);
-      throw error;
-    }
-  };
-  
+export const detectObjectsInImage = async (file: File): Promise<ImageDetectionResult> => {
+    return uploadImageToEndpoint<ImageDetectionResult>(
+        '/items/detection',
+        file,
+        '식재료 인식에 실패했습니다.'
+    );
+};
 
  // 영수증 인식 API
 export const recognizeReceipt = async (file: File): Promise<ReceiptRecognitionResult> => {

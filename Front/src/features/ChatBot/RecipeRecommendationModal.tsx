@@ -11,7 +11,7 @@ import { Ingredient } from '../../types/EntityTypes';
 import { StorageKeys } from '../../constants/StorageKey';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
-import { Message } from '../../types/FeatureTypes';
+import { useImageContext } from '../../contexts/ChatbotContext';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
@@ -19,7 +19,6 @@ interface RecipeRecommendationModalProps {
   ingredients: Ingredient[];
   setIngredients: React.Dispatch<React.SetStateAction<Ingredient[]>>;
   detectedImageSrc?: string;
-  addMessage: (message: Message) => void;
 }
 
 const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
@@ -29,6 +28,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   setIngredients,
   detectedImageSrc,
 }) => {
+  const { imageData } = useImageContext();
   const { ingredients: storedIngredients } = useIngredients();
   const [userInfo, setUserInfo] = useState<any>(null);
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
@@ -39,7 +39,8 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
     if (savedData) {
       setUserInfo(JSON.parse(savedData));
     }
-  }, []);
+    console.log('Received detectedImageSrc in RecipeRecommendationModal:', detectedImageSrc);
+  }, [detectedImageSrc]);
 
   const handleSubmit = () => {
     if (!userInfo) {
@@ -93,9 +94,9 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   return (
     <FullScreenOverlay title="레시피 추천 받기" onClose={onClose}>
       <div className="mb-3">
-        {detectedImageSrc ? (
+        {imageData ? (
           <ImagePreview
-            src={detectedImageSrc}
+            src={imageData}
             alt="탐지된 이미지 미리보기"
             style={{ height: '400px', width: '100%' }}
           />
@@ -115,7 +116,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
         <Input
           value={additionalRequest}
           onChange={(e) => setAdditionalRequest(e.target.value)}
-          placeholder="추가 요청사항을 입력하세요"
+          placeholder="ex) 어떤 재료를 많이 써줘, 매운맛이 강한 음식 추천 등"
         />
       </div>
       <div className="mt-4 d-flex justify-content-end">
