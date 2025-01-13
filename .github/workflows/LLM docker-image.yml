@@ -1,0 +1,39 @@
+name: Build & Deploy LLM Docker Image
+
+on:
+  push:
+    branches:
+      - main
+      - llm
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. GitHub Repository 체크아웃
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Docker Hub 로그인
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.LLM_DOCKER_USERNAME }}
+        password: ${{ secrets.LLM_DOCKERHUB_TOKEN }}
+
+    # 3. Docker 이미지 빌드 및 푸시
+    - name: Build and Push Docker Image
+      run: |
+        docker buildx build --no-cache --push \
+          -t ${{ secrets.LLM_DOCKER_USERNAME }}/llm_flask:v1.1 \
+          ./LLM_run
+
+    # 4. Docker 컨테이너 실행
+    - name: Run Docker Container
+      run: |
+        docker run -d --name llm-container --network service_network \
+          -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+          -e WEAVIATE_URL=${{ secrets.WEAVIATE_URL }} \
+          -p 5002:5002 \
+          ${{ secrets.LLM_DOCKER_USERNAME }}/llm_flask:v1.1
