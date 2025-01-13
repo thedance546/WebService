@@ -11,7 +11,7 @@ import HomeNavBar from "../components/organisms/HomeNavBar";
 
 const SettingsPage: React.FC = () => {
   return (
-    <div className="container settings-container">
+    <div className="container">
       <CommonHeader pageTitle="설정" />
       <div style={{ height: 'var(--top-margin)' }}></div>
 
@@ -19,11 +19,17 @@ const SettingsPage: React.FC = () => {
         <div className="accordion" id="settingsAccordion">
           <PrivacyPolicy />
           <ContactForm />
+          <TeamInfo />
         </div>
         <div className="d-grid gap-2 mt-4">
-          <TeamInfo />
-          <LogoutButton />
-          <DeleteAccountButton />
+          <LogoutButton style={{
+            width: '45%', margin: '0 auto',
+            backgroundColor: 'var(--button-warning-color)',
+          }} />
+          <DeleteAccountButton style={{
+            width: '45%', margin: '0 auto',
+            backgroundColor: 'var(--button-danger-color)',
+          }} />
         </div>
       </div>
 

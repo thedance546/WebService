@@ -1,6 +1,6 @@
 // src/features/MyIngredients/IngredientCardContainer.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
 import TopTabMenu from "./TopTabMenu";
 import IngredientCard from "./IngredientCard";
@@ -16,14 +16,41 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   onCardClick,
 }) => {
   const { ingredients } = useIngredients();
-  const [activeTab, setActiveTab] = useState<string>("전체"); // 로컬 상태로 관리
+  const [activeTab, setActiveTab] = useState<string>("전체");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const [itemsPerPage, setItemsPerPage] = useState(12); // 기본 값
+  const [, setColumns] = useState(3); // 기본 열 수
+
+  useEffect(() => {
+    const calculateItemsPerPage = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      // 최소 열 수와 행 수 설정
+      const minCols = 1;
+      const minRows = 1;
+
+      const cols = Math.max(Math.floor(width / 200), minCols); // 최소 열 개수 보장
+      const rows = Math.max(Math.floor(height / 150), minRows); // 최소 행 개수 보장
+
+      setColumns(cols);
+      setItemsPerPage(cols * rows);
+    };
+
+    calculateItemsPerPage(); // 초기 계산
+    window.addEventListener("resize", calculateItemsPerPage); // 리사이즈 이벤트 등록
+
+    return () => {
+      window.removeEventListener("resize", calculateItemsPerPage); // 이벤트 제거
+    };
+  }, []);
 
   const filteredIngredients =
     activeTab === "전체"
       ? ingredients
-      : ingredients.filter((item) => String(item.storageMethod?.storageMethodName) === activeTab);
+      : ingredients.filter(
+          (item) => String(item.storageMethod?.storageMethodName) === activeTab
+        );
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -31,14 +58,18 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
 
   const totalPages = Math.ceil(filteredIngredients.length / itemsPerPage);
 
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
+  const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
     <div style={{ position: "relative", paddingBottom: "5rem" }}>
-      <TopTabMenu activeTab={activeTab} onTabClick={setActiveTab} onAddClick={onAddClick} />
-
+      <TopTabMenu
+        activeTab={activeTab}
+        onTabClick={(tab) => {
+          setActiveTab(tab);
+          setCurrentPage(1);
+        }}
+        onAddClick={onAddClick}
+      />
       <div
         className="ingredient-card-grid"
         style={{
@@ -52,7 +83,6 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
           <IngredientCard
             key={ingredient.ingredientId}
             ingredient={ingredient}
-            
             onClick={() => onCardClick(ingredient)}
           />
         ))}
@@ -62,10 +92,12 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
         className="pagination"
         style={{
           position: "fixed",
-          bottom: "5rem",
+          bottom: "5rem", // 네비게이션 바로 위
           left: "50%",
           transform: "translateX(-50%)",
-          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          gap: "0.5rem",
         }}
       >
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
@@ -73,14 +105,12 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
             key={pageNumber}
             onClick={() => handlePageChange(pageNumber)}
             style={{
-              margin: "0 0.5rem",
               padding: "0.5rem 1rem",
               backgroundColor: pageNumber === currentPage ? "var(--primary-color)" : "transparent",
               color: pageNumber === currentPage ? "#fff" : "var(--primary-color)",
               border: `1px solid var(--primary-color)`,
               borderRadius: "4px",
               cursor: "pointer",
-              transition: "background-color 0.3s, color 0.3s",
             }}
           >
             {pageNumber}

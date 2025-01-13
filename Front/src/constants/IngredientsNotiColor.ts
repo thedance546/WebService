@@ -1,10 +1,7 @@
 // src/constants/IngredientsNotiColor.ts
 
 export const STATUS_COLORS = {
-    safe: "#CFF5D2",            // 유통기한 이내
-    nearShelfLife: "#F9F3C6",   // 유통기한 임박
-    withinConsume: "#FFE5B4",   // 소비기한 이내
-    nearConsume: "#FFD2C2",     // 소비기한 임박
-    expired: "#E0E0E0",         // 소비기한 만료
-  };
-  
+  safe: "#D3F5D3",    // 유통기한 이전 - 아주 연한 초록색
+  caution: "#FFEBCB", // 소비기한 이전 - 아주 연한 주황색
+  expired: "#FFD6D6", // 소비기한 이후 - 아주 연한 빨간색
+};

@@ -80,8 +80,8 @@ const LoginPage: React.FC = () => {
         </div>
         {error && <div className="text-danger mt-2">{error}</div>}
         <div className="d-flex justify-content-between mt-3">
-          <BackButton />
-          <Button type="submit" className="btn btn-primary w-50 ms-2" disabled={loading}>
+          <BackButton className="btn btn-light" />
+          <Button type="submit" className="btn w-50 ms-2" variant="primary" disabled={loading}>
             {loading ? '로그인 중...' : '로그인'}
           </Button>
         </div>

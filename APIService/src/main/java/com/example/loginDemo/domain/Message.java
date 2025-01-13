@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "messages")
 public class Message {
 
     @Id
@@ -15,7 +16,7 @@ public class Message {
 
     private String question;
 
-    @Column(length = 2000)
+    @Column(length = 2000, nullable = false)
     private String response;
 
     @ManyToOne(fetch = FetchType.LAZY)

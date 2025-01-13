@@ -3,15 +3,16 @@
 import React from "react";
 import CommonHeader from "../components/organisms/CommonHeader";
 import IngredientCardContainer from "../features/MyIngredients/IngredientCardContainer";
-import EditIngredientModal from "../features/MyIngredients/EditIngredientModal";
+import IngredientDetailsModal from "../features/MyIngredients/IngredientDetailsModal";
 import ReceiptUploadModal from "../features/MyIngredients/ReceiptUploadModal";
 import AddIngredientModal from "../features/MyIngredients/AddIngredientModal";
 import IngredientOptionsModal from "../features/MyIngredients/IngredientOptionModal";
+import AddManualIngredientModal from "../features/MyIngredients/AddManualIngredientModal";
 import LoadingModal from "../components/organisms/LoadingModal";
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from "../hooks/usePopupState";
 import { useIngredients } from "../contexts/IngredientsContext";
-import { Ingredient, StorageMethod } from "../types/EntityTypes";
+import { Ingredient } from "../types/EntityTypes";
 import { recognizeReceipt } from "../services/ServiceApi";
 
 const MyIngredientsPage: React.FC = () => {
@@ -24,8 +25,9 @@ const MyIngredientsPage: React.FC = () => {
     purchaseDate: '',
     matchedItems: [],
   });
-  const editModal = usePopupState<Ingredient | null>(null);
-  const { ingredients, updateIngredient, deleteIngredient } = useIngredients();
+  const manualModal = usePopupState(null);
+  const detailModal = usePopupState<Ingredient | null>(null);
+  const { updateIngredient } = useIngredients();
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleReceiptUploadConfirm = async () => {
@@ -42,7 +44,7 @@ const MyIngredientsPage: React.FC = () => {
       console.log("영수증 인식 응답:", response);
 
       addIngredientModal.setState({
-        purchaseDate: response.구매일자 || "알 수 없음",
+        purchaseDate: response.purchaseDate || "알 수 없음",
         matchedItems: response.matchedItems || [],
       });
 
@@ -57,25 +59,20 @@ const MyIngredientsPage: React.FC = () => {
   };
 
   const handleDirectInput = () => {
-    addIngredientModal.setState({ purchaseDate: '', matchedItems: [""] });
-    addIngredientModal.open();
+    manualModal.open();
     optionsModal.close();
   };
 
-  const storageMethods = ingredients
-    .map((item) => item.storageMethod)
-    .filter((method): method is StorageMethod => method !== undefined);
-
   return (
-    <div className="container container-fluid px-0">
+    <div className="container">
       <CommonHeader pageTitle="나의 식재료" />
 
       {/* 식재료 카드 리스트 */}
       <IngredientCardContainer
         onAddClick={optionsModal.open}
         onCardClick={(ingredient) => {
-          editModal.setState(ingredient);
-          editModal.open();
+          detailModal.setState(ingredient);
+          detailModal.open();
         }}
       />
 
@@ -99,7 +96,7 @@ const MyIngredientsPage: React.FC = () => {
         />
       )}
 
-      {/* 식재료 추가 모달 */}
+      {/* 영수증 인식 식재료 추가 모달 */}
       {addIngredientModal.isOpen && (
         <AddIngredientModal
           purchaseDate={addIngredientModal.state.purchaseDate}
@@ -108,29 +105,22 @@ const MyIngredientsPage: React.FC = () => {
         />
       )}
 
-      {/* 수정 모달 */}
-      {editModal.isOpen && editModal.state && (
-        <EditIngredientModal
-          row={editModal.state}
-          storageMethods={storageMethods} // StorageMethod 데이터 전달
-          onSave={(updatedIngredientRow) => {
-            const updatedIngredient = {
-              ...updatedIngredientRow,
-              ingredientId: editModal.state!.ingredientId,
-            };
-            updateIngredient(updatedIngredient);
-            editModal.close();
-          }}
-          onDelete={(ingredientId: number) => {
-            const confirmed = window.confirm("정말로 삭제하시겠습니까?");
-            if (confirmed) {
-              deleteIngredient(ingredientId);
-              editModal.close();
-            }
-          }}
-          onCancel={editModal.close}
-        />
+      {/* 직접 입력 식재료 추가 모달 */}
+      {manualModal.isOpen &&
+        <AddManualIngredientModal
+          onClose={manualModal.close} />
+      }
 
+      {/* 상세 정보 모달 */}
+      {detailModal.isOpen && detailModal.state && (
+        <IngredientDetailsModal
+          row={detailModal.state}
+          onQuantityUpdated={(updatedIngredient) => {
+            updateIngredient(updatedIngredient);
+            detailModal.close();
+          }}
+          onClose={detailModal.close}
+        />
       )}
 
       {/* 로딩 모달 */}
