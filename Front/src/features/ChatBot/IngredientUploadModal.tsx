@@ -50,10 +50,10 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
     try {
       const { detectionResults, imageData } = await detectObjectsInImage(state.selectedFile);
   
-      console.log('Received imageData:', imageData); // 로그로 이미지 데이터 확인
+      console.log('Received imageData:', imageData);
   
       const parsedIngredients = Object.entries(detectionResults).map(([name, quantity]) => ({
-        ingredientId: Date.now() + Math.floor(Math.random() * 1000), // 고유 ID 생성
+        ingredientId: Date.now() + Math.floor(Math.random() * 1000),
         name,
         quantity: parseInt(quantity, 10),
       }));
@@ -62,7 +62,7 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
       setState((prevState) => ({
         ...prevState,
         detectionResult: detectionResults,
-        previewUrl: imageData, // API에서 받은 이미지를 previewUrl로 저장
+        previewUrl: imageData,
       }));
   
       openDetectionModal();
@@ -75,8 +75,6 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
     }
   };
   
-
-
   return (
     <Modal title="레시피 추천 받기" onClose={onClose}>
       <ImageUploadPreview

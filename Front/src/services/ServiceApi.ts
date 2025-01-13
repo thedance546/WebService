@@ -41,16 +41,9 @@ const uploadImageToEndpoint = async <T>(
   
     try {
       const headers = getAuthHeaders('Bearer');
-      const response = await api.post<ImageDetectionResult>('/items/detection2', formData, { headers });
+      const response = await api.post<ImageDetectionResult>('/items/detection', formData, { headers });
   
       console.log('Detection API Response:', response.data);
-  
-      // 새 탭에서 이미지 확인
-      const newWindow = window.open();
-      if (newWindow && response.data.imageData) {
-        newWindow.document.write(`<img src="${response.data.imageData}" alt="Detected Image" />`);
-        newWindow.document.title = 'YOLO Detection Result';
-      }
   
       if (!response.data.imageData.startsWith('data:image/')) {
         throw new Error('Invalid image data format');

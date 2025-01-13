@@ -28,7 +28,6 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   ingredients,
   setIngredients,
   detectedImageSrc,
-  addMessage,
 }) => {
   const { ingredients: storedIngredients } = useIngredients();
   const [userInfo, setUserInfo] = useState<any>(null);
