@@ -44,15 +44,30 @@ public class YoloService {
         return new DetectionResponse(detectionResults, imageDataUri);
     }
 
-    //바운딩 바이너리
-    public byte[] sendBoundingImage(MultipartFile imageFile) throws IOException {
-        // 바운딩 요청을 보내고 결과 이미지 받기
-        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+    // ocr
+    public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
+        Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
-        return resultImage;
+        // '품목' 추출
+        List<String> items = (List<String>) response.get("품목");
+
+        // 아이템 매칭
+        Set<String> matchedItemsSet = matchItems(items);
+
+        // 매칭된 아이템이 없으면 "No matched items"로 처리
+        List<String> matchedItems = new ArrayList<>(matchedItemsSet);
+        if (matchedItems.isEmpty()) {
+            matchedItems.add("No matched items");
+        }
+
+        String purchaseDateString = (String) response.get("구매일자");
+        LocalDate purchaseDate = LocalDate.parse(purchaseDateString, DateTimeFormatter.ofPattern("yy-MM-dd"));
+
+        // ReceiptResponse 객체 생성하여 리턴
+        return new ReceiptResponse(purchaseDate, matchedItems);
     }
 
-
+    //메서드
     private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -80,8 +95,6 @@ public class YoloService {
         }
     }
 
-
-
     private <T> Map sendPostRequest(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -106,29 +119,6 @@ public class YoloService {
         } catch (HttpClientErrorException e) {
             throw new RuntimeException("Flask 서버와의 통신에 실패했습니다.", e);
         }
-    }
-
-    // ocr
-    public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
-        Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-
-        // '품목' 추출
-        List<String> items = (List<String>) response.get("품목");
-
-        // 아이템 매칭
-        Set<String> matchedItemsSet = matchItems(items);
-
-        // 매칭된 아이템이 없으면 "No matched items"로 처리
-        List<String> matchedItems = new ArrayList<>(matchedItemsSet);
-        if (matchedItems.isEmpty()) {
-            matchedItems.add("No matched items");
-        }
-
-        String purchaseDateString = (String) response.get("구매일자");
-        LocalDate purchaseDate = LocalDate.parse(purchaseDateString, DateTimeFormatter.ofPattern("yy-MM-dd"));
-
-        // ReceiptResponse 객체 생성하여 리턴
-        return new ReceiptResponse(purchaseDate, matchedItems);
     }
 
     private Set<String> matchItems(List<String> items) {
