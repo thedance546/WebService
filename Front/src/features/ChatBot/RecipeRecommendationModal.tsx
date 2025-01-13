@@ -12,6 +12,7 @@ import { StorageKeys } from '../../constants/StorageKey';
 import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
 import { useChatbotContext } from '../../contexts/ChatbotContext';
+import { fetchRecipeRecommendation } from '../../services/ServiceApi';
 
 interface RecipeRecommendationModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
   const [userInfo, setUserInfo] = useState<any>(null);
   const [selectedIngredients, setSelectedIngredients] = useState<Ingredient[]>([]);
   const [additionalRequest, setAdditionalRequest] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const savedData = localStorage.getItem(StorageKeys.USER_INFO);
@@ -39,7 +41,7 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
     }
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!userInfo) {
       alert("사용자 정보를 입력해주세요.");
       return;
@@ -81,9 +83,18 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
     delete payload.userPreferences.customFoodCategory;
     delete payload.userPreferences.customAllergy;
 
-    console.log("API 호출 데이터:", JSON.stringify(payload, null, 2));
-    alert("레시피 추천이 요청되었습니다.");
-    onClose();
+    try {
+      setLoading(true); // 로딩 시작
+      const response = await fetchRecipeRecommendation(payload);
+      console.log('레시피 추천 응답:', response);
+      alert(`추천된 레시피: ${response}`);
+    } catch (error) {
+      console.error('레시피 추천 요청 실패:', error);
+      alert('레시피 추천 요청 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false); // 로딩 종료
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
@@ -117,8 +128,8 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
         />
       </div>
       <div className="mt-4 d-flex justify-content-end">
-        <Button variant="primary" onClick={handleSubmit}>
-          레시피 추천 받기
+        <Button variant="primary" onClick={handleSubmit} disabled={loading}>
+          {loading ? '요청 중...' : '레시피 추천 받기'}
         </Button>
       </div>
     </FullScreenOverlay>
