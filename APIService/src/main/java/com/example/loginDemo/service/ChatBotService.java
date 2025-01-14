@@ -43,7 +43,7 @@ public class ChatBotService {
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
             if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
-                String contents = ((String) responseBody.get("contents")).replace("\n", " ");
+                String contents = ((String) responseBody.get("contents"));
                 String imageLink = (String) responseBody.get("imageLink");
 
                 RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
