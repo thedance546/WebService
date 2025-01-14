@@ -66,11 +66,19 @@ output_parser = StrOutputParser()
 # LangChain LLMChain 생성
 chain = prompt | llm | output_parser
 
+#재료 외에 모조리 날리고 탐색
+def remove_excluded_ingredients_from_query(query_text):
+    pattern = r"(.*[가-힣, ]+를 사용한 레시피 추천해줘\. 저장된 재료로는 [가-힣, 0-9\(\)\-\: ]+가 있어\.?)"
+    match = re.match(pattern, query_text)
+    return match.group(1).strip() if match else query_text
 
 
 # Weaviate 검색 함수
 def search_weaviate(query_text, top_k=5, min_certainty=0.5):
-    query_vector = embedding_model.encode(query_text).tolist()
+    
+    clean_text = remove_excluded_ingredients_from_query(query_text)
+    print(f"검색문:\n{clean_text}\n")
+    query_vector = embedding_model.encode(clean_text).tolist()
     try:
         result = client.query.get(
             "Recipescema", ["content", "_additional {certainty}"]
@@ -100,30 +108,6 @@ def search_weaviate(query_text, top_k=5, min_certainty=0.5):
 
 
 
-def generate_answer(question, result_texts):
-    """
-    LLM을 통해 단일 레시피 추천 답변 생성.
-    """
-    try:
-        response = chain.invoke({
-            "question": f"{question}\n추천 레시피를 한 가지 선택하여 다음 형식으로 답변해주세요:\n\n"
-                        "추천 레시피 제목: <레시피 제목>\n"
-                        "재료: <레시피에 필요한 재료 목록>\n"
-                        "레시피 만드는 법: <간단한 요리 방법>\n"
-                        "선택 이유: <왜 이 레시피를 추천했는지에 대한 설명>\n",
-            "context": result_texts
-        })
-        print(f"LLM 응답:\n{response}\n")
-        return response
-    except Exception as e:
-        print("LLM 처리 중 오류:", e)
-        return "오류가 발생했습니다."
-
-
-
-
-
-
 def generate_rag_answer(question):
     """
     Weaviate에서 검색된 결과를 기반으로 LLM 답변 생성.
@@ -134,24 +118,20 @@ def generate_rag_answer(question):
     if result_texts:
         # 검색 결과가 있는 경우 단일 레시피 선택
         selected_recipe = result_texts[0]  # 첫 번째 레시피 선택
-        llm_response = generate_answer(
-            question=f"{question}와 관련된 레시피를 추천해 주세요. 추천 이유와 생략된 재료에 대해 코멘트를 추가해 주세요.",
-            result_texts=selected_recipe
-        )
+        llm_response = chain.invoke({
+            "question": f"{question} 추천 이유와 생략된 재료에 대해 코멘트를 추가해 주세요.",
+            "context": {selected_recipe}
+        })
 
-        # LLM 응답에서 내용과 이미지 링크 분리
-        contents_match = re.search(r"(?<=내용: ).*?(?=\n이미지:)", llm_response, re.DOTALL)
-        contents = contents_match.group(0).strip() if contents_match else llm_response.strip()
+        contents = llm_response
 
-        image_links_match = re.search(r"(?<=이미지 링크: ).*", llm_response)
-        image_links = image_links_match.group(0).strip() if image_links_match else "NO Image"
+        image_links = selected_recipe.split("Image: ")[1].split(". TotalTime:")[0]
     else:
         # 검색 결과가 없는 경우
         print("검색 결과가 없습니다. 질문을 기반으로 답변을 생성합니다.")
-        llm_response = generate_answer(
-            question=f"{question}와 관련된 레시피를 추천해 주세요. 추천 이유와 생략된 재료에 대해 코멘트를 추가해 주세요.",
-            result_texts=""
-        )
+        llm_response = chain.invoke({
+            "question": f"{question}."
+        })
         contents = llm_response.strip()
         image_links = "이미지 없음"
 
@@ -204,7 +184,7 @@ def generate_sentence(data):
     additional_request = data.get("additionalRequest", "").strip()
 
     # 문장 생성
-    sentence = f"{detected_ingredients}를 사용한 레시피 타이틀 추천 목록 만들어줘."
+    sentence = f"{detected_ingredients}를 사용한 레시피 추천해줘."
 
     if stored_ingredients:
         sentence += f" 저장된 재료로는 {stored_ingredients}가 있어."
@@ -299,7 +279,6 @@ def ask_recipe():
     except Exception as e:
         print(f"Error during RAG processing: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-
 
 
 if __name__ == "__main__":
