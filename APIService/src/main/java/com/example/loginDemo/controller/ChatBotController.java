@@ -4,6 +4,7 @@ import com.example.loginDemo.dto.ChatMessageDTO;
 import com.example.loginDemo.dto.RecipeResponse;
 import com.example.loginDemo.service.ChatBotService;
 import com.example.loginDemo.domain.*;
+import com.example.loginDemo.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -21,40 +22,10 @@ import java.util.stream.Collectors;
 public class ChatBotController {
     private static final String LLM_GENERAL_URL = "http://llm-container:5002/ask/general";
     private static final String LLM_RECIPE_URL = "http://llm-container:5002/ask/recipe";
-    private final ChatBotService chatBotService;
+//    private final ChatBotService chatBotService;
+    private final MessageService messageService;
 
     // LLM (레시피 관련 요청)
-//    @PostMapping("/recipes/questions")
-//    public Map<String, Object> askToFlask(@RequestBody Map<String, Object> payload,
-//                                          @RequestHeader("Authorization") String accessToken) {
-//
-//        String token = extractToken(accessToken);
-//
-//        Map<String, Object> requestBody = new HashMap<>();
-//        requestBody.put("detectedIngredients", payload.get("detectedIngredients"));
-//        requestBody.put("selectedStoredIngredients", payload.get("selectedStoredIngredients"));
-//        requestBody.put("userPreferences", payload.get("userPreferences"));
-//        requestBody.put("additionalRequest", payload.get("additionalRequest"));
-//
-//        // Flask 서버에 요청 보내기
-//        ResponseEntity<Map> response = sendRequestToFlask(LLM_RECIPE_URL, requestBody, token);
-//
-//        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-//            Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
-//            if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
-//                String contents = (String) responseBody.get("contents");
-//                String imageLink = (String) responseBody.get("imageLink");
-//                RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
-//                return Map.of("response", recipeResponse);
-//            } else {
-//                return Map.of("error", "'response' 필드에서 'contents' 또는 'imageLink' 값을 찾을 수 없습니다.");
-//            }
-//        } else {
-//            return Map.of("error", "Flask 서버에서 유효하지 않은 응답을 받았습니다.");
-//        }
-//    }
-
-    //LLM2
     @PostMapping("/recipes/questions")
     public Map<String, Object> ask(@RequestBody Map<String, Object> payload,
                                    @RequestHeader("Authorization") String accessToken) {
@@ -79,7 +50,7 @@ public class ChatBotController {
                 String imageLink = (String) responseBody.get("imageLink");
                 RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
 
-                chatBotService.saveMessage(token, recipeRequest, contents);
+                messageService.saveMessage(token, recipeRequest, contents);
 
                 return Map.of("response", recipeResponse);
             } else {
@@ -100,7 +71,7 @@ public class ChatBotController {
         // 재료 이름을 콤마로 구분하여 문자열로 변환
         String ingredients = detectedIngredients.stream()
                 .map(ingredient -> (String) ingredient.get("name"))
-                .filter(Objects::nonNull) // 이름이 null인 경우 제외
+                .filter(Objects::nonNull)
                 .collect(Collectors.joining(", "));
 
         // 결과 문자열 생성
@@ -128,7 +99,7 @@ public class ChatBotController {
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             String responseContent = (String) response.getBody().get("response");
-            chatBotService.saveMessage(token, question, responseContent);
+            messageService.saveMessage(token, question, responseContent);
             return ResponseEntity.ok(response.getBody());
         } else {
             return ResponseEntity.status(response.getStatusCode())
@@ -141,7 +112,7 @@ public class ChatBotController {
     public ResponseEntity<List<ChatMessageDTO>> getMessageHistory(@RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
 
-        List<Message> messages = chatBotService.getAllMessagesByUser(token);
+        List<Message> messages = messageService.getAllMessagesByUser(token);
 
         List<ChatMessageDTO> chatMessageDTOs = messages.stream()
                 .map(message -> new ChatMessageDTO(
@@ -158,7 +129,7 @@ public class ChatBotController {
     @DeleteMapping("/messages")
     public ResponseEntity<Void> deleteAllMessages(@RequestHeader("Authorization") String accessToken) {
         String token = extractToken(accessToken);
-        chatBotService.deleteAllMessagesByUser(token);
+        messageService.deleteAllMessagesByUser(token);
         return ResponseEntity.noContent().build();
     }
 
