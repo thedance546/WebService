@@ -5,11 +5,10 @@ import Button from '../../components/atoms/Button';
 import Input from '../../components/atoms/Input';
 import { useChatInput } from '../../hooks/useChatInput';
 import { Send, Plus } from 'react-bootstrap-icons';
-import { ChatInputProps } from '../../types/FeatureTypes';
 import './ChatInput.css';
 
-const ChatInput: React.FC<ChatInputProps> = ({ addMessage, toggleOptions, disabled }) => {
-  const { input, handleInputChange, handleSendMessage } = useChatInput(addMessage);
+const ChatInput: React.FC<{ toggleOptions: () => void; disabled: boolean }> = ({ toggleOptions, disabled }) => {
+  const { input, handleInputChange, handleSendMessage } = useChatInput();
 
   return (
     <div className="chat-input d-flex align-items-center justify-content-between mt-2">

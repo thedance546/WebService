@@ -6,6 +6,7 @@ import ImageUploadPreview from '../../components/molecules/ImageUploadPreview';
 import Button from '../../components/atoms/Button';
 import { detectObjectsInImage } from '../../services/ServiceApi';
 import { Ingredient } from '../../types/EntityTypes';
+import { useChatbotContext } from '../../contexts/ChatbotContext';
 
 interface IngredientUploadModalProps {
   isOpen: boolean;
@@ -13,14 +14,12 @@ interface IngredientUploadModalProps {
   state: {
     selectedFile: File | null;
     detectionResult: any;
-    previewUrl: string | null;
     loading: boolean;
   };
   setState: React.Dispatch<
     React.SetStateAction<{
       selectedFile: File | null;
       detectionResult: any;
-      previewUrl: string | null;
       loading: boolean;
     }>
   >;
@@ -35,6 +34,8 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
   openDetectionModal,
   setIngredients,
 }) => {
+  const { setImageData } = useChatbotContext(); // Context 사용
+
   const handleFileChange = (file: File) => {
     setState((prevState) => ({ ...prevState, selectedFile: file }));
   };
@@ -49,11 +50,10 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
   
     try {
       const { detectionResults, imageData } = await detectObjectsInImage(state.selectedFile);
-  
-      console.log('Received imageData:', imageData); // 로그로 이미지 데이터 확인
-  
+      setImageData(imageData);
+
       const parsedIngredients = Object.entries(detectionResults).map(([name, quantity]) => ({
-        ingredientId: Date.now() + Math.floor(Math.random() * 1000), // 고유 ID 생성
+        ingredientId: Date.now() + Math.floor(Math.random() * 1000),
         name,
         quantity: parseInt(quantity, 10),
       }));
@@ -62,7 +62,6 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
       setState((prevState) => ({
         ...prevState,
         detectionResult: detectionResults,
-        previewUrl: imageData, // API에서 받은 이미지를 previewUrl로 저장
       }));
   
       openDetectionModal();
@@ -75,8 +74,6 @@ const IngredientUploadModal: React.FC<IngredientUploadModalProps> = ({
     }
   };
   
-
-
   return (
     <Modal title="레시피 추천 받기" onClose={onClose}>
       <ImageUploadPreview

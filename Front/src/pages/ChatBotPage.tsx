@@ -1,6 +1,6 @@
 // src/pages/ChatBotPage.tsx
 
-import React, { useState } from 'react';
+import React from 'react';
 import CommonHeader from "../components/organisms/CommonHeader";
 import ChatMessages from '../features/ChatBot/ChatMessages';
 import ChatInput from '../features/ChatBot/ChatInput';
@@ -10,40 +10,29 @@ import CustomInfoInputModal from '../features/ChatBot/CustomInfoInputModal';
 import RecipeRecommendationModal from '../features/ChatBot/RecipeRecommendationModal';
 import HomeNavBar from '../components/organisms/HomeNavBar';
 import { usePopupState } from '../hooks/usePopupState';
-import { Message, Sender } from '../types/FeatureTypes';
+import { useChatbotContext } from '../contexts/ChatbotContext';
 import { Ingredient } from '../types/EntityTypes';
-import botAvatar from '../assets/matjipsa_logo.webp';
 
 const ChatBotPage: React.FC = () => {
-  const initialMessage: Message[] = [
-    { sender: Sender.Bot, text: '안녕하세요! 맛집사 챗봇입니다!\n식재료 정보나 관리에 대해 물어보세요\nAI 레시피 추천은 옵션에서 할 수 있습니다', profileImage: botAvatar },
-  ];
-
-  const [messages, setMessages] = useState<Message[]>(() => {
-    const savedMessages = localStorage.getItem('chatMessages');
-    return savedMessages ? JSON.parse(savedMessages) : initialMessage;
-  });
-
-  const addMessage = (message: Message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
-  };
+  const { messages, clearMessages } = useChatbotContext();
 
   const optionsModal = usePopupState({ isOpen: false });
-  const recipeModal = usePopupState({
+  const uploadModal = usePopupState({
     selectedFile: null as File | null,
     detectionResult: null as any,
-    previewUrl: null as string | null,
     loading: false,
   });
-  const detectionModal = usePopupState({
+  const recommendModal = usePopupState<{
+    isOpen: boolean;
+    ingredients: Ingredient[];
+  }>({
     isOpen: false,
-    ingredients: [] as Ingredient[],
+    ingredients: [],
   });
   const customInfoModal = usePopupState({ isOpen: false });
 
-  const clearMessages = () => {
-    setMessages(initialMessage);
-    localStorage.removeItem('chatMessages');
+  const handleRecommendModalClose = () => {
+    recommendModal.close();
   };
 
   return (
@@ -52,32 +41,28 @@ const ChatBotPage: React.FC = () => {
 
       <ChatMessages messages={messages} />
 
-      <ChatInput
-        addMessage={addMessage}
-        toggleOptions={optionsModal.open}
-        disabled={optionsModal.isOpen}
-      />
+      <ChatInput toggleOptions={optionsModal.open} disabled={optionsModal.isOpen} />
 
       <OptionsModal
         isOpen={optionsModal.isOpen}
         onClose={optionsModal.close}
         clearMessages={clearMessages}
-        openRecipeModal={recipeModal.open}
+        openRecipeModal={uploadModal.open}
         openCustomInfoModal={customInfoModal.open}
       />
 
-      {recipeModal.isOpen && (
+      {uploadModal.isOpen && (
         <IngredientUploadModal
-          isOpen={recipeModal.isOpen}
+          isOpen={uploadModal.isOpen}
           onClose={() => {
-            recipeModal.close();
-            recipeModal.reset();
+            uploadModal.close();
+            uploadModal.reset();
           }}
-          state={recipeModal.state}
-          setState={recipeModal.setState}
-          openDetectionModal={detectionModal.open}
+          state={uploadModal.state}
+          setState={uploadModal.setState}
+          openDetectionModal={recommendModal.open}
           setIngredients={(ingredients) => {
-            detectionModal.setState((prevState) => ({
+            recommendModal.setState((prevState) => ({
               ...prevState,
               ingredients: Array.isArray(ingredients) ? ingredients : [],
             }));
@@ -85,19 +70,17 @@ const ChatBotPage: React.FC = () => {
         />
       )}
 
-      {detectionModal.isOpen && (
+      {recommendModal.isOpen && (
         <RecipeRecommendationModal
-          isOpen={detectionModal.isOpen}
-          onClose={detectionModal.close}
-          ingredients={detectionModal.state.ingredients}
+          isOpen={recommendModal.isOpen}
+          onClose={handleRecommendModalClose}
+          ingredients={recommendModal.state.ingredients}
           setIngredients={(ingredients) => {
-            detectionModal.setState((prevState) => ({
+            recommendModal.setState((prevState) => ({
               ...prevState,
               ingredients: Array.isArray(ingredients) ? ingredients : [],
             }));
           }}
-          detectedImageSrc={recipeModal.state.previewUrl || undefined}
-          addMessage={addMessage}
         />
       )}
 

@@ -17,7 +17,7 @@ app = Flask(__name__)
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='best_ocr.pt', trust_repo=True, force_reload=True)
 
 # Tesseract 환경 변수 설정
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 def detect_text_with_yolo(image_path, confidence_threshold=0.35):
     img = cv2.imread(image_path)

@@ -21,6 +21,11 @@ models = {
 def draw_bounding_boxes(image, results):
     """Draw bounding boxes on the image."""
     boxes = results.pandas().xyxy[0]
+
+    # Confidence threshold 적용
+    confidence_threshold = 0.3
+    boxes = boxes[boxes['confidence'] >= confidence_threshold]
+
     pil_image = Image.fromarray(image)
     draw = ImageDraw.Draw(pil_image)
 
@@ -117,6 +122,10 @@ def object_detection(model_name):
             model = models["object_detection"]
             results = model(image)
             detections = results.pandas().xyxy[0]
+
+             # Confidence threshold 추가
+            confidence_threshold = 0.3  # 50% 신뢰도
+            detections = detections[detections['confidence'] >= confidence_threshold]
 
             # 감지된 객체 수 계산
             name_counter = detections["name"].value_counts().to_dict()

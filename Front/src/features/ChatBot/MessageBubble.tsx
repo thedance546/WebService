@@ -24,7 +24,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
     borderRadius: '10px',
     backgroundColor: isUser ? '#007bff' : '#6c757d',
     color: 'white',
-    maxWidth: isUser ? '60%' : '100%',
+    maxWidth: isUser ? '60%' : '80%',
     wordBreak: 'break-word' as 'break-word',
   };
 

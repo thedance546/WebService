@@ -74,7 +74,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
         className="ingredient-card-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, max-content))",
           gap: "1rem",
           padding: "1rem",
         }}
