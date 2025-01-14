@@ -104,7 +104,6 @@ const RecipeRecommendationModal: React.FC<RecipeRecommendationModalProps> = ({
           sender: Sender.Bot,
           text: response.contents,
           profileImage: botAvatar,
-          formatted: true,
         });
       }
 

@@ -1,76 +1,93 @@
-// src/features/MyIngredients/CategoryTabs.tsx
+// src/features/MyIngredients/TopTabMenu.tsx
 
 import React from "react";
-import { STORAGE_METHODS } from "../../constants/StorageMethod";
 
 interface TopTabMenuProps {
-  activeTab: string;
-  onTabClick: (tab: string) => void;
+  activeSort: string;
+  sortDirection: boolean;
+  onSortChange: (sortType: string) => void;
   onAddClick: () => void;
 }
 
-const TopTabMenu: React.FC<TopTabMenuProps> = ({ activeTab, onTabClick, onAddClick }) => (
-  <div
-    className="top-tab-menu d-flex align-items-center justify-content-between px-3 py-2 container"
-    style={{
-      position: "sticky",
-      top: 0,
-      overflowX: "auto",
-    }}
-  >
-    <style>
-      {`
-        .top-tab-menu .tab-active {
-          background-color: var(--primary-color);
-          color: white;
-          border: none;
-        }
-
-        .top-tab-menu .tab-inactive {
-          background-color: transparent;
-          color: var(--primary-color);
-          border: 1px solid var(--primary-color);
-        }
-
-        .top-tab-menu .tab-inactive:hover {
-          background-color: var(--primary-color);
-          color: white;
-        }
-      `}
-    </style>
+const TopTabMenu: React.FC<TopTabMenuProps> = ({
+  activeSort,
+  sortDirection,
+  onSortChange,
+  onAddClick,
+}) => {
+  return (
     <div
-      className="d-flex align-items-center"
+      className="top-tab-menu d-flex align-items-center justify-content-between px-3 py-2 container"
       style={{
+        position: "sticky",
+        top: 0,
         overflowX: "auto",
-        whiteSpace: "nowrap",
       }}
     >
-      {STORAGE_METHODS.map((method) => (
+      <style>
+        {`
+          .top-tab-menu .tab-active {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+          }
+
+          .top-tab-menu .tab-inactive {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+          }
+
+          .top-tab-menu .tab-inactive:hover {
+            background-color: var(--primary-color);
+            color: white;
+          }
+        `}
+      </style>
+      <div className="d-flex align-items-center gap-3">
         <button
-          key={method.id}
-          className={`btn mx-2 ${
-            activeTab === method.name ? "tab-active" : "tab-inactive"
-          }`}
+          className={`btn ${activeSort === "status" ? "tab-active" : "tab-inactive"}`}
           style={{
             borderRadius: "20px",
             whiteSpace: "nowrap",
             padding: "8px 16px",
-            flexShrink: 0,
           }}
-          onClick={() => onTabClick(method.name)}
+          onClick={() => onSortChange("status")}
         >
-          {method.displayName}
+          상태 {sortDirection ? "↑" : "↓"}
         </button>
-      ))}
+        <button
+          className={`btn ${activeSort === "name" ? "tab-active" : "tab-inactive"}`}
+          style={{
+            borderRadius: "20px",
+            whiteSpace: "nowrap",
+            padding: "8px 16px",
+          }}
+          onClick={() => onSortChange("name")}
+        >
+          이름 {sortDirection ? "↑" : "↓"}
+        </button>
+        <button
+          className={`btn ${activeSort === "quantity" ? "tab-active" : "tab-inactive"}`}
+          style={{
+            borderRadius: "20px",
+            whiteSpace: "nowrap",
+            padding: "8px 16px",
+          }}
+          onClick={() => onSortChange("quantity")}
+        >
+          수량 {sortDirection ? "↑" : "↓"}
+        </button>
+      </div>
+      <button
+        className="btn btn-success"
+        style={{ borderRadius: "20px", whiteSpace: "nowrap", padding: "8px 16px" }}
+        onClick={onAddClick}
+      >
+        + 식재료 추가
+      </button>
     </div>
-    <button
-      className="btn btn-success"
-      style={{ borderRadius: "20px", whiteSpace: "nowrap", padding: "8px 16px" }}
-      onClick={onAddClick}
-    >
-      + 식재료 추가
-    </button>
-  </div>
-);
+  );
+};
 
 export default TopTabMenu;
