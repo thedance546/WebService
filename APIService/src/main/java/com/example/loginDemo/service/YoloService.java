@@ -69,6 +69,9 @@ public class YoloService {
         }
 
         String purchaseDateString = (String) response.get("구매일자");
+        if (purchaseDateString == null) {
+            throw new IllegalArgumentException("영수증에서 구매일자가 없습니다.");
+        }
         LocalDate purchaseDate = LocalDate.parse(purchaseDateString, DateTimeFormatter.ofPattern("yy-MM-dd"));
 
         // ReceiptResponse 객체 생성하여 리턴
