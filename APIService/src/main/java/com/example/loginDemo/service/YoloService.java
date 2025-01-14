@@ -46,6 +46,11 @@ public class YoloService {
     public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
         Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
+        // 응답이 null이거나 비어 있는 경우 예외 처리
+        if (response == null || response.isEmpty()) {
+            throw new IllegalArgumentException("Flask 서버에서 응답이 없습니다.");
+        }
+
         // '품목' 추출
         List<String> items = (List<String>) response.get("품목");
 
