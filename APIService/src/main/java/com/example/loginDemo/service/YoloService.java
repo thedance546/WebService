@@ -26,7 +26,7 @@ public class YoloService {
     private final String Bounding_URL = "http://yolo-container:5000/object-detection/object_detection/image";
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
-    //인식+바운딩
+    // 식재료 인식 + 바운딩 박스 리턴
     public DetectionResponse detectAndReturn(MultipartFile imageFile) throws IOException {
         // 객체 감지 결과 가져오기
         Map<String, String> detectionResults = sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
@@ -42,20 +42,7 @@ public class YoloService {
         return new DetectionResponse(detectionResults, imageDataUri);
     }
 
-    //바운딩
-    public ResponseEntity<byte[]> b(MultipartFile imageFile) throws IOException {
-        // 바운딩 박스를 그린 결과 이미지 가져오기
-        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-
-        // 이미지 반환을 byte[]로 바로 리턴
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);  // 이미지를 JPEG로 지정
-
-        return new ResponseEntity<>(resultImage, headers, HttpStatus.OK);
-    }
-
-
-    // ocr
+    // 영수증 인식 (OCR)
     public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
         Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
@@ -83,19 +70,6 @@ public class YoloService {
         return new ReceiptResponse(purchaseDate, matchedItems);
     }
 
-    //ocr2
-    public List<String> ocr(MultipartFile imageFile) throws IOException {
-        Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-
-        // '품목' 추출
-        List<String> items = (List<String>) response.get("품목");
-
-        // 품목 리스트만 리턴
-        return items;
-    }
-
-
-    //메서드
     private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -149,6 +123,7 @@ public class YoloService {
         }
     }
 
+    // 영수증에서 인식한 글자와 식품 매치
     private Set<String> matchItems(List<String> items) {
         Set<String> matchedItemsSet = new HashSet<>();
         List<String> ITEMS_TO_CHECK = Arrays.asList(

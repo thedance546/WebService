@@ -30,12 +30,6 @@ public class YoloController {
         }
     }
 
-    //바운딩
-    @PostMapping("/items/detection2")
-    public ResponseEntity<byte[]> getBoundingBoxImage(@RequestParam("image") MultipartFile imageFile) throws IOException {
-        return yoloService.b(imageFile);
-    }
-
     // receipt
     @PostMapping("/receipts")
     public ResponseEntity<ReceiptResponse> processImage(@RequestParam("image") MultipartFile imageFile) {
@@ -45,11 +39,5 @@ public class YoloController {
         } catch (IOException e) {
             return ResponseEntity.status(500).body(new ReceiptResponse(null, List.of("Failed to process image")));
         }
-    }
-
-    //ocr2
-    @PostMapping("/receipts2")
-    public List<String> ocr(@RequestParam("image") MultipartFile imageFile) throws IOException {
-        return yoloService.ocr(imageFile);
     }
 }

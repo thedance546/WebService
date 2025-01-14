@@ -43,7 +43,6 @@ public class MessageService {
         messageRepository.save(message);
     }
 
-
     // 현재 로그인한 유저 정보 추출
     private User getCurrentUser(String accessToken) {
         String email = jwtService.extractUsername(accessToken);

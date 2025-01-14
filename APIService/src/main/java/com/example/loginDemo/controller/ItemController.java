@@ -1,13 +1,8 @@
 package com.example.loginDemo.controller;
 
-import com.example.loginDemo.domain.Category;
 import com.example.loginDemo.domain.Item;
-import com.example.loginDemo.domain.StorageMethod;
 import com.example.loginDemo.dto.ItemRequest;
-import com.example.loginDemo.service.CategoryService;
 import com.example.loginDemo.service.ItemService;
-import com.example.loginDemo.service.StorageMethodService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
