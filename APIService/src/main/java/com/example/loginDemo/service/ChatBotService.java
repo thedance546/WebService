@@ -33,12 +33,17 @@ public class ChatBotService {
         requestBody.put("userPreferences", payload.get("userPreferences"));
         requestBody.put("additionalRequest", payload.get("additionalRequest"));
 
-        ResponseEntity<Map> response = sendRequestToFlask(LLM_RECIPE_URL, requestBody, token);
+        ResponseEntity<Map> response;
+        try {
+            response = sendRequestToFlask(LLM_RECIPE_URL, requestBody, token);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Flask 서버와의 통신 중 오류가 발생했습니다: " + e.getMessage());
+        }
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             Map<String, Object> responseBody = (Map<String, Object>) response.getBody().get("response");
             if (responseBody != null && responseBody.containsKey("contents") && responseBody.containsKey("imageLink")) {
-                String contents = ((String) responseBody.get("contents")).replace("\n", " ");
+                String contents = ((String) responseBody.get("contents"));
                 String imageLink = (String) responseBody.get("imageLink");
 
                 RecipeResponse recipeResponse = new RecipeResponse(contents, imageLink);
@@ -63,7 +68,12 @@ public class ChatBotService {
         requestBody.put("question", question);
         requestBody.put("search_results", payload.getOrDefault("search_results", ""));
 
-        ResponseEntity<Map> response = sendRequestToFlask(LLM_GENERAL_URL, requestBody, token);
+        ResponseEntity<Map> response;
+        try {
+            response = sendRequestToFlask(LLM_GENERAL_URL, requestBody, token);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Flask 서버와의 통신 중 오류가 발생했습니다: " + e.getMessage());
+        }
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             String responseContent = (String) response.getBody().get("response");
@@ -77,6 +87,10 @@ public class ChatBotService {
     // 사용자별 메세지 기록 조회
     public List<ChatMessageDTO> getMessageHistory(String token) {
         List<Message> messages = messageService.getAllMessagesByUser(token);
+        if (messages == null || messages.isEmpty()) {
+            throw new IllegalStateException("해당 토큰에 대한 메세지 기록이 없습니다.");
+        }
+
         return messages.stream()
                 .map(message -> new ChatMessageDTO(
                         message.getId(),
