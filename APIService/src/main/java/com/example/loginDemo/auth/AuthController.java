@@ -40,13 +40,9 @@ public class AuthController {
                                     HttpServletResponse response) {
         try {
             accessToken = extractToken(accessToken);
-
             authService.logout(accessToken, refreshToken, response);
-
             return ResponseEntity.ok("Successfully logged out");
-
         } catch (Exception e) {
-            System.err.println("Error during logout: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during logout");
         }
     }

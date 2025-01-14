@@ -34,7 +34,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@RequestHeader("Authorization") String accessToken,@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCategory(@RequestHeader("Authorization") String accessToken, @PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }

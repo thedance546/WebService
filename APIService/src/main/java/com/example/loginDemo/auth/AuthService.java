@@ -121,10 +121,8 @@ public class AuthService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // 새로운 Access Token 생성
+        // 새로운 Access Token 생성 및 반환
         String newAccessToken = jwtService.generateAccessToken(user, user.getRole().name());
-
-        // 새로운 Access Token 반환
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
     }
 
@@ -135,7 +133,6 @@ public class AuthService {
             if (isTokenExpired(accessToken)) {
                 throw new ExpiredJwtException(null, null, "Access Token has expired");
             }
-
             if (isTokenExpired(refreshToken)) {
                 throw new ExpiredJwtException(null, null, "Refresh Token has expired");
             }
@@ -148,11 +145,11 @@ public class AuthService {
             blacklistService.addToBlacklist(accessToken, accessTokenExpiration);
             blacklistService.addToBlacklist(refreshToken, refreshTokenExpiration);
 
-            // Refresh Token을 쿠키에서 삭제 (빈 값으로 설정)
+            // Refresh Token을 쿠키에서 삭제
             clearRefreshToken(response);
 
         } catch (ExpiredJwtException e) {
-            System.err.println("Error during logout: " + e.getMessage());
+            System.err.println("Error during logout(access token expiration): " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
             System.err.println("Error during logout: " + e.getMessage());
@@ -160,20 +157,16 @@ public class AuthService {
         }
     }
 
-    /*
-     * Helper Methods
-     */
     private void clearRefreshToken(HttpServletResponse response) {
-        // Refresh Token을 제거하기 위해 빈 값을 가지는 쿠키로 설정
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
-                .maxAge(0)  // 만료 시간을 0으로 설정하여 즉시 삭제
-                .path("/")  // 전체 도메인에서 접근 가능
-                .secure(true)  // HTTPS 연결에서만 전송
-                .sameSite("None")  // 크로스 사이트 쿠키 설정
-                .httpOnly(true)  // JavaScript에서 접근할 수 없도록 설정
+                .maxAge(0)
+                .path("/")
+                .secure(true)
+                .sameSite("None")
+                .httpOnly(true)
                 .build();
 
-        response.setHeader("Set-Cookie", cookie.toString());  // 응답 헤더에 쿠키 설정
+        response.setHeader("Set-Cookie", cookie.toString());
     }
 
     private boolean isTokenExpired(String token) {
@@ -182,21 +175,20 @@ public class AuthService {
             Date expiration = jwtService.extractExpiration(token);
             return expiration.before(new Date());
         } catch (Exception e) {
-            return true; // 예외 발생 시 토큰이 유효하지 않다고 간주
+            return true;
         }
     }
 
     // 로그인 후 처리
     private ResponseEntity<AuthenticationResponse> handleLogin(HttpServletResponse response, String accessToken, String refreshToken) {
-        // Refresh Token을 HTTPOnly 쿠키에 설정
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .maxAge(7 * 24 * 60 * 60)  // 7일
                 .path("/")
-                .secure(true)  // HTTPS 연결에서만 전송
-                .sameSite("None")  // 크로스 사이트 요청에서 쿠키를 사용할 수 있도록
-                .httpOnly(true)  // JS에서 접근할 수 없도록
+                .secure(true)
+                .sameSite("None")
+                .httpOnly(true)
                 .build();
-        response.setHeader("Set-Cookie", cookie.toString());  // 응답 헤더에 쿠키 설정
+        response.setHeader("Set-Cookie", cookie.toString());
 
         // Access Token을 AuthenticationResponse에 담아 반환
         AuthenticationResponse authResponse = new AuthenticationResponse(accessToken);
@@ -244,7 +236,6 @@ public class AuthService {
     }
 
     private boolean isValidEmailFormat(String email) {
-        // 이메일 형식 검사를 위한 정규식
         String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
         return Pattern.compile(emailRegex).matcher(email).matches();
     }
