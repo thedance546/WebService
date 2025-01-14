@@ -3,7 +3,6 @@ package com.example.loginDemo.service;
 
 import com.example.loginDemo.dto.ChatMessageDTO;
 import com.example.loginDemo.dto.RecipeResponse;
-import com.example.loginDemo.service.ChatBotService;
 import com.example.loginDemo.domain.*;
 import com.example.loginDemo.service.MessageService;
 import lombok.RequiredArgsConstructor;
