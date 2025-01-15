@@ -27,4 +27,4 @@ jobs:
       run: |
         docker buildx build --no-cache --push \
           -t ${{ secrets.LLM_DOCKER_USERNAME }}/llm_flask:latest \
-          ./LLM/llm_run_latest.py
+          ./LLM/
