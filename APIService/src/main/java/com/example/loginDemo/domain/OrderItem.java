@@ -32,7 +32,7 @@ public class OrderItem {
     @JoinColumn(name = "item_id", nullable = true)
     private Item item;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_custom_item_id", nullable = true)
     private UserCustomItem userCustomItem;
 }

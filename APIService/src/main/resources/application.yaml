@@ -10,11 +10,13 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://mariadb-container:3306/service?characterEncoding=UTF-8&serverTimezone=UTC
+#    url: jdbc:mariadb://mariadb-container-:3306/service?characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: 1234
 
   data:
     redis:
+#      host: redis-container-
       host: redis-container
       port: 6379
 

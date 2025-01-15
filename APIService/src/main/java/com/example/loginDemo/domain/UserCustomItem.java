@@ -14,17 +14,17 @@ public class UserCustomItem {
     @Column(name = "user_custom_item_id", updatable = false)
     private Long id;
 
-    @Column(name = "item_name", nullable = false, unique = true)
+    @Column(name = "item_name", nullable = false)
     private String itemName;
 
-    @Column(name = "count", nullable = false, unique = true)
+    @Column(name = "count", nullable = false)
     @Min(0)
     private int count;
 
-    @Column(name = "category_name", nullable = false, unique = true)
+    @Column(name = "category_name", nullable = false)
     private String categoryName;
 
-    @Column(name = "storage_method_name", nullable = false)
+    @Column(name = "storage_method_name")
     private String storageMethodName;
 
     @Column(name = "sell_by_days", nullable = false)

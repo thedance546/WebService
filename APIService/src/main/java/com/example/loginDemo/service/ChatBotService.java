@@ -22,6 +22,8 @@ public class ChatBotService {
 
     private static final String LLM_GENERAL_URL = "http://llm-container:5002/ask/general";
     private static final String LLM_RECIPE_URL = "http://llm-container:5002/ask/recipe";
+//    private static final String LLM_GENERAL_URL = "http://llm-container-:5002/ask/general";
+//    private static final String LLM_RECIPE_URL = "http://llm-container-:5002/ask/recipe";
 
     // 사용자가 입력한 재료 정보를 기반으로 레시피를 요청
     public RecipeResponse askForRecipes(Map<String, Object> payload, String token) {
