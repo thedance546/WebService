@@ -33,10 +33,10 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
       const footerHeight = 120;
       const availableHeight = height - headerHeight - footerHeight;
 
-      const cardWidth = 200;
+      const cardWidth = 240;
       const cardHeight = 120;
-      const horizontalGap = 16;
-      const verticalGap = 16;
+      const horizontalGap = 8;
+      const verticalGap = 8;
 
       const cols = Math.floor((width + horizontalGap) / (cardWidth + horizontalGap));
       const rows = Math.floor((availableHeight + verticalGap) / (cardHeight + verticalGap));
