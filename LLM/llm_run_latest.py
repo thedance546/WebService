@@ -211,11 +211,11 @@ def generate_sentence(data):
 
 
 
-def filter_special_characters(text):
-    # **과 ###을 제거
-    text = re.sub(r'\*\*', '', text)  # ** 제거
-    text = re.sub(r'#', '', text)  # # 제거
-    return text.strip()
+# def filter_special_characters(text):
+#     # **과 ###을 제거
+#     text = re.sub(r'\*\*', '', text)  # ** 제거
+#     text = re.sub(r'#', '', text)  # # 제거
+#     return text.strip()
 
 
 # Flask 앱 설정
@@ -279,9 +279,9 @@ def ask_recipe():
             return jsonify({"response": "검색된 결과가 없습니다."}), 404
         
         response_origin = generate_rag_answer(query_text)
-        response_contents = filter_special_characters(response_origin["contents"])  # 문자열만 처리
+        # response_contents = filter_special_characters(response_origin["contents"])  # 문자열만 처리
         response = {
-            "contents": response_contents,
+            "contents": response_origin["contents"],
             "imageLink": response_origin["imageLink"]  # 이미지 링크 그대로 유지
         }
 
