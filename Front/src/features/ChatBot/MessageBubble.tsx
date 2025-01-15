@@ -16,7 +16,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
   const containerStyle = {
     display: 'flex',
     alignItems: 'flex-start',
-    marginBottom: '0px',
+    marginBottom: '10px',
     justifyContent: isUser ? 'flex-end' : 'flex-start',
   };
 
