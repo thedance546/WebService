@@ -22,12 +22,12 @@ import java.util.*;
 @RequiredArgsConstructor
 public class YoloService {
     private final RestTemplate restTemplate = new RestTemplate();
-//    private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
-//    private final String Bounding_URL = "http://yolo-container:5000/object-detection/object_detection/image";
-//    private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
-    private final String Ingredient_URL = "http://yolo-container-:5000/object-detection/object_detection";
-    private final String Bounding_URL = "http://yolo-container-:5000/object-detection/object_detection/image";
-    private final String Receipt_URL = "http://receipt-container-:5001/ocr-detection";
+    private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
+    private final String Bounding_URL = "http://yolo-container:5000/object-detection/object_detection/image";
+    private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
+//    private final String Ingredient_URL = "http://yolo-container-:5000/object-detection/object_detection";
+//    private final String Bounding_URL = "http://yolo-container-:5000/object-detection/object_detection/image";
+//    private final String Receipt_URL = "http://receipt-container-:5001/ocr-detection";
 
     // 식재료 인식 + 바운딩 박스 리턴
     public DetectionResponse detectAndReturn(MultipartFile imageFile) throws IOException {
