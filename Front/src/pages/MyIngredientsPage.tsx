@@ -41,7 +41,6 @@ const MyIngredientsPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await recognizeReceipt(selectedFile);
-      console.log("영수증 인식 응답:", response);
 
       addIngredientModal.setState({
         purchaseDate: response.purchaseDate || "알 수 없음",

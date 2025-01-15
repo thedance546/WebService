@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
     private final UserCustomItemRepository userCustomItemRepository;
@@ -143,7 +143,6 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-
     //orderItem의 count수정
     @Transactional
     public void updateOrderItemCount(Long orderItemId, int newCount, String accessToken) {
@@ -161,7 +160,6 @@ public class OrderService {
         // 주문 아이템 업데이트 (자동으로 영속성 컨텍스트에서 업데이트됨)
         orderItemRepository.save(orderItem);
     }
-
 
     // 유저가 주문한 주문 아이템 삭제
     @Transactional

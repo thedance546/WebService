@@ -3,7 +3,6 @@ package com.example.loginDemo.service;
 import com.example.loginDemo.domain.StorageMethod;
 import com.example.loginDemo.repository.ItemRepository;
 import com.example.loginDemo.repository.StorageMethodRepository;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

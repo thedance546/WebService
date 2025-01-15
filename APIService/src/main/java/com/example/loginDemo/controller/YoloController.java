@@ -9,12 +9,12 @@ import org.springframework.http.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.io.IOException;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:8080")
 @RequiredArgsConstructor
 public class YoloController {
     private final YoloService yoloService;

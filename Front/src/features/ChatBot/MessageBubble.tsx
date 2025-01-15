@@ -1,6 +1,7 @@
 // src/features/ChatBot/MessageBubble.tsx
 
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 interface MessageBubbleProps {
   sender: string;
@@ -24,16 +25,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
     borderRadius: '10px',
     backgroundColor: isUser ? '#007bff' : '#6c757d',
     color: 'white',
-    maxWidth: isUser ? '60%' : '100%',
+    maxWidth: isUser ? '60%' : '80%',
     wordBreak: 'break-word' as 'break-word',
   };
-
-  const formattedText = text?.replace(/\\n/g, '\n').split('\n').map((line, index) => (
-    <React.Fragment key={index}>
-      {line}
-      <br />
-    </React.Fragment>
-  ));
 
   return (
     <div style={containerStyle}>
@@ -46,16 +40,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
             height: '40px',
             borderRadius: '50%',
             marginRight: '10px',
-            alignSelf: 'flex-start',
           }}
         />
       )}
       {text && (
         <div style={bubbleStyle}>
-          {formattedText}
+          <ReactMarkdown>{text}</ReactMarkdown>
         </div>
       )}
-      {/* 이미지가 있는 경우에만 렌더링 */}
       {attachedImage && (
         <img
           src={attachedImage}

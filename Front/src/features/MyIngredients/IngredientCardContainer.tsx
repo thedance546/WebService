@@ -1,6 +1,6 @@
 // src/features/MyIngredients/IngredientCardContainer.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
 import TopTabMenu from "./TopTabMenu";
 import IngredientCard from "./IngredientCard";
@@ -16,67 +16,96 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   onCardClick,
 }) => {
   const { ingredients } = useIngredients();
-  const [activeTab, setActiveTab] = useState<string>("전체");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12); // 기본 값
-  const [, setColumns] = useState(3); // 기본 열 수
+  const [activeSort, setActiveSort] = useState<string>("status");
+  const [sortDirection, setSortDirection] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+  const [columns, setColumns] = useState<number>(3);
 
   useEffect(() => {
     const calculateItemsPerPage = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
 
-      // 최소 열 수와 행 수 설정
-      const minCols = 1;
-      const minRows = 1;
+      const headerHeight = 60; // TopTabMenu 높이
+      const footerHeight = 120; // 페이지네이션 높이 + 여유 공간
+      const availableHeight = height - headerHeight - footerHeight;
 
-      const cols = Math.max(Math.floor(width / 200), minCols); // 최소 열 개수 보장
-      const rows = Math.max(Math.floor(height / 150), minRows); // 최소 행 개수 보장
+      const cardWidth = 200;
+      const cardHeight = 120; // 카드 높이 유지
+      const horizontalGap = 16;
+      const verticalGap = 16;
+
+      const cols = Math.floor((width + horizontalGap) / (cardWidth + horizontalGap));
+      const rows = Math.floor((availableHeight + verticalGap) / (cardHeight + verticalGap));
 
       setColumns(cols);
       setItemsPerPage(cols * rows);
     };
 
-    calculateItemsPerPage(); // 초기 계산
-    window.addEventListener("resize", calculateItemsPerPage); // 리사이즈 이벤트 등록
+    calculateItemsPerPage();
+    window.addEventListener("resize", calculateItemsPerPage);
 
     return () => {
-      window.removeEventListener("resize", calculateItemsPerPage); // 이벤트 제거
+      window.removeEventListener("resize", calculateItemsPerPage);
     };
   }, []);
 
-  const filteredIngredients =
-    activeTab === "전체"
-      ? ingredients
-      : ingredients.filter(
-          (item) => String(item.storageMethod?.storageMethodName) === activeTab
-        );
+  const sortedIngredients = useMemo(() => {
+    let sorted = [...ingredients];
+    switch (activeSort) {
+      case "status":
+        sorted.sort((a, b) => {
+          const aDate = a.consumeBy ? new Date(a.consumeBy).getTime() : Infinity;
+          const bDate = b.consumeBy ? new Date(b.consumeBy).getTime() : Infinity;
+          return sortDirection ? aDate - bDate : bDate - aDate;
+        });
+        break;
+      case "name":
+        sorted.sort((a, b) => {
+          const comparison = a.name.localeCompare(b.name);
+          return sortDirection ? comparison : -comparison;
+        });
+        break;
+      case "quantity":
+        sorted.sort((a, b) => (sortDirection ? b.quantity - a.quantity : a.quantity - b.quantity));
+        break;
+    }
+    return sorted;
+  }, [activeSort, sortDirection, ingredients]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredIngredients.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = sortedIngredients.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalPages = Math.ceil(filteredIngredients.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedIngredients.length / itemsPerPage);
 
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
-    <div style={{ position: "relative", paddingBottom: "5rem" }}>
+    <div style={{ position: "relative", paddingBottom: "7rem" }}>
       <TopTabMenu
-        activeTab={activeTab}
-        onTabClick={(tab) => {
-          setActiveTab(tab);
-          setCurrentPage(1);
+        activeSort={activeSort}
+        sortDirection={sortDirection}
+        onSortChange={(sortType) => {
+          if (activeSort === sortType) {
+            setSortDirection(!sortDirection);
+          } else {
+            setActiveSort(sortType);
+            setSortDirection(true);
+          }
         }}
         onAddClick={onAddClick}
       />
+
       <div
         className="ingredient-card-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: "1rem",
+          gridTemplateColumns: `repeat(${columns}, 1fr)`,
+          gap: "16px",
           padding: "1rem",
+          overflowY: "auto", // 내부 스크롤 추가
         }}
       >
         {currentItems.map((ingredient) => (
@@ -87,12 +116,11 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
           />
         ))}
       </div>
-
       <div
         className="pagination"
         style={{
           position: "fixed",
-          bottom: "5rem", // 네비게이션 바로 위
+          bottom: "5rem",
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",

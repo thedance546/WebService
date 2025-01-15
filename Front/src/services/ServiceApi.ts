@@ -2,9 +2,11 @@
 
 import { api, getAuthHeaders } from './Api';
 import { handleApiError } from '../utils/Utils';
-import { OrderRequest,
+import {
+    Message, OrderRequest,
     ImageDetectionResult,
-    ReceiptRecognitionResult } from '../types/FeatureTypes';
+    ReceiptRecognitionResult
+} from '../types/FeatureTypes';
 
 /**
  * 이미지 업로드 및 데이터 반환 공통 함수
@@ -34,37 +36,16 @@ const uploadImageToEndpoint = async <T>(
     }
 };
 
- // 식재료 인식 API
- export const detectObjectsInImage = async (file: File): Promise<ImageDetectionResult> => {
-    const formData = new FormData();
-    formData.append('image', file);
-  
-    try {
-      const headers = getAuthHeaders('Bearer');
-      const response = await api.post<ImageDetectionResult>('/items/detection', formData, { headers });
-  
-      console.log('Detection API Response:', response.data);
-  
-      // 새 탭에서 이미지 확인
-      const newWindow = window.open();
-      if (newWindow && response.data.imageData) {
-        newWindow.document.write(`<img src="${response.data.imageData}" alt="Detected Image" />`);
-        newWindow.document.title = 'YOLO Detection Result';
-      }
-  
-      if (!response.data.imageData.startsWith('data:image/')) {
-        throw new Error('Invalid image data format');
-      }
-  
-      return response.data;
-    } catch (error) {
-      console.error('Image detection failed:', error);
-      throw error;
-    }
-  };
-  
+// 식재료 인식 API
+export const detectObjectsInImage = async (file: File): Promise<ImageDetectionResult> => {
+    return uploadImageToEndpoint<ImageDetectionResult>(
+        '/items/detection',
+        file,
+        '식재료 인식에 실패했습니다.'
+    );
+};
 
- // 영수증 인식 API
+// 영수증 인식 API
 export const recognizeReceipt = async (file: File): Promise<ReceiptRecognitionResult> => {
     return uploadImageToEndpoint<ReceiptRecognitionResult>(
         '/receipts',
@@ -133,30 +114,54 @@ export const deleteUserIngredient = async (orderItemId: number): Promise<string>
 
 // 챗봇 UI
 /**
- * 공통 API 호출 함수
- * @param endpoint - API 요청 엔드포인트
- * @param question - 전달할 질문 데이터 (문자열 또는 JSON)
- * @returns API 응답에서 추출한 답변
- */
-const sendChatMessage = async (endpoint: string, question: string): Promise<string> => {
+* 레시피 챗봇 질의 API
+* @param payload - 레시피 추천 요청 데이터
+* @returns 레시피 추천 응답 데이터
+*/
+export const fetchRecipeRecommendation = async (payload: any): Promise<any> => {
     try {
-        const requestBody = { question }; // 질문 데이터를 공통 구조로 만듦
-        const headers = getAuthHeaders('Bearer'); // Bearer 토큰 추가
-        const response = await api.post(endpoint, requestBody, { headers });
-        return response.data.answer; // 응답에서 "answer" 값만 반환
-    } catch (error: any) {
-        throw handleApiError(error, `${endpoint} 요청 중 오류가 발생했습니다.`);
+        const headers = getAuthHeaders('Bearer');
+        console.log('레시피 추천 질의:', payload);
+        const response = await api.post('/chat/recipes/questions', payload, { headers });
+        console.log('레시피 추천 응답:', response.data);
+        return response.data.response;
+    } catch (error) {
+        console.error('레시피 추천 요청 실패:', error);
+        throw handleApiError(error, '레시피 추천 요청에 실패했습니다.');
     }
 };
 
-// 일반 질의
-export const sendGeneralChatMsg = async (message: string): Promise<string> => {
-    return sendChatMessage('/chat/general/questions', message); // 일반 질의 엔드포인트
+/**
+* 일반 챗봇 질의 API
+* @param question - 일반 질문 데이터
+* @returns 챗봇의 응답
+*/
+export const fetchGeneralChatResponse = async (question: string): Promise<string> => {
+    try {
+        const headers = getAuthHeaders('Bearer');
+        const payload = { question };
+        console.log('일반 챗봇 질의:', payload);
+        const response = await api.post('/chat/general/questions', payload, { headers });
+        console.log('일반 챗봇 응답:', response.data);
+        return response.data.response;
+    } catch (error) {
+        console.error('일반 챗봇 질의 요청 실패:', error);
+        throw handleApiError(error, '일반 챗봇 요청에 실패했습니다.');
+    }
 };
 
-// 레시피 추천
-export const sendRecipeChatMsg = async (message: string): Promise<string> => {
-    return sendChatMessage('/chat/recipes/questions', message); // 레시피 추천 엔드포인트
+/**
+ * 모든 챗봇 메시지 조회 API
+ * @returns 메시지 리스트
+ */
+export const fetchAllChatMessages = async (): Promise<Message[]> => {
+    try {
+        const headers = getAuthHeaders('Bearer');
+        const response = await api.get<Message[]>('/chat/messages', { headers });
+        console.log('모든 챗봇 메시지 조회 성공:', response.data);
+        return response.data;
+    } catch (error: any) {
+        console.error('모든 챗봇 메시지 조회 실패:', error);
+        throw new Error('모든 챗봇 메시지 조회에 실패했습니다.');
+    }
 };
-
-// 모든 메시지 조회

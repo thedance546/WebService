@@ -22,37 +22,65 @@ import java.util.*;
 @RequiredArgsConstructor
 public class YoloService {
     private final RestTemplate restTemplate = new RestTemplate();
-//    private final String Ingredient_URL = "http://yolo-container-:5000/object-detection/object_detection";
-//    private final String Receipt_URL = "http://receipt-container-:5001/ocr-detection";
     private final String Ingredient_URL = "http://yolo-container:5000/object-detection/object_detection";
+    private final String Bounding_URL = "http://yolo-container:5000/object-detection/object_detection/image";
     private final String Receipt_URL = "http://receipt-container:5001/ocr-detection";
 
+    // 식재료 인식 + 바운딩 박스 리턴
     public DetectionResponse detectAndReturn(MultipartFile imageFile) throws IOException {
         // 객체 감지 결과 가져오기
         Map<String, String> detectionResults = sendPostRequest(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
         // 바운딩 박스를 그린 결과 이미지 가져오기
-        byte[] resultImage = sendPostRequestImage(Ingredient_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
-
-        // 디버깅: 반환된 이미지 크기 출력
-        System.out.println("바운딩 박스 이미지 크기(byte): " + resultImage.length);
+        byte[] resultImage = sendPostRequestImage(Bounding_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
 
         // Base64로 인코딩
         String base64Image = Base64.getEncoder().encodeToString(resultImage);
-
-        // 디버깅: Base64 문자열 길이 출력
-        System.out.println("Base64 인코딩된 이미지 길이: " + base64Image.length());
-
-        // Base64 URI 생성
         String imageDataUri = "data:image/jpeg;base64," + base64Image;
-
-        // 디버깅: Base64 URI 출력
-        System.out.println("Base64 URI: " + imageDataUri.substring(0, 100) + "...");
 
         // DTO 생성하여 반환
         return new DetectionResponse(detectionResults, imageDataUri);
     }
 
+    // 영수증 인식 (OCR)
+    public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
+        Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+
+        // 응답이 null이거나 비어 있는 경우 예외 처리
+        if (response == null || response.isEmpty()) {
+            throw new IllegalArgumentException("Flask 서버에서 응답이 없습니다.");
+        }
+
+        // '품목' 추출
+        List<String> items = (List<String>) response.get("품목");
+
+        // '품목'이 null인 경우 예외 처리
+        if (items == null) {
+            throw new IllegalArgumentException("영수증에서 인식된 내역이 없습니다.");
+        }
+
+        // 아이템 매칭
+        Set<String> matchedItemsSet = matchItems(items);
+
+        // 매칭된 아이템이 없으면 "No matched items"로 처리
+        List<String> matchedItems = new ArrayList<>(matchedItemsSet);
+        if (matchedItems.isEmpty()) {
+            matchedItems.add("No matched items");
+        }
+
+        // '구매일자' 처리
+        String purchaseDateString = (String) response.get("구매일자");
+        LocalDate purchaseDate;
+        if (purchaseDateString == null) {
+            // 구매일자가 null인 경우 현재 날짜 사용
+            purchaseDate = LocalDate.now();
+        } else {
+            // 구매일자가 있는 경우 파싱
+            purchaseDate = LocalDate.parse(purchaseDateString, DateTimeFormatter.ofPattern("yy-MM-dd"));
+        }
+        // ReceiptResponse 객체 생성하여 리턴
+        return new ReceiptResponse(purchaseDate, matchedItems);
+    }
 
     private byte[] sendPostRequestImage(String url, byte[] imageBytes, String filename) {
         HttpHeaders headers = new HttpHeaders();
@@ -69,11 +97,9 @@ public class YoloService {
         HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
 
         try {
-            // Flask 서버에 이미지 요청 및 응답 수신
+            // 이미지 반환을 byte[]로 받기
             ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
-
             if (response.getStatusCode() == HttpStatus.OK) {
-                System.out.println("Flask 서버로부터 받은 이미지 크기: " + response.getBody().length);
                 return response.getBody();
             } else {
                 throw new RuntimeException("요청 실패: 상태 코드 " + response.getStatusCode());
@@ -83,30 +109,33 @@ public class YoloService {
         }
     }
 
+    private <T> Map sendPostRequest(String url, byte[] imageBytes, String filename) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-    // ocr
-    public ReceiptResponse processReceiptImage(MultipartFile imageFile) throws IOException {
-        Map<String, Object> response = sendPostRequest(Receipt_URL, imageFile.getBytes(), imageFile.getOriginalFilename());
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("image", new ByteArrayResource(imageBytes) {
+            @Override
+            public String getFilename() {
+                return filename;
+            }
+        });
 
-        // '품목' 추출
-        List<String> items = (List<String>) response.get("품목");
+        HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        // 아이템 매칭
-        Set<String> matchedItemsSet = matchItems(items);
-
-        // 매칭된 아이템이 없으면 "No matched items"로 처리
-        List<String> matchedItems = new ArrayList<>(matchedItemsSet);
-        if (matchedItems.isEmpty()) {
-            matchedItems.add("No matched items");
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("요청 실패: 상태 코드 " + response.getStatusCode());
+            }
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Flask 서버와의 통신에 실패했습니다.", e);
         }
-
-        String purchaseDateString = (String) response.get("구매일자");
-        LocalDate purchaseDate = LocalDate.parse(purchaseDateString, DateTimeFormatter.ofPattern("yy-MM-dd"));
-
-        // ReceiptResponse 객체 생성하여 리턴
-        return new ReceiptResponse(purchaseDate, matchedItems);
     }
 
+    // 영수증에서 인식한 글자와 식품 매치
     private Set<String> matchItems(List<String> items) {
         Set<String> matchedItemsSet = new HashSet<>();
         List<String> ITEMS_TO_CHECK = Arrays.asList(
@@ -132,34 +161,5 @@ public class YoloService {
             }
         }
         return matchedItemsSet;
-    }
-
-    //공통 메서드
-    private <T> Map sendPostRequest(String url, byte[] imageBytes, String filename) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("image", new ByteArrayResource(imageBytes) {
-            @Override
-            public String getFilename() {
-                return filename;
-            }
-        });
-
-        HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
-
-        try {
-            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                // 디버깅: 반환된 JSON 데이터 확인
-                System.out.println("Flask 서버에서 반환된 데이터: " + response.getBody());
-                return response.getBody();
-            } else {
-                throw new RuntimeException("요청 실패: 상태 코드 " + response.getStatusCode());
-            }
-        } catch (HttpClientErrorException e) {
-            throw new RuntimeException("Flask 서버와의 통신에 실패했습니다.", e);
-        }
     }
 }
