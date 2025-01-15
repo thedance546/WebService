@@ -3,51 +3,23 @@
 import React, { CSSProperties, ReactNode } from 'react';
 
 interface GlobalBackgroundProps {
-  title?: string;
   children: ReactNode;
-  cardStyle?: CSSProperties;
-  cardClassName?: string;
 }
 
-const GlobalBackground: React.FC<GlobalBackgroundProps> = ({
-  title,
-  children,
-  cardStyle = {},
-  cardClassName = '',
-}) => {
+const GlobalBackground: React.FC<GlobalBackgroundProps> = ({ children }) => {
   const style: CSSProperties = {
     backgroundImage: 'url(/Images/Background_Welcome.webp)',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   };
 
-  return (
-    <div style={style} className="d-flex flex-column align-items-center min-vh-100">
-      {title && (
-        <div
-          className="text-light text-center"
-          style={{
-            marginTop: '6dvh',
-            marginBottom: '2vh',
-            fontSize: '2rem',
-          }}
-        >
-          {title}
-        </div>
-      )}
-      <div
-        className={`card p-4 shadow-sm ${cardClassName}`}
-        style={{
-          maxWidth: '600px',
-          width: '85%',
-          ...cardStyle,
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  );
+  return <div style={style}>{children}</div>;
 };
 
 export default GlobalBackground;

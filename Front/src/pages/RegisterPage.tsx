@@ -33,29 +33,9 @@ const RegisterPage: React.FC = () => {
   return (
     <GlobalBackground>
       {/* 로고와 타이틀 구역 */}
-      <div
-        className="d-flex align-items-center justify-content-center mb-4"
-        style={{
-          marginTop: '5rem', // 상단 여백
-        }}
-      >
-        <img
-          src={logo}
-          alt="맛집사 로고"
-          style={{
-            width: '100px',
-            height: '100px',
-            marginRight: '1rem',
-          }}
-        />
-        <img
-          src={title}
-          alt="맛집사 타이틀"
-          style={{
-            width: '200px',
-            height: 'auto',
-          }}
-        />
+      <div className="d-flex align-items-center justify-content-center mb-4" style={{ marginTop: '5rem' }}>
+        <img src={logo} alt="맛집사 로고" style={{ width: '100px', height: '100px', marginRight: '1rem' }} />
+        <img src={title} alt="맛집사 타이틀" style={{ width: '200px', height: 'auto' }} />
       </div>
 
       <form onSubmit={onSubmit}>
