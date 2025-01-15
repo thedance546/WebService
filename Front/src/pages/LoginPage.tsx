@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
     <GlobalBackground>
       <form onSubmit={onSubmit}>
         <div className="mb-3 d-flex align-items-center">
-          <label className="form-label mb-0 me-4" style={{ width: '20%' }}>
+          <label className="form-label mb-0 me-4" style={{ width: '20%', color: 'white' }}>
             이메일
           </label>
           <input
@@ -43,7 +43,7 @@ const LoginPage: React.FC = () => {
           />
         </div>
         <div className="mb-3 d-flex align-items-center">
-          <label className="form-label mb-0 me-4" style={{ width: '20%' }}>
+          <label className="form-label mb-0 me-4" style={{ width: '20%', color: 'white' }}>
             비밀번호
           </label>
           <input

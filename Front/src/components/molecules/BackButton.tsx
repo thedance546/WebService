@@ -12,8 +12,8 @@ interface BackButtonProps {
 
 const BackButton: React.FC<BackButtonProps> = ({
   to = '/',
-  className = 'btn btn-secondary w-50 me-2',
-  children = '뒤로가기',
+  className = 'btn w-50 me-2',
+  children = '<',
 }) => {
   const navigate = useNavigate();
 
@@ -22,7 +22,15 @@ const BackButton: React.FC<BackButtonProps> = ({
   };
 
   return (
-    <Button onClick={handleBack} className={className}>
+    <Button
+      onClick={handleBack}
+      className={className}
+      style={{
+        backgroundColor: '#DFF4E0',
+        color: 'black',
+        border: 'none',
+      }}
+    >
       {children}
     </Button>
   );
