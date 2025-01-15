@@ -16,7 +16,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
   const containerStyle = {
     display: 'flex',
     alignItems: 'flex-start',
-    marginBottom: '10px',
+    marginBottom: '0px',
     justifyContent: isUser ? 'flex-end' : 'flex-start',
   };
 
@@ -45,7 +45,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ sender, text, profileImag
       )}
       {text && (
         <div style={bubbleStyle}>
-          <ReactMarkdown>{text}</ReactMarkdown>
+          <ReactMarkdown
+            components={{
+              p: ({ node, ...props }) => <p style={{ margin: 0, lineHeight: "1.4" }} {...props} />,
+            }}
+          >
+            {text}
+          </ReactMarkdown>
         </div>
       )}
       {attachedImage && (

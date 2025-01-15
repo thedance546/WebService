@@ -21,7 +21,7 @@ interface ChatbotProviderProps {
 const getInitialMessages = (): Message[] => [
     {
         sender: Sender.Bot,
-        text: '안녕하세요! 맛집사 챗봇입니다! 🤖\n\n식재료 정보나 관리에 대해 물어보세요 \n\nAI 레시피 추천은 옵션에서 할 수 있습니다',
+        text: '안녕하세요! 맛집사 챗봇입니다! 🤖\n\n식재료 정보나 관리에 대해 물어보세요\n\nAI 레시피 추천은 옵션에서 할 수 있습니다',
         profileImage: botAvatar,
     },
 ];
