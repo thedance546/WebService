@@ -27,6 +27,6 @@ public class Order {
     private LocalDate orderDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = true, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
 }
