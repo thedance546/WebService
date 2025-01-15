@@ -1,6 +1,6 @@
 // src/features/MyIngredients/IngredientCardContainer.tsx
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
 import TopTabMenu from "./TopTabMenu";
 import IngredientCard from "./IngredientCard";
@@ -19,7 +19,42 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   const [activeSort, setActiveSort] = useState<string>("status"); // 기본 정렬 기준
   const [sortDirection, setSortDirection] = useState<boolean>(true); // true: 오름차순, false: 내림차순
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(12);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(12); // 기본 값
+  const [columns, setColumns] = useState<number>(3); // 기본 열 수
+
+  // 화면 크기에 따라 동적으로 아이템 수 계산
+  useEffect(() => {
+    const calculateItemsPerPage = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      // 여유 공간 고려
+      const headerHeight = 60; // TopTabMenu 높이
+      const footerHeight = 80; // 페이지네이션 높이
+      const availableHeight = height - headerHeight - footerHeight;
+
+      // 카드 크기 및 간격 설정
+      const cardWidth = 200;
+      const cardHeight = 150;
+      const horizontalGap = 16; // 카드 간격
+      const verticalGap = 16;
+
+      // 계산된 열과 행 수
+      const cols = Math.floor((width + horizontalGap) / (cardWidth + horizontalGap));
+      const rows = Math.floor((availableHeight + verticalGap) / (cardHeight + verticalGap));
+
+      // 상태 업데이트
+      setColumns(cols);
+      setItemsPerPage(cols * rows);
+    };
+
+    calculateItemsPerPage();
+    window.addEventListener("resize", calculateItemsPerPage);
+
+    return () => {
+      window.removeEventListener("resize", calculateItemsPerPage);
+    };
+  }, []);
 
   const sortedIngredients = useMemo(() => {
     let sorted = [...ingredients];
@@ -72,8 +107,8 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
         className="ingredient-card-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, max-content))",
-          gap: "1rem",
+          gridTemplateColumns: `repeat(${columns}, 1fr)`,
+          gap: "16px",
           padding: "1rem",
         }}
       >
