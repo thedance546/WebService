@@ -9,7 +9,8 @@ COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 애플리케이션 소스 복사
-COPY . .
+COPY llm_run_latest.py .
+COPY pj.env .
 
 # Flask 앱 실행
 CMD ["python", "llm_run_latest.py"]
