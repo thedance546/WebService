@@ -22,7 +22,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const options = [
+  const topOptions = [
     {
       label: '레시피 추천 받기',
       icon: '🍴',
@@ -39,13 +39,13 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
         onClose();
       },
     },
-    { label: '채팅 내역 지우기', icon: '🗑️', action: clearMessages },
   ];
 
   return (
     <Modal title="옵션 메뉴" onClose={onClose}>
-      <Grid columns={2} columnsMd={2} margin="0 1rem" className="gap-4">
-        {options.map((option, index) => (
+      {/* 위 2개의 버튼 */}
+      <Grid columns={2} columnsMd={2} margin="0 1rem" className="gap-4 mb-3">
+        {topOptions.map((option, index) => (
           <div key={index} className="col d-flex justify-content-center">
             <Button
               onClick={option.action}
@@ -58,6 +58,22 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
           </div>
         ))}
       </Grid>
+
+      {/* 아래 긴 버튼 */}
+      <div className="d-flex justify-content-center mt-3">
+        <Button
+          onClick={clearMessages}
+          className="d-flex align-items-center justify-content-center px-4 py-3"
+          variant="light"
+          style={{
+            width: '80%', // 긴 버튼
+            borderRadius: '8px',
+          }}
+        >
+          <span style={{ marginRight: '10px' }}>🗑️</span>
+          <span>채팅 내역 지우기</span>
+        </Button>
+      </div>
     </Modal>
   );
 };
