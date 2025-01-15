@@ -1,0 +1,6 @@
+flask
+sentence-transformers
+langchain-core
+langchain-openai
+weaviate-client
+python-dotenv
