@@ -16,34 +16,29 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   onCardClick,
 }) => {
   const { ingredients } = useIngredients();
-  const [activeSort, setActiveSort] = useState<string>("status"); // 기본 정렬 기준
-  const [sortDirection, setSortDirection] = useState<boolean>(true); // true: 오름차순, false: 내림차순
+  const [activeSort, setActiveSort] = useState<string>("status");
+  const [sortDirection, setSortDirection] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(12); // 기본 값
-  const [columns, setColumns] = useState<number>(3); // 기본 열 수
+  const [itemsPerPage, setItemsPerPage] = useState<number>(12);
+  const [columns, setColumns] = useState<number>(3);
 
-  // 화면 크기에 따라 동적으로 아이템 수 계산
   useEffect(() => {
     const calculateItemsPerPage = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
 
-      // 여유 공간 고려
       const headerHeight = 60; // TopTabMenu 높이
-      const footerHeight = 80; // 페이지네이션 높이
+      const footerHeight = 120; // 페이지네이션 높이 + 여유 공간
       const availableHeight = height - headerHeight - footerHeight;
 
-      // 카드 크기 및 간격 설정
       const cardWidth = 200;
-      const cardHeight = 150;
-      const horizontalGap = 16; // 카드 간격
+      const cardHeight = 120; // 카드 높이 유지
+      const horizontalGap = 16;
       const verticalGap = 16;
 
-      // 계산된 열과 행 수
       const cols = Math.floor((width + horizontalGap) / (cardWidth + horizontalGap));
       const rows = Math.floor((availableHeight + verticalGap) / (cardHeight + verticalGap));
 
-      // 상태 업데이트
       setColumns(cols);
       setItemsPerPage(cols * rows);
     };
@@ -88,7 +83,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
-    <div style={{ position: "relative", paddingBottom: "5rem" }}>
+    <div style={{ position: "relative", paddingBottom: "7rem" }}>
       <TopTabMenu
         activeSort={activeSort}
         sortDirection={sortDirection}
@@ -110,6 +105,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
           gap: "16px",
           padding: "1rem",
+          overflowY: "auto", // 내부 스크롤 추가
         }}
       >
         {currentItems.map((ingredient) => (
