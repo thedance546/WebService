@@ -5,6 +5,8 @@ import { useIngredients } from "../../contexts/IngredientsContext";
 import TopTabMenu from "./TopTabMenu";
 import IngredientCard from "./IngredientCard";
 import { Ingredient } from "../../types/EntityTypes";
+import { IngredientStatus } from "../../types/FeatureTypes";
+import { calculateStatus } from "../../utils/Utils";
 
 interface IngredientCardContainerProps {
   onAddClick: () => void;
@@ -27,12 +29,12 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
       const width = window.innerWidth;
       const height = window.innerHeight;
 
-      const headerHeight = 60; // TopTabMenu 높이
-      const footerHeight = 120; // 페이지네이션 높이 + 여유 공간
+      const headerHeight = 60;
+      const footerHeight = 120;
       const availableHeight = height - headerHeight - footerHeight;
 
       const cardWidth = 200;
-      const cardHeight = 120; // 카드 높이 유지
+      const cardHeight = 120;
       const horizontalGap = 16;
       const verticalGap = 16;
 
@@ -51,14 +53,28 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
     };
   }, []);
 
+  const getStatusPriority = (ingredient: Ingredient): number => {
+    const status = calculateStatus(ingredient);
+    switch (status) {
+      case IngredientStatus.Expired:
+        return 1; // 가장 높은 우선순위
+      case IngredientStatus.Caution:
+        return 2;
+      case IngredientStatus.Safe:
+        return 3;
+      default:
+        return 4; // 기본값
+    }
+  };
+
   const sortedIngredients = useMemo(() => {
     let sorted = [...ingredients];
     switch (activeSort) {
       case "status":
         sorted.sort((a, b) => {
-          const aDate = a.consumeBy ? new Date(a.consumeBy).getTime() : Infinity;
-          const bDate = b.consumeBy ? new Date(b.consumeBy).getTime() : Infinity;
-          return sortDirection ? aDate - bDate : bDate - aDate;
+          const aPriority = getStatusPriority(a);
+          const bPriority = getStatusPriority(b);
+          return sortDirection ? aPriority - bPriority : bPriority - aPriority;
         });
         break;
       case "name":
@@ -105,7 +121,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
           gap: "16px",
           padding: "1rem",
-          overflowY: "auto", // 내부 스크롤 추가
+          overflowY: "auto",
         }}
       >
         {currentItems.map((ingredient) => (

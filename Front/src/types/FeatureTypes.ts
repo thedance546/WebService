@@ -59,3 +59,9 @@ export interface ReceiptRecognitionResult {
   purchaseDate: string; // 구매 날짜
   matchedItems: string[]; // 인식된 아이템 리스트
 }
+
+export enum IngredientStatus {
+  Safe = "안전",
+  Caution = "주의",
+  Expired = "위험",
+}

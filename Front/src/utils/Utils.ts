@@ -1,5 +1,8 @@
 // src/utils/Utils.ts
 
+import { IngredientStatus } from "../types/FeatureTypes";
+import { Ingredient } from "../types/EntityTypes";
+
 // 날짜 계산 함수 (yymmdd + 유통기한, 소비기한)
 export const calculateDate = (baseDate: string | Date, daysToAdd: number): string => {
   const date = new Date(baseDate);
@@ -44,4 +47,20 @@ export const formatLocalDate = (date: Date): string => {
   const month = String(date.getMonth() + 1).padStart(2, '0'); // 로컬 월
   const day = String(date.getDate()).padStart(2, '0'); // 로컬 일
   return `${year}-${month}-${day}`;
+};
+
+export const calculateStatus = (ingredient: Ingredient): IngredientStatus => {
+  const currentDate = new Date();
+  const shelfLifeDate = ingredient.shelfLife ? new Date(ingredient.shelfLife) : null;
+  const consumeByDate = ingredient.consumeBy ? new Date(ingredient.consumeBy) : null;
+
+  if (shelfLifeDate && currentDate <= shelfLifeDate) {
+    return IngredientStatus.Safe;
+  } else if (consumeByDate && currentDate > shelfLifeDate! && currentDate <= consumeByDate) {
+    return IngredientStatus.Caution;
+  } else if (consumeByDate && currentDate > consumeByDate) {
+    return IngredientStatus.Expired;
+  }
+
+  return IngredientStatus.Expired;
 };
