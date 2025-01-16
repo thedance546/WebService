@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
 import TopTabMenu from "./TopTabMenu";
-import IngredientCard from "./IngredientCard";
-import PaginationControls from "./PaginationControls";
 import IngredientFilter from "./IngredientFilter";
+import PaginationControls from "./PaginationControls";
+import IngredientCardGrid from "./IngredientCardGrid";
 import { Ingredient } from "../../types/EntityTypes";
 
 interface IngredientCardContainerProps {
@@ -30,17 +30,20 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
       const width = window.innerWidth;
       const height = window.innerHeight;
 
-      const headerHeight = 60;
-      const footerHeight = 120;
-      const availableHeight = height - headerHeight - footerHeight;
-
-      const cardWidth = 240;
+      const minWidth = 160;
+      const minHeight = 120;
+      const cardWidth = 180;
       const cardHeight = 120;
       const horizontalGap = 8;
       const verticalGap = 8;
 
-      const cols = Math.floor((width + horizontalGap) / (cardWidth + horizontalGap));
-      const rows = Math.floor((availableHeight + verticalGap) / (cardHeight + verticalGap));
+      const headerHeight = 60;
+      const footerHeight = 120;
+      const availableWidth = Math.max(width, minWidth);
+      const availableHeight = Math.max(height - headerHeight - footerHeight, minHeight);
+
+      const cols = Math.max(1, Math.floor((availableWidth + horizontalGap) / (cardWidth + horizontalGap)));
+      const rows = Math.max(1, Math.floor((availableHeight + verticalGap) / (cardHeight + verticalGap)));
 
       setColumns(cols);
       setItemsPerPage(cols * rows);
@@ -83,24 +86,11 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
         onFilter={setFilteredIngredients}
       />
 
-      <div
-        className="ingredient-card-grid"
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-          gap: "16px",
-          padding: "1rem",
-          overflowY: "auto",
-        }}
-      >
-        {currentItems.map((ingredient) => (
-          <IngredientCard
-            key={ingredient.ingredientId}
-            ingredient={ingredient}
-            onClick={() => onCardClick(ingredient)}
-          />
-        ))}
-      </div>
+      <IngredientCardGrid
+        items={currentItems}
+        columns={columns}
+        onCardClick={onCardClick}
+      />
 
       <PaginationControls
         currentPage={currentPage}
