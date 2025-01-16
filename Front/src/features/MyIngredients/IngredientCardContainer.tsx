@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
 import TopTabMenu from "./TopTabMenu";
 import IngredientCard from "./IngredientCard";
+import PaginationControls from "./PaginationControls";
 import { Ingredient } from "../../types/EntityTypes";
 import { IngredientStatus } from "../../types/FeatureTypes";
 import { calculateStatus } from "../../utils/Utils";
@@ -57,13 +58,13 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
     const status = calculateStatus(ingredient);
     switch (status) {
       case IngredientStatus.Expired:
-        return 1; // 가장 높은 우선순위
+        return 1;
       case IngredientStatus.Caution:
         return 2;
       case IngredientStatus.Safe:
         return 3;
       default:
-        return 4; // 기본값
+        return 4;
     }
   };
 
@@ -95,8 +96,6 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   const currentItems = sortedIngredients.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(sortedIngredients.length / itemsPerPage);
-
-  const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
     <div style={{ position: "relative", paddingBottom: "7rem" }}>
@@ -132,35 +131,13 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
           />
         ))}
       </div>
-      <div
-        className="pagination"
-        style={{
-          position: "fixed",
-          bottom: "5rem",
-          left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex",
-          justifyContent: "center",
-          gap: "0.5rem",
-        }}
-      >
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-          <button
-            key={pageNumber}
-            onClick={() => handlePageChange(pageNumber)}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: pageNumber === currentPage ? "var(--primary-color)" : "transparent",
-              color: pageNumber === currentPage ? "#fff" : "var(--primary-color)",
-              border: `1px solid var(--primary-color)`,
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            {pageNumber}
-          </button>
-        ))}
-      </div>
+
+      {/* PaginationControls 컴포넌트 */}
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };
