@@ -1,7 +1,8 @@
 // src/features/MyIngredients/IngredientCard.tsx
 
 import React from "react";
-import { Ingredient } from "../../types/EntityTypes";
+import { Ingredient, } from "../../types/EntityTypes";
+import { IngredientStatus } from "../../types/FeatureTypes";
 import { STATUS_COLORS } from "../../constants/IngredientsNotiColor";
 import { getIconForIngredient } from "../../utils/LoadIcons";
 
@@ -15,26 +16,30 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
   const shelfLifeDate = ingredient.shelfLife ? new Date(ingredient.shelfLife) : null;
   const consumeByDate = ingredient.consumeBy ? new Date(ingredient.consumeBy) : null;
 
-  let status = "";
+  let status = IngredientStatus.Safe;
   let backgroundColor = "";
   let badgeIcon = null;
+  let expirationInfo = "";
 
   if (shelfLifeDate && currentDate <= shelfLifeDate) {
-    status = "안전";
+    status = IngredientStatus.Safe;
     backgroundColor = STATUS_COLORS.safe;
+    expirationInfo = `유통기한: ${ingredient.shelfLife}`;
   } else if (
     shelfLifeDate &&
     consumeByDate &&
     currentDate > shelfLifeDate &&
     currentDate <= consumeByDate
   ) {
-    status = "주의";
+    status = IngredientStatus.Caution;
     backgroundColor = STATUS_COLORS.caution;
     badgeIcon = "⚠️";
+    expirationInfo = `소비기한: ${ingredient.consumeBy}`;
   } else if (consumeByDate && currentDate > consumeByDate) {
-    status = "위험";
+    status = IngredientStatus.Expired;
     backgroundColor = STATUS_COLORS.expired;
     badgeIcon = "❗";
+    expirationInfo = "소비기한 만료";
   }
 
   const ingredientIcon = getIconForIngredient(
@@ -59,7 +64,6 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
       }}
       onClick={onClick}
     >
-      {/* 첫 번째 줄: 아이콘, 이름, 주의/경고 아이콘 */}
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         {ingredientIcon && (
           <img
@@ -89,7 +93,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
             style={{
               fontSize: "1rem",
               color: badgeIcon === "⚠️" ? "orange" : "red",
-              marginLeft: "auto", // 오른쪽으로 붙이기
+              marginLeft: "auto",
             }}
           >
             {badgeIcon}
@@ -97,7 +101,6 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
         )}
       </div>
 
-      {/* 두 번째 줄: 수량 */}
       <div
         style={{
           display: "flex",
@@ -111,13 +114,15 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
         </span>
       </div>
 
-      {/* 세 번째 줄: 소비기한 */}
-      <p style={{ margin: "4px 0 0", fontSize: "0.8rem" }}>
-        {status === "안전" || status === "주의" ? (
-          <span>유통기한: {ingredient.shelfLife}</span>
-        ) : (
-          <span>소비기한: {ingredient.consumeBy}</span>
-        )}
+      <p
+        style={{
+          margin: "4px 0 0",
+          fontSize: "0.8rem",
+          color: status === IngredientStatus.Expired ? "red" : "black",
+          fontWeight: status === IngredientStatus.Expired ? "bold" : "normal",
+        }}
+      >
+        {expirationInfo}
       </p>
     </div>
   );

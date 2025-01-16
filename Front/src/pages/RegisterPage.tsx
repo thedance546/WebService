@@ -32,10 +32,10 @@ const RegisterPage: React.FC = () => {
     <GlobalBackground>
       <form onSubmit={onSubmit}>
         <div className="mb-3 d-flex align-items-center">
-          <label className="form-label mb-0" style={{ width: '20%' }}>
+          <label className="form-label mb-0" style={{ width: '15%', color: 'white' }}>
             이메일
           </label>
-          <div className="d-flex" style={{ width: '80%' }}>
+          <div className="d-flex" style={{ width: '85%' }}>
             <input
               type="text"
               className="form-control me-2"
@@ -56,13 +56,13 @@ const RegisterPage: React.FC = () => {
           </div>
         </div>
         <div className="mb-3 d-flex align-items-center">
-          <label className="form-label mb-0" style={{ width: '20%' }}>
+          <label className="form-label mb-0" style={{ width: '15%', color: 'white' }}>
             아이디
           </label>
           <input
             type="text"
             className="form-control"
-            style={{ width: '80%' }}
+            style={{ width: '85%' }}
             placeholder="아이디 입력"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -70,23 +70,23 @@ const RegisterPage: React.FC = () => {
           />
         </div>
         <div className="mb-3 d-flex align-items-center">
-          <label className="form-label mb-0" style={{ width: '20%' }}>
+          <label className="form-label mb-0" style={{ width: '15%', color: 'white' }}>
             비밀번호
           </label>
           <input
             type="password"
             className="form-control"
-            style={{ width: '80%' }}
+            style={{ width: '85%' }}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
         <div className="d-flex justify-content-between mt-3">
-          <BackButton className="btn btn-light" />
+          <BackButton className="btn btn-light ms-2" />
           <Button
             type="submit"
-            className="btn w-50 ms-2"
+            className="btn ms-2"
             style={{
               backgroundColor: '#A1D4A3',
               color: 'black',
