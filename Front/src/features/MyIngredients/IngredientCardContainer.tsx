@@ -1,13 +1,12 @@
 // src/features/MyIngredients/IngredientCardContainer.tsx
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useIngredients } from "../../contexts/IngredientsContext";
 import TopTabMenu from "./TopTabMenu";
 import IngredientCard from "./IngredientCard";
 import PaginationControls from "./PaginationControls";
+import IngredientFilter from "./IngredientFilter";
 import { Ingredient } from "../../types/EntityTypes";
-import { IngredientStatus } from "../../types/FeatureTypes";
-import { calculateStatus } from "../../utils/Utils";
 
 interface IngredientCardContainerProps {
   onAddClick: () => void;
@@ -24,6 +23,7 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(12);
   const [columns, setColumns] = useState<number>(3);
+  const [filteredIngredients, setFilteredIngredients] = useState<Ingredient[]>([]);
 
   useEffect(() => {
     const calculateItemsPerPage = () => {
@@ -54,48 +54,11 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
     };
   }, []);
 
-  const getStatusPriority = (ingredient: Ingredient): number => {
-    const status = calculateStatus(ingredient);
-    switch (status) {
-      case IngredientStatus.Expired:
-        return 1;
-      case IngredientStatus.Caution:
-        return 2;
-      case IngredientStatus.Safe:
-        return 3;
-      default:
-        return 4;
-    }
-  };
-
-  const sortedIngredients = useMemo(() => {
-    let sorted = [...ingredients];
-    switch (activeSort) {
-      case "status":
-        sorted.sort((a, b) => {
-          const aPriority = getStatusPriority(a);
-          const bPriority = getStatusPriority(b);
-          return sortDirection ? aPriority - bPriority : bPriority - aPriority;
-        });
-        break;
-      case "name":
-        sorted.sort((a, b) => {
-          const comparison = a.name.localeCompare(b.name);
-          return sortDirection ? comparison : -comparison;
-        });
-        break;
-      case "quantity":
-        sorted.sort((a, b) => (sortDirection ? b.quantity - a.quantity : a.quantity - b.quantity));
-        break;
-    }
-    return sorted;
-  }, [activeSort, sortDirection, ingredients]);
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedIngredients.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredIngredients.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalPages = Math.ceil(sortedIngredients.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredIngredients.length / itemsPerPage);
 
   return (
     <div style={{ position: "relative", paddingBottom: "7rem" }}>
@@ -111,6 +74,13 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
           }
         }}
         onAddClick={onAddClick}
+      />
+
+      <IngredientFilter
+        ingredients={ingredients}
+        activeSort={activeSort}
+        sortDirection={sortDirection}
+        onFilter={setFilteredIngredients}
       />
 
       <div
@@ -132,7 +102,6 @@ const IngredientCardContainer: React.FC<IngredientCardContainerProps> = ({
         ))}
       </div>
 
-      {/* PaginationControls 컴포넌트 */}
       <PaginationControls
         currentPage={currentPage}
         totalPages={totalPages}
