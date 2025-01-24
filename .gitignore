@@ -109,4 +109,4 @@ Thumbs.db
 *.sqlite3
 
 # PyCharm settings
-# .idea/
+.idea/
