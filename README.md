@@ -3,7 +3,6 @@
 
 **맛집사**는 AI 기술을 활용해 사용자의 냉장고 속 식재료를 효율적으로 관리하고, 개인 맞춤형 레시피를 제공하는 서비스입니다.
 
-[![시연 영상 보기](https://img.youtube.com/vi/-Av54X0X0R0/hqdefault.jpg)](https://www.youtube.com/watch?v=-Av54X0X0R0)
 ---
 
 ## 📋 **프로젝트 개요**
@@ -21,6 +20,11 @@
    - YOLO 모델을 활용한 식재료 이미지 인식
    - 사용자가 보유한 식재료와 개인 취향을 반영한 프롬프트 생성
    - OpenAI API에 **검색 증강 생성(RAG)** 기법을 활용하여, 사용자의 재료와 요구에 맞춘 레시피 추천
+
+---
+
+## **시연 영상**
+[![시연 영상 보기](https://img.youtube.com/vi/-Av54X0X0R0/hqdefault.jpg)](https://www.youtube.com/watch?v=-Av54X0X0R0)
 
 ---
 
