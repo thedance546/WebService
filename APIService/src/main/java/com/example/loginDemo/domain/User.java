@@ -1,13 +1,12 @@
 package com.example.loginDemo.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,8 +17,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@NoArgsConstructor
+@Getter @Setter
 public class User implements UserDetails {
 
     @Id
@@ -32,7 +32,6 @@ public class User implements UserDetails {
     @Column(name="email", nullable = false, unique=true)
     private String email;
 
-    //유저 아이디
     @NotBlank(message = "Name cannot be blank")
     @Column(name = "username", nullable = false)
     private String username;
@@ -44,7 +43,6 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
 
     @Builder
     public User(String username, String email, String password, Role role) {

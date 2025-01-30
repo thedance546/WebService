@@ -46,36 +46,40 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateAccessToken(new HashMap<>(), userDetails, "access");  // type = access
+    public String generateAccessToken(UserDetails userDetails, String role) {
+        return generateAccessToken(new HashMap<>(), userDetails, "access", role);
     }
 
     public String generateAccessToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
-            String tokenType
-    ){
-        extraClaims.put("type", tokenType);  // "type" 클레임 추가
+            String tokenType,
+            String role
+    ) {
+        extraClaims.put("type", tokenType);
+        extraClaims.put("role", role);
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis())) // 토큰 발행 시간
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION)) // 만료 시간
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 토큰 알고리즘
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return generateRefreshToken(new HashMap<>(), userDetails, "refresh");
+    public String generateRefreshToken(UserDetails userDetails, String role) {
+        return generateRefreshToken(new HashMap<>(), userDetails, "refresh", role);
     }
 
     public String generateRefreshToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
-            String tokenType
+            String tokenType,
+            String role
     ) {
         extraClaims.put("type", tokenType);
+        extraClaims.put("role", role);
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -120,7 +124,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 블랙리스트에 있는지 확인하는 메서드
     public boolean isTokenBlacklisted(String token) {
         return blacklistService.isTokenBlacklisted(token);
     }

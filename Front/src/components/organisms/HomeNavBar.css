@@ -1,0 +1,21 @@
+/* src/components/organisms/HomeNavBar.css */
+:root {
+    --navbar-height: 50px;
+}
+
+.navbar {
+    height: var(--navbar-height);
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: center; /* NavList 전체 중앙 정렬 */
+    align-items: center;
+}
+
+.navbar-nav-list-responsive {
+    display: flex;
+    justify-content: space-evenly; /* 간격을 균등 분배 */
+    flex-grow: 1; /* 부모 컨테이너의 가용 공간 사용 */
+    max-width: 100%; /* 너무 넓어지지 않도록 제한 */
+    padding: 0 1rem; /* 좌우 여백 */
+}

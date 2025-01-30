@@ -2,7 +2,7 @@
 # Backend (Spring / Gradle)
 # -----------------------------
 
-Gradle specific files
+# Gradle specific files
 /APIService/.gradle/
 /APIService/.gradle/**/*.lock
 /APIService/.gradle/**/*.bin
@@ -86,9 +86,6 @@ venv/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Model files
-*.pt
-
 # Training and log directories
 runs/
 
@@ -112,4 +109,4 @@ Thumbs.db
 *.sqlite3
 
 # PyCharm settings
-# .idea/
+.idea/

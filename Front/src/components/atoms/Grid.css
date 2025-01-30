@@ -1,0 +1,36 @@
+/* src/components/atoms/Grid.css */
+
+.responsive-grid {
+  display: grid;
+  gap: 1rem;
+  overflow-x: hidden; /* 가로 스크롤 제거 */
+  overflow-y: auto; /* 세로 스크롤 허용 */
+}
+
+.grid-columns-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-columns-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-columns-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (min-width: 768px) {
+  .grid-columns-md-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-columns-md-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .grid-columns-md-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.responsive-grid label {
+  white-space: nowrap;
+}
